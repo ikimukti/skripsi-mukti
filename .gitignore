@@ -1,0 +1,7 @@
+# Ignore /env
+env/
+
+# Ingnore /finalproject/__pycache__
+finalproject/__pycache__/
+
+# Ignore log files

@@ -1,0 +1,57 @@
+{% extends "myapp/core_base2.html" %}
+{% load static %}
+
+{% block content %}
+<div class="flex flex-col w-5/6 fixed right-0 top-14 h-[calc(100vh-3.5rem)] px-4 py-4 overflow-y-auto overflow-hidden" id="content">
+    <div class="flex flex-col m-2 bg-white rounded-md p-4 shadow-md z-10 mb-48 pb-20">
+        <div class="flex flex-row justify-between items-center mb-2">
+            <div class="flex flex-col space-y-2">
+                <h1 class="text-2xl font-bold text-gray-700">{{ title }}</h1>
+            </div>
+            <!-- button back -->
+            <div class="flex flex-row space-x-2">
+                <a href="{% url 'myapp:image_list' %}" class="flex flex-row justify-center items-center px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded-md shadow-md">
+                    <i class="fas fa-arrow-left"></i>
+                    <span class="ml-2">Back</span>
+                </a>
+            </div>
+        </div>
+        <hr class="border-gray-200 mb-2">
+        <div class="flex flex-col space-y-2">
+            <!-- list Image Upload -->
+            <div class="flex flex-row justify-between items-center">
+                <div class="flex flex-row space-x-2">
+                    <div class="flex flex-col space-y-1">
+                        <h1 class="text-lg font-bold text-gray-700">Image Details</h1>
+                        <p class="text-sm text-gray-500">Image uploaded by {{ image.uploader }}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- list Images Uploaded -->
+            <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
+                <div class="flex flex-col space-y-2">
+                    <div class="flex flex-row justify-center items-center">
+                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
+                    </div>
+                    <div class="flex flex-row justify-center items-center">
+                        <a href="{{ image.image.url }}" class="text-sm text-blue-500 hover:text-blue-700">View Full Image</a>
+                    </div>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <h1 class="text-lg font-bold text-gray-700">{{ image.slug }}</h1>
+                    <p class="text-sm text-gray-500">Image uploaded by {{ image.uploader }}</p>
+                    <p class="text-sm text-gray-500">Created at {{ image.created_at }}</p>
+                    <p class="text-sm text-gray-500">Updated at {{ image.updated_at }}</p>
+                    <p class="text-sm text-gray-500">Size {{ image.image.size|filesizeformat }}</p>
+                    <p class="text-sm text-gray-500">Dimension {{ image.image.width }} px x {{ image.image.height }} px</p>
+                    <p class="text-sm text-gray-500">Channel {{ image.channel }}</p>
+                    <p class="text-sm text-gray-500">DPI {{ image.dpi }} dpi</p>
+                    <p class="text-sm text-gray-500">Distance {{ image.distance }} cm</p>
+                    <p class="text-sm text-gray-500">Format {{ image.format }}</p>
+                    <p class="text-sm text-gray-500">Color {{ image.color }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
