@@ -1,49 +1,143 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 # Create your views here.
 from django.views import View
 # get menus = [] from .menus
 from .menus import menus
+# Count
+from django.db.models import Count
 
 from .models import Image
+# model user
+from django.contrib.auth.models import User
+# form
+from .forms import ImageForm
+
+class ImageUploadView(CreateView):
+    form_class = ImageForm
+    template_name = 'myapp/image/image_upload.html'
+    success_url = '/image/'
+    failure_url = '/image/upload/'
+    # form_valid
+    def form_valid(self, form):
+        form.instance.uploader = self.request.user
+        print("error nya mau di cek")
+        return super().form_valid(form)
+    # form_invalid
+    def form_invalid(self, form):
+        form = ImageForm(self.request.POST, self.request.FILES)
+        # a = reqeust.FILES
+        files = self.request.FILES.getlist('image')
+        if files:
+            # chage files to form image
+            form.instance.image = files[0]
+
+    # form save
+    def form_save(self, form):
+        form.instance.uploader = self.request.user
+        print("error nya mau di cek 3")
+        return super().form_save(form)
+    
+    # update context
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Image Create'
+        context['contributor'] = 'WeeAI Team'
+        context['content'] = 'Welcome to WeeAI! Create Image'
+        context['app_css'] = 'myapp/css/styles.css'
+        context['app_js'] = 'myapp/js/scripts.js'
+        context['logo'] = 'myapp/images/Logo.png'
+        context['menus'] = menus
+        return context
 
 class ImageListView(ListView):
     model = Image
     template_name = 'myapp/image/image_list.html'
     context_object_name = 'images'
     ordering = ['-created_at']
-    context = {
-        'title': 'Image List',
-        'contributor': 'WeeAI Team',
-        'content': 'Welcome to WeeAI!',
-        'app_css': 'myapp/css/styles.css',
-        'app_js': 'myapp/js/scripts.js',
-        'logo': 'myapp/images/Logo.png',
-        'menus': menus,
-    }
-    def get(self, request):
-        self.context['images'] = Image.objects.all()
-        return render(request, self.template_name, self.context)
+    paginate_by = 8
+    # update context
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Image List'
+        context['contributor'] = 'WeeAI Team'
+        context['content'] = 'Welcome to WeeAI!'
+        context['app_css'] = 'myapp/css/styles.css'
+        context['app_js'] = 'myapp/js/scripts.js'
+        context['logo'] = 'myapp/images/Logo.png'
+        context['menus'] = menus
+        # categories uploader name with name of uploader in User model
+        uploaders_name = User.objects.filter(image__isnull=False).distinct().values_list('username', flat=True)
+        # count Image by uploader
+        uploaders_count = Image.objects.values('uploader').distinct().annotate(count=Count('uploader')).values_list('count', flat=True)
+        # context['uploaders'] = {'name': uploaders_name, 'count': uploaders_count}
+        uploaders = []
+        for name, count in zip(uploaders_name, uploaders_count):
+            uploaders.append({'name': name, 'count': count})
+        context['uploaders'] = uploaders
+        # categories color name
+        context['colors'] = self.model.objects.values_list('color', flat=True).distinct()
+        return context
+    
+class ImageUploaderView(ListView):
+    model = Image
+    template_name = 'myapp/image/image_by_uploader.html'
+    context_object_name = 'images'
+    ordering = ['-created_at']
+    paginate_by = 8
+    # get queryset
+    def get_queryset(self):
+        uploader = self.kwargs['uploader']
+        return Image.objects.filter(uploader__username=uploader)
+    
+    # update context
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Capitalize first letter of uploader
+        context['title'] = 'Image Uploader ' + self.kwargs['uploader'].capitalize()
+        context['kwargs_uploader'] = self.kwargs['uploader']
+        context['contributor'] = 'WeeAI Team'
+        context['content'] = 'Welcome to WeeAI!'
+        context['app_css'] = 'myapp/css/styles.css'
+        context['app_js'] = 'myapp/js/scripts.js'
+        context['logo'] = 'myapp/images/Logo.png'
+        context['menus'] = menus
+        # categories uploader name with name of uploader in User model
+        uploaders_name = User.objects.filter(image__isnull=False).distinct().values_list('username', flat=True)
+        # count Image by uploader
+        uploaders_count = Image.objects.values('uploader').distinct().annotate(count=Count('uploader')).values_list('count', flat=True)
+        # context['uploaders'] = {'name': uploaders_name, 'count': uploaders_count}
+        uploaders = []
+        for name, count in zip(uploaders_name, uploaders_count):
+            uploaders.append({'name': name, 'count': count})
+        context['uploaders'] = uploaders
+        # categories color name
+        context['colors'] = self.model.objects.values_list('color', flat=True).distinct()
+        return context
 
 class ImageDetailView(DetailView):
     model = Image
     template_name = 'myapp/image/image_detail.html'
     context_object_name = 'image'
-    context = {
-        'title': 'Image Detail',
-        'contributor': 'WeeAI Team',
-        'content': 'Welcome to WeeAI!',
-        'app_css': 'myapp/css/styles.css',
-        'app_js': 'myapp/js/scripts.js',
-        'logo': 'myapp/images/Logo.png',
-        'menus': menus,
-    }
-    def get(self, request, pk):
-        self.context['image'] = Image.objects.get(id=pk)
-        return render(request, self.template_name, self.context)
-    
+    # update context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Image Detail'
+        context['contributor'] = 'WeeAI Team'
+        context['content'] = 'Welcome to WeeAI!'
+        context['app_css'] = 'myapp/css/styles.css'
+        context['app_js'] = 'myapp/js/scripts.js'
+        context['logo'] = 'myapp/images/Logo.png'
+        context['menus'] = menus
+        # categories uploader by uploader name in Image model uploader_id
+        context['uploader'] = User.objects.get(id=self.object.uploader_id)
+        # get 5 image by uploader lastest
+        context['images'] = Image.objects.filter(uploader_id=self.object.uploader_id).order_by('-created_at')[:5]
+
+        return context
+
 
 class IndexClassView(View):
     template_name = 'myapp/index.html'

@@ -23,7 +23,10 @@
                 <div class="flex flex-row space-x-2">
                     <div class="flex flex-col space-y-1">
                         <h1 class="text-lg font-bold text-gray-700">Image Details</h1>
-                        <p class="text-sm text-gray-500">Image uploaded by {{ image.uploader }}</p>
+                        <p class="text-sm text-gray-500">
+                            <i class="fas fa-user"></i>	
+                            <span class="ml-2">Uploaded by {{ image.uploader|title }}</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -34,21 +37,128 @@
                         <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
                     </div>
                     <div class="flex flex-row justify-center items-center">
-                        <a href="{{ image.image.url }}" class="text-sm text-blue-500 hover:text-blue-700">View Full Image</a>
+                        <a href="{{ image.image.url }}" class="text-sm text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-eye"></i>
+                            <span class="ml-2">View Full Image</span>
+                        </a>
                     </div>
                 </div>
+                <!-- Two column with shadow -->
                 <div class="flex flex-col space-y-2">
                     <h1 class="text-lg font-bold text-gray-700">{{ image.slug }}</h1>
-                    <p class="text-sm text-gray-500">Image uploaded by {{ image.uploader }}</p>
-                    <p class="text-sm text-gray-500">Created at {{ image.created_at }}</p>
-                    <p class="text-sm text-gray-500">Updated at {{ image.updated_at }}</p>
-                    <p class="text-sm text-gray-500">Size {{ image.image.size|filesizeformat }}</p>
-                    <p class="text-sm text-gray-500">Dimension {{ image.image.width }} px x {{ image.image.height }} px</p>
-                    <p class="text-sm text-gray-500">Channel {{ image.channel }}</p>
-                    <p class="text-sm text-gray-500">DPI {{ image.dpi }} dpi</p>
-                    <p class="text-sm text-gray-500">Distance {{ image.distance }} cm</p>
-                    <p class="text-sm text-gray-500">Format {{ image.format }}</p>
-                    <p class="text-sm text-gray-500">Color {{ image.color }}</p>
+                    <div class="flex flex-row space-x-2">
+                        <div class="flex flex-col space-y-1">
+                            <p class="text-sm text-gray-500">
+                                <i class="fas fa-user"></i>
+                                <span class="ml-2">Uploaded by {{ image.uploader|title }}</span>
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <i class="fas fa-calendar"></i>
+                                <span class="ml-2">Uploaded at {{ image.created_at|date:"d F Y" }}</span>
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <i class="fas fa-clock"></i>
+                                <span class="ml-2">Uploaded at {{ image.created_at|time:"H:i:s" }}</span>
+                            </p>
+                        </div>
+                        <div class="flex flex-col space-y-1">
+                            <p class="text-sm text-gray-500">
+                                <i class="fas fa-file"></i>
+                                <span class="ml-2">File Size {{ image.image.size|filesizeformat }}</span>
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <i class="fas fa-image"></i>
+                                <span class="ml-2">Image Size {{ image.image.width }} x {{ image.image.height }} px</span>
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <i class="fas fa-image"></i>
+                                <span class="ml-2">Image Channel {{ image.channel }} Channel</span>
+                            </p>
+                        </div>
+                        <div class="flex flex-col space-y-1">
+                            <p class="text-sm text-gray-500">
+                                <i class="fa-solid fa-icons"></i>
+                                <span class="ml-2">Image Type {{ image.format }}</span>
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <i class="fa-solid fa-camera-retro"></i>
+                                <span class="ml-2">Image DPI {{ image.dpi }}</span>
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <i class="fa-solid fa-people-arrows"></i>
+                                <span class="ml-2">Image Distance {{ image.distance }}</span>
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <i class="fa-solid fa-palette"></i>
+                                <span class="ml-2">Image Color {{ image.color }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- List Segmentation Image -->
+            <div class="flex flex-col space-y-2">
+                <h1 class="text-lg font-bold text-gray-700">Segmentation Image</h1>
+                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
+                    <h2 class="text-md font-bold text-gray-700">Segmentation Image K-Means <span class="text-sm text-gray-500">K = 2</span></h2>
+                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
+                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
+                        <p class="text-sm text-gray-500">Segmentation Image K-Means <span class="text-sm text-gray-500">K = 2</span></p>
+                    </div>
+                </div>
+                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
+                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Thresholding Adaptive</h2>
+                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
+                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
+                        <p class="text-sm text-gray-500">Segmentation Image Thresholding Adaptive</p>
+                    </div>
+                </div>
+                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
+                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Thresholding Otsu</h2>
+                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
+                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
+                        <p class="text-sm text-gray-500">Segmentation Image Thresholding Otsu</p>
+                    </div>
+                </div>
+                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
+                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Edge Detection Canny</h2>
+                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
+                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
+                        <p class="text-sm text-gray-500">Segmentation Image Edge Detection Canny</p>
+                    </div>
+                </div>
+                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
+                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Edge Detection Sobel</h2>
+                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
+                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
+                        <p class="text-sm text-gray-500">Segmentation Image Edge Detection Sobel</p>
+                    </div>
+                </div>
+                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
+                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Edge Detection Prewitt</h2>
+                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
+                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
+                        <p class="text-sm text-gray-500">Segmentation Image Edge Detection Prewitt</p>
+                    </div>
+                </div>
+            </div>
+            <!-- List Image From Uploader User 5 Image latest -->
+            <div class="flex flex-col space-y-2">
+                <h1 class="text-lg font-bold text-gray-700">Image Latest From {{ image.uploader }}</h1>
+                <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
+                    {% for image in images %}
+                    <div class="flex flex-col space-y-2">
+                        <a class="flex flex-row justify-center items-center" href="{% url 'myapp:image_detail' image.id %}">
+                            <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
+                        </a>
+                        <div class="flex flex-row justify-center items-center">
+                            <a href="{{ image.image.url }}" class="text-sm text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-eye"></i>
+                                <span class="ml-2">View Full Image</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

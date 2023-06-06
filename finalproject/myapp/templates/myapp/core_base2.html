@@ -53,6 +53,11 @@
             accountMenu.classList.toggle('hidden');
         }
 
+        function toggleModal(id) {
+            const modal = document.querySelector(`#modal-${id}`);
+            modal.classList.toggle('hidden');
+        }
+
         function toggleDropdown(id) {
             const dropdownMenu = document.querySelector(`#dropdown-menu-${id}`);
             const dropdownIcon = document.querySelector(`#dropdown-icon-${id}`);

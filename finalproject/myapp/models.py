@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from .utils.generate import generate_unique_image_name
+from django.urls import reverse
 
 # Create your models here.
 class Image(models.Model):
@@ -25,10 +26,23 @@ class Image(models.Model):
     def save(self, *args, **kwargs):
         # hash image name to make it unique
         unique_name = generate_unique_image_name(self.image.name)
+        # width, height, size, channel, format, dpi, distance, color
+        self.width = self.image.width
+        self.height = self.image.height
+        self.size = self.image.size
+        self.channel = 3
+        # shape to get channel
+        self.format = self.image.name.split('.')[-1]
+        # get dpi from image
+        self.dpi = 300
         # set file format
         self.slug = slugify(unique_name + '.' + self.image.name.split('.')[-1])
         self.image.name = unique_name + '.' + self.image.name.split('.')[-1]
         super(Image, self).save(*args, **kwargs)
+
+    def get_absolute_url(self, *args, **kwargs):
+        return reverse('image_detail', kwargs={'pk': self.pk})
+
 
     def __str__(self):
         return "{}. {}".format(self.id, self.image.name, self.uploader.username)
