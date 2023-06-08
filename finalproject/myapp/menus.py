@@ -8,7 +8,8 @@ menus = [
     ]},
     {'name': 'Images', 'url': '/image/', 'icon': 'fas fa-image', 'dropdown': True, 'id': 'image'
     ,'submenus': [
-        {'name': 'List', 'url': '/image/list/', 'icon': 'fas fa-list', 'id': 'imageList'},
+        {'name': 'Image All', 'url': '/image/', 'icon': 'fas fa-list', 'id': 'image'},
+        {'name': 'Image by Uploader', 'url': '/image/uploader/', 'icon': 'fas fa-user', 'id': 'imageUploader'},
         {'name': 'Upload', 'url': '/image/upload/', 'icon': 'fas fa-upload', 'id': 'imageUpload'},
         {'name': 'Summary', 'url': '/image/summary/', 'icon': 'fas fa-chart-bar', 'id': 'imageSummary'},
         {'name': 'Manage', 'url': '/image/manage/', 'icon': 'fas fa-cog', 'id': 'imageManage'},

@@ -1,31 +1,32 @@
 from django import forms
 from .models import Image
 from django.utils.safestring import mark_safe
+from django.core.exceptions import ValidationError
 
 class VisibleMultipleHiddenInput(forms.widgets.HiddenInput):
     def render(self, name, value, attrs=None, renderer=None):
         if not attrs:
             attrs = {}
-        attrs['type'] = 'hidden'  # Change the input type to 'hidden'
+        attrs["type"] = "hidden"  # Change the input type to 'hidden'
+        return mark_safe(super().render(name, value, attrs, renderer))
+
+class VisibleMultipleHiddenInput(forms.widgets.HiddenInput):
+    def render(self, name, value, attrs=None, renderer=None):
+        if not attrs:
+            attrs = {}
+        attrs["type"] = "hidden"  # Change the input type to 'hidden'
         return mark_safe(super().render(name, value, attrs, renderer))
 
 class ImageForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super(ImageForm, self).__init__(*args, **kwargs)
-        self.fields['image'].required = True
-    
     def clean_image(self):
-        image = self.cleaned_data.get('image', False)
+        image = self.cleaned_data.get('image')
         if not image:
-            raise forms.ValidationError("Image is required 2")
+            raise ValidationError(self.error_messages['image'])
         return image
-
 
     class Meta:
         model = Image
         fields = [
-            'uploader',
             'image',
             'distance',
             'color',
@@ -39,14 +40,19 @@ class ImageForm(forms.ModelForm):
         widgets = {
             'image': VisibleMultipleHiddenInput(
                 attrs={
-                    'multiple': True,
-                    'accept': 'image/*',
-                    'type': 'file',
-                    'required': True,
-                    }
-                ),
-            'distance': forms.NumberInput(attrs={'class': 'form-control'}),
-            'color': forms.TextInput(attrs={'class': 'form-control'}),
+                    "multiple": True,
+                    "class": "block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer",
+                    "id": "image-field",
+                    "accept": "image/*",
+                    "type": "file",
+                },
+            ),
+            'distance': forms.NumberInput(
+                attrs={'class': 'form-control', 'placeholder': 'Distance', 'min': 0, 'max': 100, 'step': 1}
+            ),
+            'color': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Color', 'maxlength': 20}
+            ),
         }
         allow_empty_file = False
         error_messages = {

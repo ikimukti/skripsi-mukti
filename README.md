@@ -90,7 +90,7 @@ Skripsi Mukti is a web application that can be used to manage the data of theses
 
     ```bash
     cd skripsi-mukti
-    python3 -m venv venv
+    python3 -m venv env
     source venv/bin/activate # Linux or Mac 
     env\Scripts\activate # Windows
     pip install -r requirements.txt
@@ -152,4 +152,22 @@ Skripsi Mukti is a web application that can be used to manage the data of theses
     python manage.py tailwind install
     # Start the development server by running tailwind
     python manage.py tailwind start
+    ```
+
+9. Create superuser
+
+    ```bash
+    python manage.py createsuperuser
+    # Enter your username, email, and password
+    Username (leave blank to use 'smkn1kediri'): admin
+    Email address: admin@ikimukti.com
+    Password: 
+    Password (again): 
+    Superuser created successfully.
+    ```
+
+10. Run the development server
+
+    ```bash
+    python manage.py runserver
     ```

@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 
 # Create your views here.
 from django.views import View
@@ -18,32 +20,52 @@ from .forms import ImageForm
 class ImageUploadView(CreateView):
     form_class = ImageForm
     template_name = 'myapp/image/image_upload.html'
-    success_url = '/image/'
     failure_url = '/image/upload/'
-    # form_valid
-    def form_valid(self, form):
-        form.instance.uploader = self.request.user
-        print("error nya mau di cek")
-        return super().form_valid(form)
-    # form_invalid
-    def form_invalid(self, form):
-        form = ImageForm(self.request.POST, self.request.FILES)
-        # a = reqeust.FILES
-        files = self.request.FILES.getlist('image')
-        if files:
-            # chage files to form image
-            form.instance.image = files[0]
+    success_url = reverse_lazy('image_list')  # Assuming you have a URL name for the image list view
+
+    # # form_invalid
+    # def form_invalid(self, form):
+    #     print(form.errors)
+    #     print(self.request.FILES)
+    #     print(self.request.POST)
+    #     # a = reqeust.FILES
+    #     files = self.request.FILES.getlist('image')
+    #     print("ini files : ", files)
+    #     # print form image value
+    #     print(form['image'].value())
+    #     if form['image'].value() == None:
+    #         print('image is empty')
+    #         # if files not empty
+    #         if files:
+    #             print('files not empty')
+    #             # try again to save
+    #             if form.is_valid():
+    #                 return self.form_valid(form)
+    #             else:
+    #                 return self.render_to_response(self.get_context_data(form=form))
+    #         else:
+    #             print('files empty')
+    #             return self.render_to_response(self.get_context_data(form=form))
+    #     else:
+    #         print('image not empty and files empty')
+    #         return self.render_to_response(self.get_context_data(form=form))
+
+
 
     # form save
-    def form_save(self, form):
-        form.instance.uploader = self.request.user
-        print("error nya mau di cek 3")
-        return super().form_save(form)
+    def form_valid(self, form):
+        print('form valid')
+        # get user
+        user = User.objects.get(username=self.request.user)
+        # set uploader
+        form.instance.uploader = user
+        # save
+        return super().form_valid(form)
     
     # update context
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Image Create'
+        context['title'] = 'Image Upload'
         context['contributor'] = 'WeeAI Team'
         context['content'] = 'Welcome to WeeAI! Create Image'
         context['app_css'] = 'myapp/css/styles.css'
