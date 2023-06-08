@@ -3,63 +3,76 @@ from django.views.generic import TemplateView
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+# redirect
+from django.shortcuts import redirect
+# auth login
+from django.contrib.auth import authenticate, login, logout
+# decorator
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 # Create your views here.
 from django.views import View
 # get menus = [] from .menus
-from .menus import menus
+from .menus import menus, it_admin_menus, staff_menus, researcher_menus, set_user_menus
 # Count
 from django.db.models import Count
 
 from .models import Image
 # model user
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 # form
 from .forms import ImageForm
+
+class ImageUpdateView(UpdateView):
+    model = Image
+    template_name = 'myapp/image/image_update.html'
+    form_class = ImageForm
+    success_url = reverse_lazy('myapp:image_list')
+    failure_url = '/image/update/'
+
+    #update context
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Image Update'
+        context['contributor'] = 'WeeAI Team'
+        context['content'] = 'Welcome to WeeAI! Update Image'
+        context['app_css'] = 'myapp/css/styles.css'
+        context['app_js'] = 'myapp/js/scripts.js'
+        context['logo'] = 'myapp/images/Logo.png'
+        context['menus'] = menus
+        return context
+
+class ImageDeleteView(DeleteView):
+    model = Image
+    template_name = 'myapp/image/image_delete.html'
+    success_url = reverse_lazy('myapp:image_list')
+
+    # update context
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Image Delete'
+        context['contributor'] = 'WeeAI Team'
+        context['content'] = 'Welcome to WeeAI! Delete Image'
+        context['app_css'] = 'myapp/css/styles.css'
+        context['app_js'] = 'myapp/js/scripts.js'
+        context['logo'] = 'myapp/images/Logo.png'
+        context['menus'] = menus
+        return context
 
 class ImageUploadView(CreateView):
     form_class = ImageForm
     template_name = 'myapp/image/image_upload.html'
     failure_url = '/image/upload/'
-    success_url = reverse_lazy('image_list')  # Assuming you have a URL name for the image list view
+    # success_url = reverse_lazy('image_list')  # Assuming you have a URL name for the image list view
 
-    # # form_invalid
-    # def form_invalid(self, form):
-    #     print(form.errors)
-    #     print(self.request.FILES)
-    #     print(self.request.POST)
-    #     # a = reqeust.FILES
-    #     files = self.request.FILES.getlist('image')
-    #     print("ini files : ", files)
-    #     # print form image value
-    #     print(form['image'].value())
-    #     if form['image'].value() == None:
-    #         print('image is empty')
-    #         # if files not empty
-    #         if files:
-    #             print('files not empty')
-    #             # try again to save
-    #             if form.is_valid():
-    #                 return self.form_valid(form)
-    #             else:
-    #                 return self.render_to_response(self.get_context_data(form=form))
-    #         else:
-    #             print('files empty')
-    #             return self.render_to_response(self.get_context_data(form=form))
-    #     else:
-    #         print('image not empty and files empty')
-    #         return self.render_to_response(self.get_context_data(form=form))
-
-
+    # invalid form
+    def form_invalid(self, form):
+        print(form.cleaned_data)
+        return super().form_invalid(form)
 
     # form save
     def form_valid(self, form):
-        print('form valid')
-        # get user
-        user = User.objects.get(username=self.request.user)
-        # set uploader
-        form.instance.uploader = user
-        # save
+        print(form.cleaned_data)
         return super().form_valid(form)
     
     # update context
@@ -173,10 +186,14 @@ class IndexClassView(View):
         'menus': menus,
     }
     def get(self, request):
-        
-        return render(request, self.template_name, self.context)
+        # codition request user is authenticated
+        if request.user.is_authenticated:
+            return redirect('myapp:dashboard')
+        else:
+            return render(request, self.template_name, self.context)
 
 class DashboardClassView(View):
+    # set context first
     context = {
         'title': 'Dashboard',
         'content': 'Welcome to WeeAI!',
@@ -186,10 +203,15 @@ class DashboardClassView(View):
         'menus': menus,
         'logo': 'myapp/images/Logo.png',
     }
-    template_name = 'myapp/dashboard.html'
+    template_name = 'myapp/dashboard.html' # set template name
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # codition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)  # set user menus
+            return render(request, self.template_name, self.context)
 
 class SignInClassView(View):
     context = {
@@ -203,8 +225,31 @@ class SignInClassView(View):
     template_name = 'myapp/system/signin.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
-    
+        # codition request user is authenticated
+        if request.user.is_authenticated:
+            return redirect('myapp:dashboard')
+        else:
+            return render(request, self.template_name, self.context)
+        
+    # override method post
+    def post(self, request):
+        print(request.POST)
+        # get username and password
+        username_signin = request.POST['username']
+        password_signin = request.POST['password']
+        # authenticate user
+        user = authenticate(request, username=username_signin, password=password_signin)
+        print(user)
+        # condition user is not None
+        if user is not None:
+            # login user
+            login(request, user)
+            return redirect('myapp:dashboard')
+        else:
+            # update context
+            self.context['error'] = 'Username or Password is incorrect!'
+            return render(request, self.template_name, self.context)
+
 class SignUpClassView(View):
     context = {
         'title': 'Sign Up',
@@ -218,7 +263,11 @@ class SignUpClassView(View):
     # override method get
     def get(self, request):
         return render(request, self.template_name, self.context)
+    
+    # override method post
 
+    
+# @login_required(login_url='myapp:signin')
 class SignOutClassView(View):
     context = {
         'title': 'Sign Out',
@@ -231,7 +280,23 @@ class SignOutClassView(View):
     template_name = 'myapp/system/signout.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # codition request user is authenticated
+        if request.user.is_authenticated:
+            return render(request, self.template_name, self.context)
+        else:
+            return redirect('myapp:signin')
+    
+    # override method post
+    def post(self, request):
+        print(request.POST)
+        if request.POST['signout'] == 'signout':
+            # logout user
+            logout(request)
+            self.context['message'] = 'Sign Out Successfully!'
+            return redirect('myapp:signin')
+        else:
+            self.context['error'] = 'Sign Out Failed!'
+            return redirect('myapp:dashboard')
     
 class AboutClassView(View):
     context = {

@@ -23,6 +23,30 @@ class Image(models.Model):
     color = models.CharField(max_length=32 ,blank=True, null=True)
     segmented = models.BooleanField(default=False)
 
+    # override delete method
+    def delete(self, *args, **kwargs):
+        self.image.delete()
+        super().delete(*args, **kwargs)
+
+    # override update method
+    def update(self, *args, **kwargs):
+        # hash image name to make it unique
+        unique_name = generate_unique_image_name(self.image.name)
+        # width, height, size, channel, format, dpi, distance, color
+        self.width = self.image.width
+        self.height = self.image.height
+        self.size = self.image.size
+        self.channel = 3
+        # shape to get channel
+        self.format = self.image.name.split('.')[-1]
+        # get dpi from image
+        self.dpi = 300
+        # set file format
+        self.slug = slugify(unique_name + '.' + self.image.name.split('.')[-1])
+        self.image.name = unique_name + '.' + self.image.name.split('.')[-1]
+        super(Image, self).save(*args, **kwargs)
+
+    # override save method
     def save(self, *args, **kwargs):
         # hash image name to make it unique
         unique_name = generate_unique_image_name(self.image.name)
@@ -41,8 +65,7 @@ class Image(models.Model):
         super(Image, self).save(*args, **kwargs)
 
     def get_absolute_url(self, *args, **kwargs):
-        return reverse('image_detail', kwargs={'pk': self.pk})
-
+        return reverse('myapp:image_detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return "{}. {}".format(self.id, self.image.name, self.uploader.username)

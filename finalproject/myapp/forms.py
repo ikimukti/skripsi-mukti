@@ -10,12 +10,6 @@ class VisibleMultipleHiddenInput(forms.widgets.HiddenInput):
         attrs["type"] = "hidden"  # Change the input type to 'hidden'
         return mark_safe(super().render(name, value, attrs, renderer))
 
-class VisibleMultipleHiddenInput(forms.widgets.HiddenInput):
-    def render(self, name, value, attrs=None, renderer=None):
-        if not attrs:
-            attrs = {}
-        attrs["type"] = "hidden"  # Change the input type to 'hidden'
-        return mark_safe(super().render(name, value, attrs, renderer))
 
 class ImageForm(forms.ModelForm):
     def clean_image(self):
@@ -27,6 +21,7 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
         fields = [
+            'uploader',
             'image',
             'distance',
             'color',
@@ -38,14 +33,8 @@ class ImageForm(forms.ModelForm):
             'color': 'Color',
         }
         widgets = {
-            'image': VisibleMultipleHiddenInput(
-                attrs={
-                    "multiple": True,
-                    "class": "block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer",
-                    "id": "image-field",
-                    "accept": "image/*",
-                    "type": "file",
-                },
+            'image': forms.FileInput(
+                attrs={'class': 'form-control', 'placeholder': 'Image', 'accept': 'image/*'}
             ),
             'distance': forms.NumberInput(
                 attrs={'class': 'form-control', 'placeholder': 'Distance', 'min': 0, 'max': 100, 'step': 1}
