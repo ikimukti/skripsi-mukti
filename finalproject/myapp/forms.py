@@ -39,8 +39,8 @@ class ImageForm(forms.ModelForm):
             'distance': forms.NumberInput(
                 attrs={'class': 'form-control', 'placeholder': 'Distance', 'min': 0, 'max': 100, 'step': 1}
             ),
-            'color': forms.TextInput(
-                attrs={'class': 'form-control', 'placeholder': 'Color', 'maxlength': 20}
+            'color': forms.Select(
+                attrs={'class': 'form-control', 'placeholder': 'Color'}
             ),
         }
         allow_empty_file = False

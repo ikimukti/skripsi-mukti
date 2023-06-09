@@ -1,4 +1,5 @@
 {% extends "myapp/core_base2.html" %}
+{% load humanize %}
 {% load static %}
 
 {% block content %}
@@ -111,8 +112,15 @@
                                 </a>
                             </td>
                             <td class="border px-2 py-1 text-xs">{{ image.uploader|capfirst }}</td>
-                            <td class="border px-2 py-1 text-xs">{{ image.width }} x {{ image.height }} px | {{ image.size }} KB | {{ image.channel }} | {{ image.dpi }} dpi | {{ image.color }}</td>
-                            <td class="border px-2 py-1 text-xs">{{ image.created_at|date:"d M Y" }} | {{ image.created_at|date:"H:i:s" }}</td>
+                            <td class="border px-2 py-1 text-xs">
+                                <!-- image width style 1,000px * 1,000px -->
+                                {{ image.width|intcomma }} x {{ image.height|intcomma }} px |
+                                {{ image.size|filesizeformat }} |
+                                {{ image.channel }} | 
+                                {{ image.dpi }} dpi | 
+                                {{ image.color|capfirst }}
+                            </td>
+                            <td class="border px-2 py-1 text-xs">{{ image.created_at|naturaltime }}</td>
                             <td class="border px-2 py-1 text-xs">
                                 <div class="flex flex-row space-x-2">
                                     <a class="flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:image_update' image.id %}">

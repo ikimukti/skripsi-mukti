@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+
 # redirect
 from django.shortcuts import redirect
 # auth login
@@ -20,8 +21,12 @@ from django.db.models import Count
 from .models import Image
 # model user
 from django.contrib.auth.models import User, Group
+# Q
+from django.db.models import Q
 # form
 from .forms import ImageForm
+# cv2
+import cv2
 
 class ImageUpdateView(UpdateView):
     model = Image
@@ -40,7 +45,36 @@ class ImageUpdateView(UpdateView):
         context['app_js'] = 'myapp/js/scripts.js'
         context['logo'] = 'myapp/images/Logo.png'
         context['menus'] = menus
+        set_user_menus(self.request, context)
         return context
+    
+    # invalid form
+    def form_invalid(self, form):
+        print(form.cleaned_data)
+        return super().form_invalid(form)
+
+    # form save
+    def form_valid(self, form):
+        # rewrite save method in form
+        # get image channel from form data image file
+        # cv2 image channel get image channel from shape
+        image_channel = cv2.imread(form.cleaned_data['image'].temporary_file_path()).shape[2]
+        # rewrite channel in form data
+        form.instance.channel = image_channel
+        # cv2 get dpi from image file
+        image_dpi = cv2.imread(form.cleaned_data['image'].temporary_file_path()).shape[0]
+        # rewrite dpi in form data
+        form.instance.dpi = image_dpi
+        return super().form_valid(form)
+    
+    # override get method
+    def get(self, request, *args, **kwargs):
+        # codition request user is oot authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        # condition request user is authenticated
+        else:
+            return super().get(request, *args, **kwargs)
 
 class ImageDeleteView(DeleteView):
     model = Image
@@ -57,7 +91,17 @@ class ImageDeleteView(DeleteView):
         context['app_js'] = 'myapp/js/scripts.js'
         context['logo'] = 'myapp/images/Logo.png'
         context['menus'] = menus
+        set_user_menus(self.request, context)
         return context
+    
+    # override get method
+    def get(self, request, *args, **kwargs):
+        # codition request user is oot authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        # condition request user is authenticated
+        else:
+            return super().get(request, *args, **kwargs)
 
 class ImageUploadView(CreateView):
     form_class = ImageForm
@@ -72,7 +116,16 @@ class ImageUploadView(CreateView):
 
     # form save
     def form_valid(self, form):
-        print(form.cleaned_data)
+        # rewrite save method in form
+        # get image channel from form data image file
+        # cv2 image channel get image channel from shape
+        image_channel = cv2.imread(form.cleaned_data['image'].temporary_file_path()).shape[2]
+        # rewrite channel in form data
+        form.instance.channel = image_channel
+        # cv2 get dpi from image file
+        image_dpi = cv2.imread(form.cleaned_data['image'].temporary_file_path()).shape[0]
+        # rewrite dpi in form data
+        form.instance.dpi = image_dpi
         return super().form_valid(form)
     
     # update context
@@ -85,7 +138,17 @@ class ImageUploadView(CreateView):
         context['app_js'] = 'myapp/js/scripts.js'
         context['logo'] = 'myapp/images/Logo.png'
         context['menus'] = menus
+        set_user_menus(self.request, context)
         return context
+    
+    # override get method
+    def get(self, request, *args, **kwargs):
+        # codition request user is oot authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        # condition request user is authenticated
+        else:
+            return super().get(request, *args, **kwargs)
 
 class ImageListView(ListView):
     model = Image
@@ -93,6 +156,7 @@ class ImageListView(ListView):
     context_object_name = 'images'
     ordering = ['-created_at']
     paginate_by = 8
+
     # update context
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -103,6 +167,7 @@ class ImageListView(ListView):
         context['app_js'] = 'myapp/js/scripts.js'
         context['logo'] = 'myapp/images/Logo.png'
         context['menus'] = menus
+        set_user_menus(self.request, context)
         # categories uploader name with name of uploader in User model
         uploaders_name = User.objects.filter(image__isnull=False).distinct().values_list('username', flat=True)
         # count Image by uploader
@@ -116,6 +181,17 @@ class ImageListView(ListView):
         context['colors'] = self.model.objects.values_list('color', flat=True).distinct()
         return context
     
+    # override get method
+    def get(self, request, *args, **kwargs):
+        # codition request user is oot authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        # condition request user is authenticated
+        else:
+            return super().get(request, *args, **kwargs)
+
+    
+        
 class ImageUploaderView(ListView):
     model = Image
     template_name = 'myapp/image/image_by_uploader.html'
@@ -139,10 +215,11 @@ class ImageUploaderView(ListView):
         context['app_js'] = 'myapp/js/scripts.js'
         context['logo'] = 'myapp/images/Logo.png'
         context['menus'] = menus
+        set_user_menus(self.request, context)
         # categories uploader name with name of uploader in User model
         uploaders_name = User.objects.filter(image__isnull=False).distinct().values_list('username', flat=True)
         # count Image by uploader
-        uploaders_count = Image.objects.values('uploader').distinct().annotate(count=Count('uploader')).values_list('count', flat=True)
+        uploaders_count = Image.objects.values('uploader').distinct().annotate(count=Count('uploader')).values_list('count', flat=True).order_by('-count')
         # context['uploaders'] = {'name': uploaders_name, 'count': uploaders_count}
         uploaders = []
         for name, count in zip(uploaders_name, uploaders_count):
@@ -151,6 +228,15 @@ class ImageUploaderView(ListView):
         # categories color name
         context['colors'] = self.model.objects.values_list('color', flat=True).distinct()
         return context
+    
+    # override get method
+    def get(self, request, *args, **kwargs):
+        # codition request user is oot authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        # condition request user is authenticated
+        else:
+            return super().get(request, *args, **kwargs)
 
 class ImageDetailView(DetailView):
     model = Image
@@ -166,12 +252,22 @@ class ImageDetailView(DetailView):
         context['app_js'] = 'myapp/js/scripts.js'
         context['logo'] = 'myapp/images/Logo.png'
         context['menus'] = menus
+        set_user_menus(self.request, context)
         # categories uploader by uploader name in Image model uploader_id
         context['uploader'] = User.objects.get(id=self.object.uploader_id)
         # get 5 image by uploader lastest
         context['images'] = Image.objects.filter(uploader_id=self.object.uploader_id).order_by('-created_at')[:5]
 
         return context
+    
+    # override get method
+    def get(self, request, *args, **kwargs):
+        # codition request user is oot authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        # condition request user is authenticated
+        else:
+            return super().get(request, *args, **kwargs)
 
 
 class IndexClassView(View):
@@ -583,7 +679,13 @@ class AccountClassView(View):
     template_name = 'myapp/account/account.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
+        
 
 class AccountProfileClassView(View):
     context = {
@@ -598,7 +700,12 @@ class AccountProfileClassView(View):
     template_name = 'myapp/account/profile.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
 
 class AccountChangePasswordClassView(View):
     context = {
@@ -613,4 +720,9 @@ class AccountChangePasswordClassView(View):
     template_name = 'myapp/account/password.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # codition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)  # set user menus
+            return render(request, self.template_name, self.context)

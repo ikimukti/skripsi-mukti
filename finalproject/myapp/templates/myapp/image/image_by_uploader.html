@@ -1,5 +1,6 @@
 {% extends "myapp/core_base2.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <div class="flex flex-col w-5/6 fixed right-0 top-14 h-[calc(100vh-3.5rem)] px-4 py-4 overflow-y-auto overflow-hidden" id="content">
@@ -69,16 +70,35 @@
         </div>
             </div>
             <!-- list Images Uploaded -->
+            {% if images %}
             <div class="flex flex-row flex-wrap justify-center items-center space-x-2">
                 <table class="table-auto w-full">
                     <thead>
                         <tr>
-                            <th class="px-2 py-1 text-xs border">No</th>
-                            <th class="px-2 py-1 text-xs border">Image</th>
-                            <th class="px-2 py-1 text-xs border">Uploader</th>
-                            <th class="px-2 py-1 text-xs border">Information</th>
-                            <th class="px-2 py-1 text-xs border">Date</th>
-                            <th class="px-2 py-1 text-xs border">Action</th>
+                            <th class="px-2 py-1 text-xs border">
+                                <i class="fas fa-check"></i>
+                                <span class="ml-2">No</span>
+                            </th>
+                            <th class="px-2 py-1 text-xs border">
+                                <i class="fas fa-image"></i>
+                                <span class="ml-2">Image</span>
+                            </th>
+                            <th class="px-2 py-1 text-xs border">
+                                <i class="fas fa-user"></i>
+                                <span class="ml-2">Uploader</span>
+                            </th>
+                            <th class="px-2 py-1 text-xs border">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="ml-2">Information</span>
+                            </th>
+                            <th class="px-2 py-1 text-xs border">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span class="ml-2">Date</span>
+                            </th>
+                            <th class="px-2 py-1 text-xs border">
+                                <i class="fas fa-cog"></i>
+                                <span class="ml-2">Action</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -91,15 +111,22 @@
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
                             </td>
-                            <td class="border px-2 py-1 text-xs">{{ image.uploader }}</td>
-                            <td class="border px-2 py-1 text-xs">{{ image.width }} x {{ image.height }} px | {{ image.size }} KB | {{ image.channel }} | {{ image.dpi }} dpi | {{ image.color }}</td>
-                            <td class="border px-2 py-1 text-xs">{{ image.created_at }} | {{ image.updated_at }}</td>
+                            <td class="border px-2 py-1 text-xs">{{ image.uploader|capfirst }}</td>
+                            <td class="border px-2 py-1 text-xs">
+                                <!-- image width style 1,000px * 1,000px -->
+                                {{ image.width|intcomma }} x {{ image.height|intcomma }} px |
+                                {{ image.size|filesizeformat }} |
+                                {{ image.channel }} | 
+                                {{ image.dpi }} dpi | 
+                                {{ image.color|capfirst }}
+                            </td>
+                            <td class="border px-2 py-1 text-xs">{{ image.created_at|naturaltime }}</td>
                             <td class="border px-2 py-1 text-xs">
                                 <div class="flex flex-row space-x-2">
-                                    <a class="flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700" href="">
+                                    <a class="flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:image_update' image.id %}">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a class="flex flex-row justify-center items-center bg-red-200 hover:bg-red-300 rounded-md px-4 py-2 text-gray-700" href="">
+                                    <a class="flex flex-row justify-center items-center bg-red-200 hover:bg-red-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:image_delete' image.id %}">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                     <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700" href="{{ image.image.url }}" download>
@@ -115,6 +142,14 @@
                     </tbody>
                 </table>
             </div>
+            {% else %}
+            <div class="flex flex-row justify-center items-center space-x-2">
+                <div class="flex flex-col justify-center items-center space-y-2">
+                    <i class="fas fa-images text-4xl text-gray-500"></i>
+                    <span class="text-sm text-gray-500">No Images Uploaded</span>
+                </div>
+            </div>
+            {% endif %}
             <!-- pagination with first, prev, next, last and number position end -->
             {% if is_paginated %}
             <div class="flex flex-row justify-between items-center space-x-2">

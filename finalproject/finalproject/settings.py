@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'myapp',
     'fontawesomefree',
     'sweetify',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

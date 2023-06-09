@@ -20,13 +20,54 @@ class Image(models.Model):
     format = models.CharField(max_length=10)
     dpi = models.IntegerField()
     distance = models.IntegerField()
-    color = models.CharField(max_length=32 ,blank=True, null=True)
+    COLOR_CHOICES = [
+        ("red", "Red"),
+        ("green", "Green"),
+        ("blue", "Blue"),
+        ("yellow", "Yellow"),
+        ("orange", "Orange"),
+        ("purple", "Purple"),
+        ("pink", "Pink"),
+        ("brown", "Brown"),
+        ("black", "Black"),
+        ("white", "White"),
+        ("gray", "Gray"),
+        ("cyan", "Cyan"),
+        ("magenta", "Magenta"),
+        ("lime", "Lime"),
+        ("olive", "Olive"),
+        ("maroon", "Maroon"),
+        ("navy", "Navy"),
+        ("teal", "Teal"),
+        ("aqua", "Aqua"),
+        ("silver", "Silver"),
+        ("gold", "Gold"),
+        ("bronze", "Bronze"),
+        ("beige", "Beige"),
+        ("azure", "Azure"),
+        ("ivory", "Ivory"),
+        ("lavender", "Lavender"),
+        ("coral", "Coral"),
+        ("salmon", "Salmon"),
+        ("tan", "Tan"),
+        ("turquoise", "Turquoise"),
+        ("violet", "Violet"),
+        ("indigo", "Indigo"),
+        ("crimson", "Crimson"),
+        ("fuchsia", "Fuchsia"),
+        ("orchid", "Orchid"),
+        ("plum", "Plum"),
+        ("khaki", "Khaki"),
+        ("chocolate", "Chocolate"),
+        ("tomato", "Tomato"),
+        ("wheat", "Wheat"),
+        ("snow", "Snow"),
+        ("seashell", "Seashell"),
+        ("salmon", "Salmon"),
+    ]
+    color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="white", blank=False, null=False)
     segmented = models.BooleanField(default=False)
 
-    # override delete method
-    def delete(self, *args, **kwargs):
-        self.image.delete()
-        super().delete(*args, **kwargs)
 
     # override update method
     def update(self, *args, **kwargs):
@@ -54,11 +95,9 @@ class Image(models.Model):
         self.width = self.image.width
         self.height = self.image.height
         self.size = self.image.size
-        self.channel = 3
         # shape to get channel
         self.format = self.image.name.split('.')[-1]
         # get dpi from image
-        self.dpi = 300
         # set file format
         self.slug = slugify(unique_name + '.' + self.image.name.split('.')[-1])
         self.image.name = unique_name + '.' + self.image.name.split('.')[-1]
