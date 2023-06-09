@@ -68,6 +68,12 @@ class Image(models.Model):
     color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="white", blank=False, null=False)
     segmented = models.BooleanField(default=False)
 
+    # override delete method
+    def delete(self, *args, **kwargs):
+        # delete image
+        self.image.delete(False) # False means don't save model
+        super().delete(*args, **kwargs)
+
 
     # override update method
     def update(self, *args, **kwargs):

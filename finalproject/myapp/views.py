@@ -3,31 +3,59 @@ from django.views.generic import TemplateView
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-
-# redirect
+import numpy as np
 from django.shortcuts import redirect
-# auth login
 from django.contrib.auth import authenticate, login, logout
-# decorator
 from django.contrib.auth.decorators import login_required, user_passes_test
-
-# Create your views here.
 from django.views import View
-# get menus = [] from .menus
 from .menus import menus, it_admin_menus, staff_menus, researcher_menus, set_user_menus
-# Count
 from django.db.models import Count
-
 from .models import Image
-# model user
 from django.contrib.auth.models import User, Group
-# Q
 from django.db.models import Q
-# form
-from .forms import ImageForm
-# cv2
+from .forms import ImageForm, UserForm
 import cv2
 
+
+    
+class AccountClassView(DetailView):
+    model = User
+    template_name = 'myapp/account/account.html'
+    context_object_name = 'account'
+    success_url = reverse_lazy('myapp:account')
+    failure_url = '/account/'
+
+    #update context
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Account'
+        context['contributor'] = 'WeeAI Team'
+        context['content'] = 'Welcome to WeeAI! Account'
+        context['app_css'] = 'myapp/css/styles.css'
+        context['app_js'] = 'myapp/js/scripts.js'
+        context['logo'] = 'myapp/images/Logo.png'
+        context['menus'] = menus
+        set_user_menus(self.request, context)
+        # get_object to retrieve user object
+        user = self.get_object()
+        context['account'] = user
+        return context
+    
+    # override get_object method
+    def get_object(self, queryset=None):
+        # retrieve user object based on the provided username
+        username = self.kwargs.get('username')
+        return User.objects.get(username=username)
+    
+    # override get method
+    def get(self, request, *args, **kwargs):
+        # codition request user is oot authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        # condition request user is authenticated
+        else:
+            return super().get(request, *args, **kwargs)
+        
 class ImageUpdateView(UpdateView):
     model = Image
     template_name = 'myapp/image/image_update.html'
@@ -117,14 +145,14 @@ class ImageUploadView(CreateView):
     # form save
     def form_valid(self, form):
         # rewrite save method in form
-        # get image channel from form data image file
-        # cv2 image channel get image channel from shape
-        image_channel = cv2.imread(form.cleaned_data['image'].temporary_file_path()).shape[2]
         # rewrite channel in form data
+        # form.instance.channel = image_channel
+        image_data = form.cleaned_data['image'].read()
+        image_array = np.frombuffer(image_data, np.uint8)
+        image_channel = cv2.imdecode(image_array, cv2.IMREAD_UNCHANGED).shape[2]
         form.instance.channel = image_channel
-        # cv2 get dpi from image file
-        image_dpi = cv2.imread(form.cleaned_data['image'].temporary_file_path()).shape[0]
         # rewrite dpi in form data
+        image_dpi = cv2.imdecode(image_array, cv2.IMREAD_UNCHANGED).shape[0]
         form.instance.dpi = image_dpi
         return super().form_valid(form)
     
@@ -141,6 +169,39 @@ class ImageUploadView(CreateView):
         set_user_menus(self.request, context)
         return context
     
+    # override get method
+    def get(self, request, *args, **kwargs):
+        # codition request user is oot authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        # condition request user is authenticated
+        else:
+            return super().get(request, *args, **kwargs)
+        
+class ImageSummaryView(ListView):
+    model = Image
+    template_name = 'myapp/image/image_summary.html'
+    context_object_name = 'images'
+    ordering = ['-created_at']
+    paginate_by = 8
+
+    # update context
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Image Summary'
+        context['contributor'] = 'WeeAI Team'
+        context['content'] = 'Welcome to WeeAI! Image Summary'
+        context['app_css'] = 'myapp/css/styles.css'
+        context['app_js'] = 'myapp/js/scripts.js'
+        context['logo'] = 'myapp/images/Logo.png'
+        context['menus'] = menus
+        set_user_menus(self.request, context)
+        # categories uploader name with name of uploader in User model
+        uploaders_name = User.objects.filter(
+            image__isnull=False).values('username').distinct()
+        context['uploaders_name'] = uploaders_name
+        return context
+
     # override get method
     def get(self, request, *args, **kwargs):
         # codition request user is oot authenticated
@@ -457,7 +518,13 @@ class DocsClassView(View):
     template_name = 'myapp/docs.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
+        
     
 class HelpClassView(View):
     context = {
@@ -487,7 +554,13 @@ class PreferenceSettingClassView(View):
     template_name = 'myapp/preference/preferenceSetting.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
+        
 class PreferenceClassView(View):
     context = {
         'title': 'Preferences',
@@ -501,7 +574,13 @@ class PreferenceClassView(View):
     template_name = 'myapp/preference/preference.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context) 
+    
 class SettingClassView(View):
     context = {
         'title': 'Settings',
@@ -515,7 +594,13 @@ class SettingClassView(View):
     template_name = 'myapp/preference/preferenceSetting.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
+        
 class ReportClassView(View):
     context = {
         'title': 'Report',
@@ -529,7 +614,12 @@ class ReportClassView(View):
     template_name = 'myapp/report/report.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)  # set user menus
+            return render(request, self.template_name, self.context)
     
 class ReportSegmentationClassView(View):
     context = {
@@ -544,7 +634,12 @@ class ReportSegmentationClassView(View):
     template_name = 'myapp/report/reportSegmentation.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
 
 class ReportExportImageClassView(View):
     context = {
@@ -559,7 +654,13 @@ class ReportExportImageClassView(View):
     template_name = 'myapp/report/reportExportImage.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
+        
 
 class ReportExportReportClassView(View):
     context = {
@@ -574,7 +675,12 @@ class ReportExportReportClassView(View):
     template_name = 'myapp/report/reportExportReport.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
 
 class ReportSummaryClassView(View):
     context = {
@@ -589,7 +695,72 @@ class ReportSummaryClassView(View):
     template_name = 'myapp/report/reportSummary.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
+        
+class SegmentationClassView(View):
+    context = {
+        'title': 'Segmentation',
+        'content': 'Welcome to WeeAI!',
+        'contributor': 'WeeAI Team',
+        'app_css': 'myapp/css/segmentation.css',
+        'app_js': 'myapp/js/scripts.js',
+        'menus': menus,
+        'logo': 'myapp/images/Logo.png',
+    }
+    template_name = 'myapp/segmentation/segmentation.html'
+    # override method get
+    def get(self, request):
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
+
+class SegmentationProcessClassView(View):
+    context = {
+        'title': 'Segmentation Process',
+        'content': 'Welcome to WeeAI!',
+        'contributor': 'WeeAI Team',
+        'app_css': 'myapp/css/segmentation.css',
+        'app_js': 'myapp/js/scripts.js',
+        'menus': menus,
+        'logo': 'myapp/images/Logo.png',
+    }
+    template_name = 'myapp/segmentation/segmentation_process.html'
+    # override method get
+    def get(self, request):
+        # condition request user is not authenticated 
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
+        
+class SegmentationSummaryClassView(View):
+    context = {
+        'title': 'Segmentation Summary',
+        'content': 'Welcome to WeeAI!',
+        'contributor': 'WeeAI Team',
+        'app_css': 'myapp/css/segmentation.css',
+        'app_js': 'myapp/js/scripts.js',
+        'menus': menus,
+        'logo': 'myapp/images/Logo.png',
+    }
+    template_name = 'myapp/segmentation/segmentation_summary.html'
+    # override method get
+    def get(self, request):
+        # condition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
 
 class ManageClassView(View):
     context = {
@@ -604,7 +775,12 @@ class ManageClassView(View):
     template_name = 'myapp/manage/manage.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # codition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)  # set user menus
+            return render(request, self.template_name, self.context)
     
 class ManageUserClassView(View):
     context = {
@@ -619,7 +795,12 @@ class ManageUserClassView(View):
     template_name = 'myapp/manage/manageUser.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # codition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
     
 class ManageRoleClassView(View):
     context = {
@@ -634,7 +815,12 @@ class ManageRoleClassView(View):
     template_name = 'myapp/manage/manageRole.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # codition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
 
 class ManagePermissionClassView(View):
     context = {
@@ -649,7 +835,13 @@ class ManagePermissionClassView(View):
     template_name = 'myapp/manage/managePermission.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        # codition request user is not authenticated
+        if not request.user.is_authenticated:
+            return redirect('myapp:signin')
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
+        
 
 class ManageGroupClassView(View):
     context = {
@@ -664,27 +856,14 @@ class ManageGroupClassView(View):
     template_name = 'myapp/manage/manageGroup.html'
     # override method get
     def get(self, request):
-        return render(request, self.template_name, self.context)
-    
-class AccountClassView(View):
-    context = {
-        'title': 'Account',
-        'content': 'Welcome to WeeAI!',
-        'contributor': 'WeeAI Team',
-        'app_css': 'myapp/css/styles.css',
-        'app_js': 'myapp/js/scripts.js',
-        'menus': menus,
-        'logo': 'myapp/images/Logo.png',
-    }
-    template_name = 'myapp/account/account.html'
-    # override method get
-    def get(self, request):
-        # condition request user is not authenticated
+        # codition request user is not authenticated
         if not request.user.is_authenticated:
             return redirect('myapp:signin')
         else:
             set_user_menus(request, self.context)
             return render(request, self.template_name, self.context)
+        
+
         
 
 class AccountProfileClassView(View):
@@ -719,7 +898,7 @@ class AccountChangePasswordClassView(View):
     }
     template_name = 'myapp/account/password.html'
     # override method get
-    def get(self, request):
+    def get(self, request, username):
         # codition request user is not authenticated
         if not request.user.is_authenticated:
             return redirect('myapp:signin')

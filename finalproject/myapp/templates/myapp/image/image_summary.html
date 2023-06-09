@@ -1,0 +1,28 @@
+{% extends "myapp/core_base2.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<div class="flex flex-col w-5/6 fixed right-0 top-14 h-[calc(100vh-3.5rem)] px-4 py-4 overflow-y-auto overflow-hidden" id="content">
+    <div class="flex flex-col m-2 bg-white rounded-md p-4 shadow-md z-10 mb-48 pb-20">
+        <div class="flex flex-row justify-between items-center mb-2">
+            <div class="flex flex-col space-y-2">
+                <h1 class="text-2xl font-bold text-gray-700">{{ title }}</h1>
+            </div>
+            
+        </div>
+        <hr class="border-gray-200 mb-2">
+        <div class="flex flex-col space-y-2">
+            <!-- list Image Upload -->
+            <div class="flex flex-row justify-between items-center">
+                <div class="flex flex-row space-x-2">
+                    <div class="flex flex-col space-y-1">
+                        <h1 class="text-lg font-bold text-gray-700">Image Summary</h1>
+                        <p class="text-sm text-gray-500">Here is the summary of all images uploaded by all users.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

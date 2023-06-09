@@ -2,6 +2,28 @@ from django import forms
 from .models import Image
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
+# models User
+from django.contrib.auth.models import User
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'password',
+        ]
+
+        labels = {
+            'username': 'Username',
+            'first_name': 'First Name',
+            'last_name': 'Last Name',   
+            'email': 'Email',
+            'password': 'Password',
+        }
+        
 
 class VisibleMultipleHiddenInput(forms.widgets.HiddenInput):
     def render(self, name, value, attrs=None, renderer=None):
@@ -40,7 +62,13 @@ class ImageForm(forms.ModelForm):
                 attrs={'class': 'form-control', 'placeholder': 'Distance', 'min': 0, 'max': 100, 'step': 1}
             ),
             'color': forms.Select(
-                attrs={'class': 'form-control', 'placeholder': 'Color'}
+                attrs={
+                    'class': 'form-control', 
+                    'placeholder': 'Color',
+                    'data-live-search': 'true',
+                    'data-size': '5',
+                    
+                }
             ),
         }
         allow_empty_file = False
