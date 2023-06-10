@@ -3,111 +3,88 @@ from django.views import View
 from myapp.menus import menus, set_user_menus
 
 
-class ReportClassView(View):
+class ReportBaseView(View):
+    base_context = {
+        "content": "Welcome to WeeAI!",
+        "contributor": "WeeAI Team",
+        "app_css": "myapp/css/styles.css",
+        "app_js": "myapp/js/scripts.js",
+        "menus": menus,
+        "logo": "myapp/images/Logo.png",
+    }
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect("myapp:signin")
+        else:
+            self.context = {**self.base_context}  # Add this line
+            set_user_menus(request, self.context)
+            self.context["title"] = self.title  # Add this line
+            return render(
+                request, self.template_name, self.context
+            )  # Replace `context` with `self.context`
+
+
+class ReportClassView(ReportBaseView):
+    template_name = "myapp/report/report.html"
     context = {
         "title": "Report",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/report.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        **ReportBaseView.base_context,
     }
-    template_name = "myapp/report/report.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # condition request user is not authenticated
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)  # set user menus
-            return render(request, self.template_name, self.context)
+        self.title = "Report"  # Add this line
+        return super().get(request)  # Call the parent's get method
 
 
-class ReportSegmentationClassView(View):
+class ReportSegmentationClassView(ReportBaseView):
+    template_name = "myapp/report/report_segmentation.html"
     context = {
         "title": "Segmentation Report",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/report.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        **ReportBaseView.base_context,
     }
-    template_name = "myapp/report/reportSegmentation.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # condition request user is not authenticated
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+        self.title = "Segmentation Report"  # Add this line
+        return super().get(request)  # Call the parent's get method
 
 
-class ReportExportImageClassView(View):
+class ReportExportImageClassView(ReportBaseView):
+    template_name = "myapp/report/report_export_image.html"
     context = {
         "title": "Export Image Report",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/report.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        **ReportBaseView.base_context,
     }
-    template_name = "myapp/report/reportExportImage.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # condition request user is not authenticated
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+        self.title = "Export Image Report"  # Add this line
+        return super().get(request)  # Call the parent's get method
 
 
-class ReportExportReportClassView(View):
+class ReportExportReportClassView(ReportBaseView):
+    template_name = "myapp/report/report_export_report.html"
     context = {
         "title": "Export Report",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/report.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        **ReportBaseView.base_context,
     }
-    template_name = "myapp/report/reportExportReport.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # condition request user is not authenticated
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+        self.title = "Export Report"  # Add this line
+        return super().get(request)  # Call the parent's get method
 
 
-class ReportSummaryClassView(View):
+class ReportSummaryClassView(ReportBaseView):
+    template_name = "myapp/report/report_summary.html"
     context = {
         "title": "Summary Report",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/report.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        **ReportBaseView.base_context,
     }
-    template_name = "myapp/report/reportSummary.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # condition request user is not authenticated
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+        self.title = "Summary Report"  # Add this line
+        return super().get(request)  # Call the parent's get method

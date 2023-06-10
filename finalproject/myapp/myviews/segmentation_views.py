@@ -3,67 +3,62 @@ from django.views import View
 from myapp.menus import menus, set_user_menus
 
 
-class SegmentationClassView(View):
+class SegmentationBaseView(View):
+    base_context = {
+        "content": "Welcome to WeeAI!",
+        "contributor": "WeeAI Team",
+        "app_css": "myapp/css/segmentation.css",
+        "app_js": "myapp/js/scripts.js",
+        "menus": menus,
+        "logo": "myapp/images/Logo.png",
+    }
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect("myapp:signin")
+        else:
+            self.context = {**self.base_context}  # Add this line
+            set_user_menus(request, self.context)
+            self.context["title"] = self.title  # Add this line
+            return render(
+                request, self.template_name, self.context
+            )  # Replace `context` with `self.context`
+
+
+class SegmentationClassView(SegmentationBaseView):
+    template_name = "myapp/segmentation/segmentation.html"
     context = {
         "title": "Segmentation",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/segmentation.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        **SegmentationBaseView.base_context,
     }
-    template_name = "myapp/segmentation/segmentation.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # condition request user is not authenticated
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+        self.title = "Segmentation"  # Add this line
+        return super().get(request)  # Call the parent's get method
 
 
-class SegmentationProcessClassView(View):
+class SegmentationProcessClassView(SegmentationBaseView):
+    template_name = "myapp/segmentation/segmentation_process.html"
     context = {
         "title": "Segmentation Process",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/segmentation.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        **SegmentationBaseView.base_context,
     }
-    template_name = "myapp/segmentation/segmentation_process.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # condition request user is not authenticated
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+        self.title = "Segmentation Process"  # Add this line
+        return super().get(request)  # Call the parent's get method
 
 
-class SegmentationSummaryClassView(View):
+class SegmentationSummaryClassView(SegmentationBaseView):
+    template_name = "myapp/segmentation/segmentation_summary.html"
     context = {
         "title": "Segmentation Summary",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/segmentation.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        **SegmentationBaseView.base_context,
     }
-    template_name = "myapp/segmentation/segmentation_summary.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # condition request user is not authenticated
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+        self.title = "Segmentation Summary"  # Add this line
+        return super().get(request)  # Call the parent's get method

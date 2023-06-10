@@ -1,32 +1,8 @@
-from django.shortcuts import render
-from django.views.generic import TemplateView
-from django.views.generic import (
-    ListView,
-    DetailView,
-    CreateView,
-    UpdateView,
-    DeleteView,
-)
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
-import numpy as np
-from django.shortcuts import redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.views import View
-from .menus import menus, it_admin_menus, staff_menus, researcher_menus, set_user_menus
-from django.db.models import Count
-from .models import Image, UserProfile
-from django.contrib.auth.models import User, Group
-from django.db.models import Q
-from .forms import ImageForm, UserForm
-import cv2
-
 from myapp.myviews.manage_views import (
     ManageClassView,
-    ManageUserClassView,
+    ManageUsersClassView,
     ManageRoleClassView,
-    ManagePermissionClassView,
+    ManagePermissionsClassView,
     ManageGroupClassView,
 )
 

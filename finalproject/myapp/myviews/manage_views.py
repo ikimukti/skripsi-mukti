@@ -3,9 +3,8 @@ from django.views import View
 from myapp.menus import menus, set_user_menus
 
 
-class ManageClassView(View):
-    context = {
-        "title": "Manage Account",
+class ManageBaseView(View):
+    base_context = {
         "content": "Welcome to WeeAI!",
         "contributor": "WeeAI Team",
         "app_css": "myapp/css/styles.css",
@@ -13,101 +12,89 @@ class ManageClassView(View):
         "menus": menus,
         "logo": "myapp/images/Logo.png",
     }
+
+    def get(self, request):
+        return render(request, self.template_name, self.context)
+
+    def post(self, request):
+        return render(request, self.template_name, self.context)
+
+
+class ManageClassView(ManageBaseView):
     template_name = "myapp/manage/manage.html"
-
-    # override method get
-    def get(self, request):
-        # codition request user is not authenticated
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)  # set user menus
-            return render(request, self.template_name, self.context)
-
-
-class ManageUserClassView(View):
     context = {
-        "title": "Manage User",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/styles.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        "title": "Manage",
+        **ManageBaseView.base_context,
     }
-    template_name = "myapp/manage/manageUser.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # codition request user is not authenticated
         if not request.user.is_authenticated:
             return redirect("myapp:signin")
         else:
             set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+            return super().get(request)
 
 
-class ManageRoleClassView(View):
+class ManageUsersClassView(ManageBaseView):
+    template_name = "myapp/manage/manage_users.html"
     context = {
-        "title": "Manage Role",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/styles.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        "title": "Manage Users",
+        **ManageBaseView.base_context,
     }
-    template_name = "myapp/manage/manageRole.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # codition request user is not authenticated
         if not request.user.is_authenticated:
             return redirect("myapp:signin")
         else:
             set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+            return super().get(request)
 
 
-class ManagePermissionClassView(View):
+class ManagePermissionsClassView(ManageBaseView):
+    template_name = "myapp/manage/manage_permissions.html"
     context = {
-        "title": "Manage Permission",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/styles.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        "title": "Manage Permissions",
+        **ManageBaseView.base_context,
     }
-    template_name = "myapp/manage/managePermission.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # codition request user is not authenticated
         if not request.user.is_authenticated:
             return redirect("myapp:signin")
         else:
             set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+            return super().get(request)
 
 
-class ManageGroupClassView(View):
+class ManageRoleClassView(ManageBaseView):
+    template_name = "myapp/manage/manage_role.html"
+    context = {
+        "title": "Manage Settings",
+        **ManageBaseView.base_context,
+    }
+
+    # override get method
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect("myapp:signin")
+        else:
+            set_user_menus(request, self.context)
+            return super().get(request)
+
+
+class ManageGroupClassView(ManageBaseView):
+    template_name = "myapp/manage/manage_group.html"
     context = {
         "title": "Manage Group",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/styles.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+        **ManageBaseView.base_context,
     }
-    template_name = "myapp/manage/manageGroup.html"
 
-    # override method get
+    # override get method
     def get(self, request):
-        # codition request user is not authenticated
         if not request.user.is_authenticated:
             return redirect("myapp:signin")
         else:
             set_user_menus(request, self.context)
-            return render(request, self.template_name, self.context)
+            return super().get(request)

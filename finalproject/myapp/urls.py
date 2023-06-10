@@ -42,11 +42,11 @@ urlpatterns = [
         name="preference_setting",
     ),
     path("preference/", views.PreferenceClassView.as_view(), name="preference"),
-    path("manage/user/", views.ManageUserClassView.as_view(), name="manage_user"),
+    path("manage/user/", views.ManageUsersClassView.as_view(), name="manage_user"),
     path("manage/role/", views.ManageRoleClassView.as_view(), name="manage_role"),
     path(
         "manage/permission/",
-        views.ManagePermissionClassView.as_view(),
+        views.ManagePermissionsClassView.as_view(),
         name="manage_permission",
     ),
     path("manage/group/", views.ManageGroupClassView.as_view(), name="manage_group"),

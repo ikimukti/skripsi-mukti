@@ -213,7 +213,7 @@ class SettingClassView(View):
         "menus": menus,
         "logo": "myapp/images/Logo.png",
     }
-    template_name = "myapp/preference/preferenceSetting.html"
+    template_name = "myapp/preference/preference_setting.html"
 
     # override method get
     def get(self, request):
