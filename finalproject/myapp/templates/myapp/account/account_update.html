@@ -26,122 +26,119 @@
                             <p class="text-sm text-gray-500">Some info may be visible to other people</p>
                         </div>
                     </div>
-                    <div class="flex flex-row space-x-2">
-                        <a class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:account_update' account.username %}">
-                            <i class="fas fa-pencil-alt"></i>
-                        </a>
-                    </div>
                 </div>
-                
-                <!-- content Image Profile and form profile -->
-                <form class="flex items-center space-x-6 w-full" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="flex flex-col space-y-2 w-full">
-                        <h1 class="text-lg font-bold text-gray-700">Profile {{ account.first_name|title }} {{ account.last_name|title }}</h1>
+                <h1 class="text-lg font-bold text-gray-700">Profile {{ account.first_name|title }} {{ account.last_name|title }}</h1>
+                <div class="flex flex-row space-x-2">
+                    <div class="flex flex-col space-y-1">
+                        <label class="text-sm font-semibold text-gray-700">Photo</label>
                         <div class="flex flex-row space-x-2">
                             <div class="flex flex-col space-y-1">
-                                <label class="text-sm font-semibold text-gray-700">Photo</label>
-                                <div class="flex flex-row space-x-2">
-                                    <div class="flex flex-col space-y-1">
-                                        <img src="{{ account.userprofile.profile_pic.url }}" class="w-20 h-20 rounded-full object-cover" alt="profile">
-                                    </div>
-                                </div>
+                                <img src="{{ account.userprofile.profile_pic.url }}" class="w-20 h-20 rounded-full object-cover" alt="profile">
                             </div>
                         </div>
+                    </div>
+                </div>
+                <!-- content Image Profile and form profile -->
+                <div class="flex items-center space-x-6 w-full">
+                    <div class="flex flex-col space-y-2 w-full">
                         <h2 class="text-lg font-bold text-gray-700">Profile information</h2>
                         <!-- username -->
                         <div class="flex flex-col space-y-1">
-                            <label class="text-sm font-semibold text-gray-700">Usermane</label>
+                            <label class="text-sm font-semibold text-gray-700">Username <span class="text-red-500">*</span></label>
                             <input type="text" class="block w-full text-sm text-slate-500 rounded-md
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
                             file:text-sm file:font-semibold
-                            file:bg-violet-50 file:text-violet-700
-                            hover:file:bg-violet-100
-                            " placeholder="Choose a username" value="{{ account.username }}"  readonly/>
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
+                            " placeholder="Choose a username" value="{{ account.username }}"  />
                         </div>
                         <!-- email -->
                         <div class="flex flex-col space-y-1">
-                            <label class="text-sm font-semibold text-gray-700">Email</label>
+                            <label class="text-sm font-semibold text-gray-700">Email <span class="text-red-500">*</span></label>
                             <input type="text" class="block w-full text-sm text-slate-500 rounded-md
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
                             file:text-sm file:font-semibold
-                            file:bg-violet-50 file:text-violet-700
-                            hover:file:bg-violet-100
-                            " placeholder="Your email address"  value="{{ account.email }}" readonly/>
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
+                            " placeholder="Your email address"  value="{{ account.email }}"/>
                         </div>
                         <!-- first name and last name -->
                         <div class="flex flex-row space-x-2">
                             <div class="flex flex-col space-y-1 w-1/2">
-                                <label class="text-sm font-semibold text-gray-700">First name</label>
+                                <label class="text-sm font-semibold text-gray-700">First name <span class="text-red-500">*</span></label>
                                 <input type="text" class="block w-full text-sm text-slate-500 rounded-md
                                 file:mr-4 file:py-2 file:px-4
                                 file:rounded-full file:border-0
                                 file:text-sm file:font-semibold
-                                file:bg-violet-50 file:text-violet-700
-                                hover:file:bg-violet-100
-                                " placeholder="Your first name" value="{{ account.first_name }}" readonly/>
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100
+                                " placeholder="Your first name" value="{{ account.first_name }}"/>
                             </div>
                             <div class="flex flex-col space-y-1 w-1/2">
-                                <label class="text-sm font-semibold text-gray-700">Last name</label>
+                                <label class="text-sm font-semibold text-gray-700">Last name <span class="text-red-500">*</span></label>
                                 <input type="text" class="block w-full text-sm text-slate-500 rounded-md
                                 file:mr-4 file:py-2 file:px-4
                                 file:rounded-full file:border-0
                                 file:text-sm file:font-semibold
-                                file:bg-violet-50 file:text-violet-700
-                                hover:file:bg-violet-100
-                                " placeholder="Your last name" value="{{ account.last_name }}" readonly/>
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100
+                                " placeholder="Your last name" value="{{ account.last_name }}"/>
                             </div>
                         </div>
                         <h2 class="text-lg font-bold text-gray-700">Personal information</h2>
                         <!-- phone number -->
                         <div class="flex flex-col space-y-1">
-                            <label class="text-sm font-semibold text-gray-700">Phone number</label>
+                            <label class="text-sm font-semibold text-gray-700">Phone number <span class="text-red-500">*</span></label>
                             <input type="text" class="block w-full text-sm text-slate-500 rounded-md
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
                             file:text-sm file:font-semibold
-                            file:bg-violet-50 file:text-violet-700
-                            hover:file:bg-violet-100
-                            " placeholder="Your phone number" value="{{ account.userprofile.phone_number }}" readonly/>
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
+                            " placeholder="Your phone number" value="{{ account.userprofile.phone_number }}"/>
                         </div>
                         <!-- address -->
                         <div class="flex flex-col space-y-1">
-                            <label class="text-sm font-semibold text-gray-700">Address</label>
+                            <label class="text-sm font-semibold text-gray-700">Address <span class="text-red-500">*</span></label>
                             <textarea class="block w-full text-sm text-slate-500 rounded-md
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
                             file:text-sm file:font-semibold
-                            file:bg-violet-50 file:text-violet-700
-                            hover:file:bg-violet-100
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
                             " placeholder="Your address" readonly>{{ account.userprofile.address }}</textarea>
                         </div>
                         <!-- Date of birth -->
                         <div class="flex flex-col space-y-1">
-                            <label class="text-sm font-semibold text-gray-700">Date of birth</label>
+                            <label class="text-sm font-semibold text-gray-700">Date of birth <span class="text-red-500">*</span></label>
                             <input type="date" class="block w-full text-sm text-slate-500 rounded-md
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
                             file:text-sm file:font-semibold
-                            file:bg-violet-50 file:text-violet-700
-                            hover:file:bg-violet-100
-                            " placeholder="Your date of birth" value="{{ account.userprofile.date_of_birth|date:'Y-m-d' }}" readonly/>
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
+                            " placeholder="Your date of birth" value="{{ account.userprofile.date_of_birth|date:'Y-m-d' }}" />
                         </div>
                         <!-- Bio -->
                         <div class="flex flex-col space-y-1">
-                            <label class="text-sm font-semibold text-gray-700">Bio</label>
+                            <label class="text-sm font-semibold text-gray-700">Bio <span class="text-red-500">*</span></label>
                             <textarea class="block w-full text-sm text-slate-500 rounded-md
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
                             file:text-sm file:font-semibold
-                            file:bg-violet-50 file:text-violet-700
-                            hover:file:bg-violet-100
-                            " placeholder="Your bio" readonly rows="5">{{ account.userprofile.bio }}</textarea>
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
+                            " placeholder="Your bio" rows="5">{{ account.userprofile.bio }}</textarea>
+                        <div class="flex flex-row-reverse pt-4">
+                            <a href="{% url 'myapp:account_update' account.username %}" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                                Save
+                            </a>
                         </div>
                     </div>
                 </div>
-            </form>    
+            </div>    
         </div>
     </div>
 </div>
