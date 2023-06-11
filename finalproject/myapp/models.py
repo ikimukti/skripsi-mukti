@@ -5,22 +5,6 @@ from .utils.generate import generate_unique_image_name
 from django.urls import reverse
 
 
-class UserProfile(models.Model):
-    id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # additional fields
-    profile_pic = models.ImageField(
-        upload_to="static/images/profile_pics/", blank=True, null=True
-    )
-    address = models.CharField(max_length=255, blank=True, null=True)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-    date_of_birth = models.DateField(blank=True, null=True)
-    bio = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return "{}. {}".format(self.id, self.user.username)
-
-
 # Create your models here.
 class Image(models.Model):
     id = models.AutoField(primary_key=True)
@@ -149,46 +133,114 @@ class ImagePreprocessing(models.Model):
     # preprocessing
     # 1. resize
     resize = models.BooleanField(default=False)
+    resize_percent = models.IntegerField(blank=True, null=True)
     resize_width = models.IntegerField(blank=True, null=True)
     resize_height = models.IntegerField(blank=True, null=True)
-    # 2. grayscale
-    grayscale = models.BooleanField(default=False)
-    # 3. blur
-    blur = models.BooleanField(default=False)
-    blur_radius = models.IntegerField(blank=True, null=True)
-    # 4. sharpen
-    sharpen = models.BooleanField(default=False)
-    sharpen_radius = models.IntegerField(blank=True, null=True)
-    sharpen_percent = models.IntegerField(blank=True, null=True)
-    # 5. brightness
+    # 2. brightness
     brightness = models.BooleanField(default=False)
     brightness_percent = models.IntegerField(blank=True, null=True)
-    # 6. contrast
+    # 3. contrast
     contrast = models.BooleanField(default=False)
     contrast_percent = models.IntegerField(blank=True, null=True)
-    # 7. smooth
-    smooth = models.BooleanField(default=False)
-    smooth_radius = models.IntegerField(blank=True, null=True)
-    # 8. edge enhance
-    edge_enhance = models.BooleanField(default=False)
-    edge_enhance_radius = models.IntegerField(blank=True, null=True)
-    # 9. find edges
-    find_edges = models.BooleanField(default=False)
-    find_edges_radius = models.IntegerField(blank=True, null=True)
-    # 10. contour
-    contour = models.BooleanField(default=False)
-    contour_radius = models.IntegerField(blank=True, null=True)
-    # 11. enhance
-    enhance = models.BooleanField(default=False)
-    enhance_percent = models.IntegerField(blank=True, null=True)
-    # 12. colorize
-    colorize = models.BooleanField(default=False)
-    colorize_color = models.CharField(max_length=20, blank=True, null=True)
-    # 13. posterize
-    posterize = models.BooleanField(default=False)
-    posterize_bits = models.IntegerField(blank=True, null=True)
-    # 14. solarize
-    solarize = models.BooleanField(default=False)
-    solarize_threshold = models.IntegerField(blank=True, null=True)
-    # 15. invert
-    invert = models.BooleanField(default=False)
+    # 4. spartial filtering
+    mean_filter = models.BooleanField(default=False)
+    mean_filter_size = models.IntegerField(blank=True, null=True)
+    median_filter = models.BooleanField(default=False)
+    median_filter_size = models.IntegerField(blank=True, null=True)
+    gaussian_filter = models.BooleanField(default=False)
+    gaussian_filter_size = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    # override delete method
+    def delete(self, *args, **kwargs):
+        # delete image
+        self.image_preprocessing.delete(False)
+        self.image_ground_truth.delete(False)
+        super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return "{}. {}".format(
+            self.id,
+            self.image.uploader.username,
+            self.image_preprocessing.name,
+        )
+
+
+class Segmentation(models.Model):
+    id = models.AutoField(primary_key=True)
+    image_preprocessing = models.ForeignKey(
+        "ImagePreprocessing", on_delete=models.CASCADE, related_name="segmentations"
+    )
+    image_segmented = models.ImageField(
+        upload_to="static/images/segmented/", blank=False, null=False
+    )
+    # additional fields
+    segmentation_type = models.CharField(max_length=255, blank=True, null=True)
+    # other fields related to segmentation
+    f1_score = models.FloatField(blank=True, null=True)
+    accuracy = models.FloatField(blank=True, null=True)
+    precision = models.FloatField(blank=True, null=True)
+    recall = models.FloatField(blank=True, null=True)
+    k_means_score = models.FloatField(blank=True, null=True)
+    rand_score = models.FloatField(blank=True, null=True)
+    jaccard_score = models.FloatField(blank=True, null=True)
+    mse = models.FloatField(blank=True, null=True)
+    psnr = models.FloatField(blank=True, null=True)
+    mae = models.FloatField(blank=True, null=True)
+    rmse = models.FloatField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    # override delete method
+    def delete(self, *args, **kwargs):
+        # delete image
+        self.image_segmented.delete(False)
+        super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return "{} - {}".format(self.image_preprocessing.id, self.id)
+
+
+class SegmentationResult(models.Model):
+    id = models.AutoField(primary_key=True)
+    image = models.ForeignKey(
+        "Image", on_delete=models.CASCADE, related_name="segmentation_results"
+    )
+    segmentations = models.ManyToManyField(Segmentation)
+    # additional fields
+    segmentation_type = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    # override delete method
+    def delete(self, *args, **kwargs):
+        # delete image
+        for segmentation in self.segmentations.all():
+            segmentation.delete()
+        super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return "{} - {}".format(self.image.id, self.id)
+
+
+class UserProfile(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # additional fields
+    profile_pic = models.ImageField(
+        upload_to="static/images/profile_pics/", blank=True, null=True
+    )
+    address = models.CharField(max_length=255, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+
+    # override delete method
+    def delete(self, *args, **kwargs):
+        # delete image
+        self.profile_pic.delete(False)
+        super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return "{}. {}".format(self.id, self.user.username)

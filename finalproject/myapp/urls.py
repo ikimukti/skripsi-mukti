@@ -11,9 +11,9 @@ urlpatterns = [
         name="segmentation_summary",
     ),
     path(
-        "segmentation/process/",
-        views.SegmentationProcessClassView.as_view(),
-        name="segmentation_process",
+        "segmentation/detail/<int:pk>/",
+        views.SegmentationDetailClassView.as_view(),
+        name="segmentation_detail",
     ),
     path("segmentation/", views.SegmentationClassView.as_view(), name="segmentation"),
     path("setting/", views.SettingClassView.as_view(), name="setting"),

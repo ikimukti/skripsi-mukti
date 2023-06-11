@@ -16,7 +16,7 @@ from myapp.myviews.report_views import (
 
 from myapp.myviews.segmentation_views import (
     SegmentationClassView,
-    SegmentationProcessClassView,
+    SegmentationDetailClassView,
     SegmentationSummaryClassView,
 )
 
