@@ -54,48 +54,24 @@
                     <h1 class="text-lg font-bold text-gray-700">Segmentation Process</h1>
                     <form method="POST" class="flex flex-col space-y-2">
                         {% csrf_token %}
-                        <!-- check box kmeans -->
-                        <div class="flex flex-row space-x-2">
-                            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" id="kmeans" name="kmeans" {% if segmentation.kmeans %} checked {% endif %}>
-                            <label class="text-gray-700 text-sm font-bold mb-2" for="kmeans">
-                                K-Means Cluster
-                            </label>
-                        </div>
-                        <!-- check box adaptive -->
-                        <div class="flex flex-row space-x-2">
-                            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" id="adaptive" name="adaptive" {% if segmentation.adaptive %} checked {% endif %}>
-                            <label class="text-gray-700 text-sm font-bold mb-2" for="watershed">
-                                Adaptive Threshold
-                            </label>
-                        </div>
-                        <!-- check box otsu -->
-                        <div class="flex flex-row space-x-2">
-                            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" id="otsu" name="otsu" {% if segmentation.otsu %} checked {% endif %}>
-                            <label class="text-gray-700 text-sm font-bold mb-2" for="otsu">
-                                Otsu Threshold
-                            </label>
-                        </div>
-                        <!-- check box canny -->
-                        <div class="flex flex-row space-x-2">
-                            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" id="canny" name="canny" {% if segmentation.canny %} checked readonly{% endif %}>
-                            <label class="text-gray-700 text-sm font-bold mb-2" for="canny">
-                                Canny Edge Detection
-                            </label>
-                        </div>
-                        <!-- check box sobel -->
-                        <div class="flex flex-row space-x-2">
-                            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" id="sobel" name="sobel" {% if segmentation.sobel %} checked readonly{% endif %}>
-                            <label class="text-gray-700 text-sm font-bold mb-2" for="sobel">
-                                Sobel Edge Detection
-                            </label>
-                        </div>
-                        <!-- check box prewitt -->
-                        <div class="flex flex-row space-x-2">
-                            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" id="prewitt" name="prewitt" {% if segmentation.prewitt %} checked readonly{% endif %}>
-                            <label class="text-gray-700 text-sm font-bold mb-2" for="prewitt">
-                                Prewitt Edge Detection
-                            </label>
-                        </div>
+
+                        {% for segmentation_type, segmentations in segmentation_results_data.items %}
+                            {% if segmentations %}
+                                <div class="flex flex-row space-x-2">
+                                    <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" id="{{ segmentation_type }}" name="segmentation_types" value="{{ segmentation_type }}" checked>
+                                    <label class="text-gray-700 text-sm font-bold mb-2" for="{{ segmentation_type }}">
+                                        {{ segmentation_type|capfirst }} Segment (Available) <i class="fas fa-check-circle text-green-500"></i>
+                                    </label>
+                                </div>
+                            {% else %}
+                                <div class="flex flex-row space-x-2">
+                                    <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" id="{{ segmentation_type }}" name="segmentation_types" value="{{ segmentation_type }}">
+                                    <label class="text-gray-700 text-sm font-bold mb-2" for="{{ segmentation_type }}">
+                                        {{ segmentation_type|capfirst }} Segment (Not Available) <i class="fas fa-exclamation-circle text-red-500"></i>
+                                    </label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                         <!-- button -->
                         <div class="flex flex-row justify-start items-center space-x-2">
                             <button type="submit" class="flex flex-row justify-center items-center px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded-md shadow-md">
@@ -104,6 +80,7 @@
                             </button>
                         </div>
                     </form>
+
                 </div>
             </div>  
         </div>
