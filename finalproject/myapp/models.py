@@ -34,6 +34,7 @@ class Image(models.Model):
         ("brown", "Brown"),
         ("black", "Black"),
         ("white", "White"),
+        ("dark-white", "Dark White"),
         ("gray", "Gray"),
         ("cyan", "Cyan"),
         ("magenta", "Magenta"),
@@ -67,6 +68,9 @@ class Image(models.Model):
         ("snow", "Snow"),
         ("seashell", "Seashell"),
         ("salmon", "Salmon"),
+        ("mud-brown", "Mud Brown"),
+        ("dark-mud-brown", "Dark Mud Brown"),
+        ("random", "Random"),
     ]
     color = models.CharField(
         max_length=20, choices=COLOR_CHOICES, default="white", blank=False, null=False
@@ -123,8 +127,17 @@ class Image(models.Model):
 class ImagePreprocessing(models.Model):
     id = models.AutoField(primary_key=True)
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
-    image_preprocessing = models.ImageField(
-        upload_to="static/images/preprocessing/", blank=False, null=False
+    image_preprocessing_gray = models.ImageField(
+        upload_to="static/images/preprocessing/gray/",
+        blank=False,
+        null=False,
+        default="/static/images/preprocessing/gray/gray.jpg",
+    )
+    image_preprocessing_color = models.ImageField(
+        upload_to="static/images/preprocessing/color/",
+        blank=False,
+        null=False,
+        default="/static/images/preprocessing/color/color.jpg",
     )
     image_ground_truth = models.ImageField(
         upload_to="static/images/ground_truth/", blank=False, null=False
@@ -155,7 +168,8 @@ class ImagePreprocessing(models.Model):
     # override delete method
     def delete(self, *args, **kwargs):
         # delete image
-        self.image_preprocessing.delete(False)
+        self.image_preprocessing_gray.delete(False)
+        self.image_preprocessing_color.delete(False)
         self.image_ground_truth.delete(False)
         super().delete(*args, **kwargs)
 
@@ -163,7 +177,7 @@ class ImagePreprocessing(models.Model):
         return "{}. {}".format(
             self.id,
             self.image.uploader.username,
-            self.image_preprocessing.name,
+            self.image.image.name,
         )
 
 
@@ -182,7 +196,6 @@ class Segmentation(models.Model):
     accuracy = models.FloatField(blank=True, null=True)
     precision = models.FloatField(blank=True, null=True)
     recall = models.FloatField(blank=True, null=True)
-    k_means_score = models.FloatField(blank=True, null=True)
     rand_score = models.FloatField(blank=True, null=True)
     jaccard_score = models.FloatField(blank=True, null=True)
     mse = models.FloatField(blank=True, null=True)
