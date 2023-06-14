@@ -35,7 +35,7 @@ from django.contrib.auth.models import User
 
 # model
 from myapp.models import Image, ImagePreprocessing, Segmentation, SegmentationResult
-from django.db.models import Count, Q
+from django.db.models import Count, Q, F
 
 # cv2 import
 import cv2
@@ -108,11 +108,12 @@ class SegmentationClassView(ListView):
                 image.segmentation_results.filter(
                     Q(
                         segmentation_type__in=[
-                            "k-means",
+                            "kmeans",
                             "adaptive",
                             "otsu",
                             "sobel",
                             "prewitt",
+                            "canny",
                         ]
                     )
                     & Q(segmentation_type__isnull=False)
@@ -134,16 +135,58 @@ class SegmentationClassView(ListView):
         pass
 
 
+def get_segmentation_results_data(image):
+    segmentation_types = ["kmeans", "adaptive", "otsu", "sobel", "prewitt", "canny"]
+
+    segmentation_results = SegmentationResult.objects.filter(
+        image=image, segmentation_type__in=segmentation_types
+    )
+
+    segmentation_results_data = {
+        segmentation_type: False for segmentation_type in segmentation_types
+    }
+
+    for segmentation_result in segmentation_results:
+        segmentation_type = segmentation_result.segmentation_type
+        segmentation_results_data[segmentation_type] = True
+
+    return segmentation_results_data
+
+
+def perform_segmentation(segmentation_type, segmentation_results_data, image):
+    segmentations = {
+        "kmeans": {
+            "perform": perform_k_means_segmentation,
+            "top": get_top_segmentations,
+        },
+        "adaptive": {"perform": perform_adaptive_segmentation, "top": None},
+        "otsu": {"perform": perform_otsu_segmentation, "top": None},
+        "sobel": {"perform": perform_sobel_segmentation, "top": None},
+        "prewitt": {"perform": perform_prewitt_segmentation, "top": None},
+        "canny": {"perform": perform_canny_segmentation, "top": None},
+    }
+
+    if (
+        segmentation_type in segmentations
+        and not segmentation_results_data[segmentation_type]
+    ):
+        print(f"Performing {segmentation_type} segmentation...")
+        perform_func = segmentations[segmentation_type]["perform"]
+        perform_func(image)
+        top_func = segmentations[segmentation_type]["top"]
+        if top_func:
+            top_func(image, segmentation_type)
+
+
 class SegmentationDetailClassView(DetailView):
     model = Image
     template_name = "myapp/segmentation/segmentation_detail.html"
     context_object_name = "segmentation"
 
-    # Override the get_context_data method
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         set_user_menus(self.request, context)
-        self.customize_context(context)  # Call the customize_context method
+        self.customize_context(context)
 
         context["title"] = "Segmentation Detail"
         context["contributor"] = "WeeAI Team"
@@ -154,48 +197,12 @@ class SegmentationDetailClassView(DetailView):
         context["app_js"] = "myapp/js/scripts.js"
         context["logo"] = "myapp/images/Logo.png"
 
-        # Get the image object
         image = self.get_object()
-
-        # Get segmentation results for the image with the specified segmentation types
-        segmentation_types = [
-            "k-means",
-            "adaptive",
-            "otsu",
-            "sobel",
-            "prewitt",
-            "canny",
-        ]
-        segmentation_results = SegmentationResult.objects.filter(
-            image=image, segmentation_type__in=segmentation_types
-        )
-
-        # Create a dictionary to hold the segmentation results
-        segmentation_results_data = {}
-        for segmentation_type in segmentation_types:
-            segmentation_results_data[segmentation_type] = []
-
-        # Iterate over the segmentation results and add them to the dictionary
-        for segmentation_result in segmentation_results:
-            segmentations = segmentation_results.filter(
-                segmentation_type=segmentation_type
-            )
-            if segmentations:
-                for segmentation_result in segmentations:
-                    segmentation_results_data[segmentation_type].append(
-                        segmentation_result
-                    )
-            else:
-                segmentation_results_data[segmentation_type].append(None)
-
-        # Add the segmentation results dictionary to the context
+        segmentation_results_data = get_segmentation_results_data(image)
         context["segmentation_results_data"] = segmentation_results_data
-
         return context
 
-    # Override the get method
     def get(self, request, *args, **kwargs):
-        # condition to check if user is authenticated
         if not request.user.is_authenticated:
             return redirect("myapp:signin")
         else:
@@ -203,50 +210,22 @@ class SegmentationDetailClassView(DetailView):
             context = self.get_context_data(object=self.object)
             return self.render_to_response(context)
 
-    # Override the post method
     def post(self, request, *args, **kwargs):
-        # Get the image object
         image = self.get_object()
-
-        # Get the selected segmentation types from the POST data
         selected_segmentation_types = request.POST.getlist("segmentation_types")
+        segmentation_results_data = get_segmentation_results_data(image)
 
-        # Process the selected segmentation types
         for segmentation_type in selected_segmentation_types:
-            # Check if segmentation data already exists
             if SegmentationResult.objects.filter(
                 image=image, segmentation_type=segmentation_type
             ).exists():
-                continue  # Skip processing if segmentation data already exists
+                continue
 
-            # Get the asso
+            perform_segmentation(segmentation_type, segmentation_results_data, image)
 
-            # Perform the desired action based on the segmentation type
-            if segmentation_type == "k-means":
-                # Perform k-means segmentation
-                print("Performing k-means segmentation...")
-                perform_k_means_segmentation(image)
-            elif segmentation_type == "adaptive":
-                # Perform adaptive segmentation
-                perform_adaptive_segmentation(image)
-            elif segmentation_type == "otsu":
-                # Perform Otsu's thresholding segmentation
-                perform_otsu_segmentation(image)
-            elif segmentation_type == "sobel":
-                # Perform Sobel edge detection segmentation
-                perform_sobel_segmentation(image)
-            elif segmentation_type == "prewitt":
-                # Perform Prewitt edge detection segmentation
-                perform_prewitt_segmentation(image)
-            elif segmentation_type == "canny":
-                # Perform Canny edge detection segmentation
-                perform_canny_segmentation(image)
-
-        # Redirect to the segmentation detail page
         return redirect("myapp:segmentation_detail", pk=image.pk)
 
     def customize_context(self, context):
-        # Override this method in derived views to customize the context
         pass
 
 
@@ -260,7 +239,7 @@ def perform_k_means_segmentation(image):
     # Iterate over each preprocessing object
     counter = 0
     for preprocessing in preprocessings:
-        # Perform k-means segmentation using the Image and ImagePreprocessing objects
+        # Perform kmeans segmentation using the Image and ImagePreprocessing objects
         img = preprocessing.image_preprocessing_color
         img_file = cv2.imread(img.path)
         # conver image to RGB
@@ -300,7 +279,7 @@ def perform_k_means_segmentation(image):
         ground_truth_flatten = ground_truth_array.flatten()
         segmented_flatten = segmented_array.flatten()
 
-        type = "k-means"
+        type = "kmeans"
         average = "weighted"
         zero_division = 1
         # Call the calculate_scores function
@@ -315,7 +294,7 @@ def perform_k_means_segmentation(image):
         # Create a new Segmentation object
         segmentation_instance = Segmentation()
         segmentation_instance.image_preprocessing = preprocessing
-        segmentation_instance.segmentation_type = "k-means"
+        segmentation_instance.segmentation_type = "kmeans"
         segmented_image = PILImage.fromarray(segmented_image)
         segmented_stream = io.BytesIO()
         segmented_image.save(segmented_stream, format="JPEG")
@@ -344,6 +323,45 @@ def perform_k_means_segmentation(image):
         segmentation_instance.save()
 
 
+def get_top_segmentations(Image, segmentation_type):
+    top_segmentations = (
+        Segmentation.objects.select_related("image_preprocessing__image")
+        .filter(image_preprocessing__image=Image)
+        .order_by(
+            F("image_preprocessing__resize").asc(),
+            F("image_preprocessing__resize_percent").asc(),
+            F("image_preprocessing__resize_width").asc(),
+            F("image_preprocessing__resize_height").asc(),
+            F("f1_score").desc(),
+            F("accuracy").desc(),
+            F("precision").desc(),
+            F("recall").desc(),
+            F("rand_score").desc(),
+            F("jaccard_score").desc(),
+            F("mse").desc(),
+            F("psnr").desc(),
+            F("mae").desc(),
+            F("rmse").desc(),
+        )[:15]
+    )
+
+    segmentation_instances = []
+    rank = 1  # Start with rank 1
+
+    for segmentation in top_segmentations:
+        segmentation_instance = SegmentationResult.objects.create(
+            image=Image,
+            segmentation_type=segmentation_type,
+            rank=rank,
+        )
+
+        segmentation_instance.segmentations.add(segmentation)
+        segmentation_instances.append(segmentation_instance)
+        rank += 1
+
+    return segmentation_instances
+
+
 def perform_adaptive_segmentation(image):
     # Get the associated ImagePreprocessing object
     preprocessings = ImagePreprocessing.objects.filter(image=image)
@@ -358,40 +376,52 @@ def perform_adaptive_segmentation(image):
 
 def perform_otsu_segmentation(image):
     # Get the associated ImagePreprocessing object
-    preprocessing = ImagePreprocessing.objects.get(image=image)
+    preprocessing = ImagePreprocessing.objects.filter(image=image)
 
-    # Perform Otsu's thresholding segmentation using the Image and ImagePreprocessing objects
-    # You can access the Image and ImagePreprocessing data within this function
+    # count Preprocessing objects
+    preprocessing_count = preprocessing.count()
+    print("preprocessing_count:", preprocessing_count)
+    # Iterate over each preprocessing object
+    counter = 0
 
     pass
 
 
 def perform_sobel_segmentation(image):
     # Get the associated ImagePreprocessing object
-    preprocessing = ImagePreprocessing.objects.get(image=image)
+    preprocessing = ImagePreprocessing.objects.filter(image=image)
 
-    # Perform Sobel edge detection segmentation using the Image and ImagePreprocessing objects
-    # You can access the Image and ImagePreprocessing data within this function
+    # count Preprocessing objects
+    preprocessing_count = preprocessing.count()
+    print("preprocessing_count:", preprocessing_count)
+    # Iterate over each preprocessing object
+    counter = 0
 
     pass
 
 
 def perform_prewitt_segmentation(image):
     # Get the associated ImagePreprocessing object
-    preprocessing = ImagePreprocessing.objects.get(image=image)
+    preprocessing = ImagePreprocessing.objects.filter(image=image)
 
-    # Perform Prewitt edge detection segmentation using the Image and ImagePreprocessing objects
-    # You can access the Image and ImagePreprocessing data within this function
+    # count Preprocessing objects
+    preprocessing_count = preprocessing.count()
+    print("preprocessing_count:", preprocessing_count)
+    # Iterate over each preprocessing object
+    counter = 0
 
     pass
 
 
 def perform_canny_segmentation(image):
     # Get the associated ImagePreprocessing object
-    preprocessing = ImagePreprocessing.objects.get(image=image)
+    preprocessing = ImagePreprocessing.objects.filter(image=image)
 
-    # Perform Canny edge detection segmentation using the Image and ImagePreprocessing objects
-    # You can access the Image and ImagePreprocessing data within this function
+    # count Preprocessing objects
+    preprocessing_count = preprocessing.count()
+    print("preprocessing_count:", preprocessing_count)
+    # Iterate over each preprocessing object
+    counter = 0
 
     pass
 
@@ -537,7 +567,7 @@ def calculate_scores(ground_truth, segmented, type, average="binary", zero_divis
             )
         )
     )
-
+    print(scores)
     return scores
 
 

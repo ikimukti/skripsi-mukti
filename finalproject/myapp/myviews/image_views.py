@@ -378,14 +378,8 @@ class ImageUploadView(CreateView):
             for contrast in [0.5, 0.75, 1.0, 1.25, 1.5]
             for spatial_filter in [
                 ("mean_filter", 3),
-                ("mean_filter", 5),
-                ("mean_filter", 7),
                 ("median_filter", 3),
-                ("median_filter", 5),
-                ("median_filter", 7),
                 ("gaussian_filter", 3),
-                ("gaussian_filter", 5),
-                ("gaussian_filter", 7),
             ]
         ]
 

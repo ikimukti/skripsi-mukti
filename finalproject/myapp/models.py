@@ -223,6 +223,7 @@ class SegmentationResult(models.Model):
     segmentations = models.ManyToManyField(Segmentation)
     # additional fields
     segmentation_type = models.CharField(max_length=255, blank=True, null=True)
+    rank = models.IntegerField(blank=True, null=True)  # Add the rank field
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 

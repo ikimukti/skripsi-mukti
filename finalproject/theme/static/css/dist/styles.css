@@ -1100,6 +1100,10 @@ select {
   cursor: pointer;
 }
 
+.cursor-default {
+  cursor: default;
+}
+
 .list-disc {
   list-style-type: disc;
 }
