@@ -300,19 +300,11 @@ def process_and_save_image_preprocessing(image_obj, image_array, parameters):
         ground_truth = np.zeros_like(filtered_image_to_array)
 
         # set black areas as foreground (255) and white areas as background (0) with the threshold adaptative
-        thresholded_image = cv2.adaptiveThreshold(
-            filtered_image_to_array,
-            255,
-            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-            cv2.THRESH_BINARY,
-            11,
-            2,
+        _, thresholded_image = cv2.threshold(
+            filtered_image_to_array, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
         )
 
         ground_truth[thresholded_image > ground_truth] = 255
-
-        # set black area is the background, inverse of the image and background is the biggest area
-        ground_truth = cv2.bitwise_not(ground_truth)
 
         # Remove small black areas
         contours, _ = cv2.findContours(

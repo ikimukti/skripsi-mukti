@@ -2,17 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
-from sklearn.metrics import (
-    adjusted_rand_score,
-    f1_score,
-    precision_score,
-    recall_score,
-    accuracy_score,
-    rand_score,
-    jaccard_score,
-    mean_squared_error,
-    mean_absolute_error,
-)
+from myapp.utils.segmentation import perform_k_means_segmentation, get_top_segmentations, calculate_scores, perform_adaptive_segmentation, perform_otsu_segmentation
 import io
 from django.core.files.base import ContentFile
 from myapp.menus import menus, set_user_menus
@@ -32,20 +22,12 @@ from django.views.generic import (
 )
 import uuid
 from django.contrib.auth.models import User
-
-# model
 from myapp.models import Image, ImagePreprocessing, Segmentation, SegmentationResult
 from django.db.models import Count, Q, F
-
-# cv2 import
 import cv2
 import numpy as np
 from PIL import Image as PILImage
-
-# os
 import os
-
-# datetime
 from datetime import datetime
 
 
@@ -134,7 +116,6 @@ class SegmentationClassView(ListView):
         # Override this method in derived views to customize the context
         pass
 
-
 def get_segmentation_results_data(image):
     segmentation_types = ["kmeans", "adaptive", "otsu", "sobel", "prewitt", "canny"]
 
@@ -159,9 +140,18 @@ def perform_segmentation(segmentation_type, segmentation_results_data, image):
             "perform": perform_k_means_segmentation,
             "top": get_top_segmentations,
         },
-        "adaptive": {"perform": perform_adaptive_segmentation, "top": None},
-        "otsu": {"perform": perform_otsu_segmentation, "top": None},
-        "sobel": {"perform": perform_sobel_segmentation, "top": None},
+        "adaptive": {
+            "perform": perform_adaptive_segmentation, 
+            "top": get_top_segmentations,
+        },
+        "otsu": {
+            "perform": perform_otsu_segmentation,
+            "top": get_top_segmentations,
+        },
+        "sobel": {
+            "perform": perform_sobel_segmentation, 
+            "top": get_top_segmentations,
+            },
         "prewitt": {"perform": perform_prewitt_segmentation, "top": None},
         "canny": {"perform": perform_canny_segmentation, "top": None},
     }
@@ -229,73 +219,81 @@ class SegmentationDetailClassView(DetailView):
         pass
 
 
-def perform_k_means_segmentation(image):
+def perform_sobel_segmentation(image):
     # Get the associated ImagePreprocessing object
     preprocessings = ImagePreprocessing.objects.filter(image=image)
 
-    # count Preprocessing objects
+    # Count Preprocessing objects
     preprocessing_count = preprocessings.count()
     print("preprocessing_count:", preprocessing_count)
+
     # Iterate over each preprocessing object
     counter = 0
     for preprocessing in preprocessings:
-        # Perform kmeans segmentation using the Image and ImagePreprocessing objects
-        img = preprocessing.image_preprocessing_color
+        # Perform sobel segmentation on the image
+        img = preprocessing.image_preprocessing_gray
         img_file = cv2.imread(img.path)
-        # conver image to RGB
-        img_rgb = cv2.cvtColor(img_file, cv2.COLOR_BGR2RGB)
-        img_2d = img_rgb.astype(np.float32)
 
-        # Print the shape of img_2d to check its dimensions
-        counter += 1
-        print("img_2d shape:", img_2d.shape, "-->", counter)
+        # Convert the image to grayscale
+        img_file = cv2.cvtColor(img_file, cv2.COLOR_BGR2GRAY)
+        print("img_file shape:", img_file.shape)
 
-        img_2d = img_2d.reshape(img_2d.shape[0] * img_2d.shape[1], img_2d.shape[2])
+        # Apply Sobel operator
+        sobel_x = cv2.Sobel(img_file, cv2.CV_64F, 1, 0, ksize=3)
+        sobel_y = cv2.Sobel(img_file, cv2.CV_64F, 0, 1, ksize=3)
 
-        # Verify the value of cluster is valid
-        cluster = 3
-        if cluster <= 0:
-            raise ValueError("The number of clusters should be greater than zero.")
+        # Calculate gradient magnitude
+        gradient_magnitude = np.sqrt(sobel_x**2 + sobel_y**2)
+        gradient_magnitude = cv2.normalize(gradient_magnitude, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
 
-        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-        ret, label, center = cv2.kmeans(
-            img_2d, cluster, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS
-        )
+        # Perform thresholding to obtain binary image
+        _, binary_image = cv2.threshold(gradient_magnitude, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-        center = np.uint8(center)
+        # Apply morphological operations to enhance the result
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
 
-        segmented_data = center[label.flatten()]
-        segmented_image = segmented_data.reshape(img_rgb.shape)
+        binary_image = cv2.cvtColor(binary_image, cv2.COLOR_GRAY2BGR)
 
-        # Dapatkan jalur file gambar
+        # Inverse binary image if the background is black
+        if np.mean(binary_image) < 127:
+            binary_image = cv2.bitwise_not(binary_image)
+
+        segmented = binary_image
+
+        # Get image file path
         ground_truth_path = preprocessing.image_ground_truth.path
 
-        # Muat gambar sebagai array numerik
-        ground_truth_array = cv2.imread(ground_truth_path)
-        ground_truth_array = np.array(ground_truth_array)
-        segmented_array = np.array(segmented_image)
+         # Muat gambar sebagai array numerik
+        ground_truth = cv2.imread(ground_truth_path)
+        ground_truth_array = np.array(ground_truth)
+        segmented_array = np.zeros((segmented.shape[0], segmented.shape[1], 3))
+        segmented_array = np.array(segmented_array)
 
-        # Flatten array gambar
-        ground_truth_flatten = ground_truth_array.flatten()
-        segmented_flatten = segmented_array.flatten()
+        print("ground_truth:", ground_truth_array.shape)
+        print("segmented_array:", segmented_array.shape)
+        # Flatten array of images
+        ground_truth_array = ground_truth_array.flatten()
+        segmented_array = segmented_array.flatten()
 
-        type = "kmeans"
-        average = "weighted"
-        zero_division = 1
+        print("ground_truth_array:", ground_truth_array.shape)
+        print("segmented_array:", segmented_array.shape)
+
         # Call the calculate_scores function
+        type = "sobel"
+        average = "binary"
+        zero_division = 1
         scores = calculate_scores(
-            ground_truth_flatten,
-            segmented_flatten,
-            type,
-            average=average,
-            zero_division=zero_division,
+            ground_truth_array, segmented_array, type, average, zero_division
         )
+
         # save to model Segmentation()
         # Create a new Segmentation object
         segmentation_instance = Segmentation()
         segmentation_instance.image_preprocessing = preprocessing
-        segmentation_instance.segmentation_type = "kmeans"
-        segmented_image = PILImage.fromarray(segmented_image)
+        segmentation_instance.segmentation_type = "sobel"
+
+        segmented_image = PILImage.fromarray(segmented)
         segmented_stream = io.BytesIO()
         segmented_image.save(segmented_stream, format="JPEG")
         segmented_stream.seek(0)
@@ -306,8 +304,7 @@ def perform_k_means_segmentation(image):
             ContentFile(segmented_stream.getvalue()),
             save=False,
         )
-
-        # Set the scores
+         # Set the scores
         segmentation_instance.f1_score = scores["f1_score"]
         segmentation_instance.accuracy = scores["accuracy"]
         segmentation_instance.precision = scores["precision"]
@@ -321,48 +318,15 @@ def perform_k_means_segmentation(image):
 
         # Save the Segmentation object
         segmentation_instance.save()
+            
+        # # Save the result to /static/images/dump/
+        # image_path = os.path.join("static", "images", "dump", f"sobel_{counter}.jpg")
+        # cv2.imwrite(image_path, binary_image)
+
+        counter += 1
 
 
-def get_top_segmentations(Image, segmentation_type):
-    top_segmentations = (
-        Segmentation.objects.select_related("image_preprocessing__image")
-        .filter(image_preprocessing__image=Image)
-        .order_by(
-            F("image_preprocessing__resize").asc(),
-            F("image_preprocessing__resize_percent").asc(),
-            F("image_preprocessing__resize_width").asc(),
-            F("image_preprocessing__resize_height").asc(),
-            F("f1_score").desc(),
-            F("accuracy").desc(),
-            F("precision").desc(),
-            F("recall").desc(),
-            F("rand_score").desc(),
-            F("jaccard_score").desc(),
-            F("mse").desc(),
-            F("psnr").desc(),
-            F("mae").desc(),
-            F("rmse").desc(),
-        )[:15]
-    )
-
-    segmentation_instances = []
-    rank = 1  # Start with rank 1
-
-    for segmentation in top_segmentations:
-        segmentation_instance = SegmentationResult.objects.create(
-            image=Image,
-            segmentation_type=segmentation_type,
-            rank=rank,
-        )
-
-        segmentation_instance.segmentations.add(segmentation)
-        segmentation_instances.append(segmentation_instance)
-        rank += 1
-
-    return segmentation_instances
-
-
-def perform_adaptive_segmentation(image):
+def perform_prewitt_segmentation(image):
     # Get the associated ImagePreprocessing object
     preprocessings = ImagePreprocessing.objects.filter(image=image)
 
@@ -371,205 +335,25 @@ def perform_adaptive_segmentation(image):
     print("preprocessing_count:", preprocessing_count)
     # Iterate over each preprocessing object
     counter = 0
-    pass
-
-
-def perform_otsu_segmentation(image):
-    # Get the associated ImagePreprocessing object
-    preprocessing = ImagePreprocessing.objects.filter(image=image)
-
-    # count Preprocessing objects
-    preprocessing_count = preprocessing.count()
-    print("preprocessing_count:", preprocessing_count)
-    # Iterate over each preprocessing object
-    counter = 0
-
-    pass
-
-
-def perform_sobel_segmentation(image):
-    # Get the associated ImagePreprocessing object
-    preprocessing = ImagePreprocessing.objects.filter(image=image)
-
-    # count Preprocessing objects
-    preprocessing_count = preprocessing.count()
-    print("preprocessing_count:", preprocessing_count)
-    # Iterate over each preprocessing object
-    counter = 0
-
-    pass
-
-
-def perform_prewitt_segmentation(image):
-    # Get the associated ImagePreprocessing object
-    preprocessing = ImagePreprocessing.objects.filter(image=image)
-
-    # count Preprocessing objects
-    preprocessing_count = preprocessing.count()
-    print("preprocessing_count:", preprocessing_count)
-    # Iterate over each preprocessing object
-    counter = 0
-
-    pass
+    for preprocessing in preprocessings:
+        # Perform otsu segmentation on the image
+        img = preprocessing.image_preprocessing_gray
+        img_file = cv2.imread(img.path)
 
 
 def perform_canny_segmentation(image):
     # Get the associated ImagePreprocessing object
-    preprocessing = ImagePreprocessing.objects.filter(image=image)
+    preprocessings = ImagePreprocessing.objects.filter(image=image)
 
     # count Preprocessing objects
-    preprocessing_count = preprocessing.count()
+    preprocessing_count = preprocessings.count()
     print("preprocessing_count:", preprocessing_count)
     # Iterate over each preprocessing object
     counter = 0
-
-    pass
-
-
-def calculate_scores(ground_truth, segmented, type, average="binary", zero_division=1):
-    scores = {}
-    scores["type"] = type
-    average = "weighted" if type == "kmeans" else average
-
-    # convert the image segmented and ground truth to binary format (0 or 1)
-    segmented = np.where(segmented == 0, 0, 1)
-    ground_truth = np.where(ground_truth == 0, 0, 1)
-
-    scores["f1_score"] = str(
-        round(
-            f1_score(
-                ground_truth,
-                segmented,
-                average=average,
-                zero_division=zero_division,
-            ),
-            4,
-        )
-    )
-    if scores["f1_score"] in ["nan", "inf", "-inf", "None", "0.0", "0"]:
-        reverse_segmented = np.where(segmented == 0, 1, 0)
-        scores["f1_score"] = str(
-            round(
-                f1_score(
-                    ground_truth,
-                    reverse_segmented,
-                    average=average,
-                    zero_division=zero_division,
-                ),
-                4,
-            )
-        )
-
-    scores["precision"] = str(
-        round(
-            precision_score(
-                ground_truth,
-                segmented,
-                average=average,
-                zero_division=zero_division,
-            ),
-            4,
-        )
-    )
-    if scores["precision"] in ["nan", "inf", "-inf", "None", "0.0", "0"]:
-        reverse_segmented = np.where(segmented == 0, 1, 0)
-        scores["precision"] = str(
-            round(
-                precision_score(
-                    ground_truth,
-                    reverse_segmented,
-                    average=average,
-                    zero_division=zero_division,
-                ),
-                4,
-            )
-        )
-
-    scores["recall"] = str(
-        round(
-            recall_score(
-                ground_truth,
-                segmented,
-                average=average,
-                zero_division=zero_division,
-            ),
-            4,
-        )
-    )
-    if scores["recall"] in ["nan", "inf", "-inf", "None", "0.0", "0"]:
-        reverse_segmented = np.where(segmented == 0, 1, 0)
-        scores["recall"] = str(
-            round(
-                recall_score(
-                    ground_truth,
-                    reverse_segmented,
-                    average=average,
-                    zero_division=zero_division,
-                ),
-                4,
-            )
-        )
-
-    scores["accuracy"] = str(round(accuracy_score(ground_truth, segmented), 4))
-    if scores["accuracy"] in ["nan", "inf", "-inf", "None", "0.0", "0"]:
-        reverse_segmented = np.where(segmented == 0, 1, 0)
-        scores["accuracy"] = str(
-            round(accuracy_score(ground_truth, reverse_segmented), 4)
-        )
-
-    scores["rand_score"] = str(round(rand_score(ground_truth, segmented), 4))
-    if scores["rand_score"] in ["nan", "inf", "-inf", "None", "0.0", "0"]:
-        reverse_segmented = np.where(segmented == 0, 1, 0)
-        scores["rand_score"] = str(
-            round(rand_score(ground_truth, reverse_segmented), 4)
-        )
-
-    scores["jaccard_score"] = str(
-        round(
-            jaccard_score(
-                ground_truth,
-                segmented,
-                average=average,
-                zero_division=zero_division,
-            ),
-            4,
-        )
-    )
-    if scores["jaccard_score"] in ["nan", "inf", "-inf", "None", "0.0", "0"]:
-        reverse_segmented = np.where(segmented == 0, 1, 0)
-        scores["jaccard_score"] = str(
-            round(
-                jaccard_score(
-                    ground_truth,
-                    reverse_segmented,
-                    average=average,
-                    zero_division=zero_division,
-                ),
-                4,
-            )
-        )
-
-    mse = np.mean((ground_truth - segmented) ** 2)
-    scores["mse"] = str(round(mse, 4))
-    scores["mae"] = str(round(mean_absolute_error(ground_truth, segmented), 4))
-    scores["rmse"] = str(
-        round(
-            mean_squared_error(ground_truth, segmented, squared=False),
-            4,
-        )
-    )
-    scores["psnr"] = (
-        "inf"
-        if mse == 0
-        else str(
-            round(
-                10 * np.log10((255**2) / np.mean((ground_truth - segmented) ** 4)), 4
-            )
-        )
-    )
-    print(scores)
-    return scores
-
+    for preprocessing in preprocessings:
+        # Perform otsu segmentation on the image
+        img = preprocessing.image_preprocessing_gray
+        img_file = cv2.imread(img.path)
 
 class SegmentationSummaryClassView(View):
     context = {}
