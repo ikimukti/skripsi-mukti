@@ -437,6 +437,15 @@ class ImageSummaryView(ListView):
             return super().get(request, *args, **kwargs)
 
 
+def get_user_image_count():
+    user_image_count = []
+    users = User.objects.all()
+    for user in users:
+        image_count = Image.objects.filter(uploader=user).count()
+        user_image_count.append((user.username, image_count))
+    return user_image_count
+
+
 class ImageListView(ListView):
     model = Image
     template_name = "myapp/image/image_list.html"
@@ -455,23 +464,13 @@ class ImageListView(ListView):
         context["logo"] = "myapp/images/Logo.png"
         context["menus"] = menus
         set_user_menus(self.request, context)
-        # categories uploader name with name of uploader in User model
-        uploaders_name = (
-            User.objects.filter(image__isnull=False)
-            .distinct()
-            .values_list("username", flat=True)
-        )
-        # count Image by uploader
-        uploaders_count = (
-            Image.objects.values("uploader")
-            .distinct()
-            .annotate(count=Count("uploader"))
-            .values_list("count", flat=True)
-        )
-        # context['uploaders'] = {'name': uploaders_name, 'count': uploaders_count}
+
+        # Prepare uploaders data as a list of dictionaries
         uploaders = []
-        for name, count in zip(uploaders_name, uploaders_count):
-            uploaders.append({"name": name, "count": count})
+        user_image_count = get_user_image_count()
+        for name, count in user_image_count:
+            if count > 0:
+                uploaders.append({"name": name, "count": count})
         context["uploaders"] = uploaders
         # categories color name
         context["colors"] = self.model.objects.values_list(

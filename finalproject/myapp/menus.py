@@ -37,6 +37,13 @@ menus = []
 it_admin_menus = [
     create_menu("Dashboard", "/dashboard/", "fas fa-tachometer-alt", id="dashboard"),
     create_menu(
+        "Administrator",
+        "/admin/",
+        "fas fa-user-shield",
+        dropdown=False,
+        id="administrator",
+    ),
+    create_menu(
         "Account",
         "/account/",
         "fas fa-user",

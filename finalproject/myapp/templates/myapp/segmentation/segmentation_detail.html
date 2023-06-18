@@ -55,10 +55,10 @@
                     <form method="POST" class="flex flex-col space-y-2">
                         {% csrf_token %}
 
-                        {% for segmentation_type, available in segmentation_results_data.items %}
+                        {% for segmentation_type, data in segmentation_results_data.items %}
                             <div class="flex flex-row space-x-2">
-                                <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 {% if available %}cursor-default{% else %} cursor-pointer  {% endif %}" id="{{ segmentation_type }}" name="segmentation_types" value="{{ segmentation_type }}" {% if available %}checked disabled {% endif %}>
-                                {% if available %}
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 {% if data.available %}cursor-default{% else %} cursor-pointer  {% endif %}" id="{{ segmentation_type }}" name="segmentation_types" value="{{ segmentation_type }}" {% if data.available %}checked disabled{% endif %}>
+                                {% if data.available %}
                                     <label class="text-gray-700 text-sm font-bold mb-2" for="{{ segmentation_type }}">
                                         {{ segmentation_type|capfirst }} Segment (Available) <i class="fas fa-check-circle text-green-500"></i>
                                     </label>
@@ -67,9 +67,12 @@
                                         {{ segmentation_type|capfirst }} Segment (Not Available) <i class="fas fa-exclamation-circle text-red-500"></i>
                                     </label>
                                 {% endif %}
+                                {% if data.count %}
+                                    <span class="text-gray-600 text-sm">({{ data.count }})</span>
+                                {% endif %}
                             </div>
                         {% endfor %}
-                        
+
                         <!-- button -->
                         <div class="flex flex-row justify-start items-center space-x-2">
                             <button type="submit" class="flex flex-row justify-center items-center px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded-md shadow-md">

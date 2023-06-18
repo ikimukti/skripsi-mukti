@@ -19,6 +19,7 @@ from sklearn.metrics import (
     mean_absolute_error,
 )
 
+
 def perform_k_means_segmentation(image):
     # Get the associated ImagePreprocessing object
     preprocessings = ImagePreprocessing.objects.filter(image=image)
@@ -112,10 +113,11 @@ def perform_k_means_segmentation(image):
         # Save the Segmentation object
         segmentation_instance.save()
 
+
 def get_top_segmentations(Image, segmentation_type):
     top_segmentations = (
         Segmentation.objects.select_related("image_preprocessing__image")
-        .filter(image_preprocessing__image=Image)
+        .filter(image_preprocessing__image=Image, segmentation_type=segmentation_type)
         .order_by(
             F("image_preprocessing__resize").asc(),
             F("image_preprocessing__resize_percent").asc(),
@@ -149,6 +151,7 @@ def get_top_segmentations(Image, segmentation_type):
         rank += 1
 
     return segmentation_instances
+
 
 def calculate_scores(ground_truth, segmented, type, average="binary", zero_division=1):
     scores = {}
@@ -294,6 +297,7 @@ def calculate_scores(ground_truth, segmented, type, average="binary", zero_divis
     print(scores)
     return scores
 
+
 def perform_adaptive_segmentation(image):
     # Get the associated ImagePreprocessing object
     preprocessings = ImagePreprocessing.objects.filter(image=image)
@@ -314,7 +318,7 @@ def perform_adaptive_segmentation(image):
         # Convert the image to grayscale
         img_file = cv2.cvtColor(img_file, cv2.COLOR_BGR2GRAY)
         segmented = np.zeros_like(img_file)
-        
+
         # Adaptive thresholding
         thresholded_image = cv2.adaptiveThreshold(
             img_file,
@@ -388,7 +392,7 @@ def perform_adaptive_segmentation(image):
         )
         counter += 1
 
-         # Set the scores
+        # Set the scores
         segmentation_instance.f1_score = scores["f1_score"]
         segmentation_instance.accuracy = scores["accuracy"]
         segmentation_instance.precision = scores["precision"]
@@ -402,6 +406,7 @@ def perform_adaptive_segmentation(image):
 
         # Save the Segmentation object
         segmentation_instance.save()
+
 
 def perform_otsu_segmentation(image):
     # Get the associated ImagePreprocessing object
@@ -492,7 +497,7 @@ def perform_otsu_segmentation(image):
         )
         counter += 1
 
-         # Set the scores
+        # Set the scores
         segmentation_instance.f1_score = scores["f1_score"]
         segmentation_instance.accuracy = scores["accuracy"]
         segmentation_instance.precision = scores["precision"]
@@ -506,3 +511,114 @@ def perform_otsu_segmentation(image):
 
         # Save the Segmentation object
         segmentation_instance.save()
+
+
+def perform_sobel_segmentation(image):
+    # Get the associated ImagePreprocessing object
+    preprocessings = ImagePreprocessing.objects.filter(image=image)
+
+    # Count Preprocessing objects
+    preprocessing_count = preprocessings.count()
+    print("preprocessing_count:", preprocessing_count)
+
+    # Iterate over each preprocessing object
+    counter = 0
+    for preprocessing in preprocessings:
+        # Perform sobel segmentation on the image
+        img = preprocessing.image_preprocessing_gray
+        img_file = cv2.imread(img.path)
+
+        # Convert the image to grayscale
+        img_file = cv2.cvtColor(img_file, cv2.COLOR_BGR2GRAY)
+        print("img_file shape:", img_file.shape)
+
+        # Apply Sobel operator
+        sobel_x = cv2.Sobel(img_file, cv2.CV_64F, 1, 0, ksize=3)
+        sobel_y = cv2.Sobel(img_file, cv2.CV_64F, 0, 1, ksize=3)
+
+        # Calculate gradient magnitude
+        gradient_magnitude = np.sqrt(sobel_x**2 + sobel_y**2)
+        gradient_magnitude = cv2.normalize(
+            gradient_magnitude, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U
+        )
+
+        # Perform thresholding to obtain binary image
+        _, binary_image = cv2.threshold(
+            gradient_magnitude, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+        )
+
+        # Apply morphological operations to enhance the result
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+
+        binary_image = cv2.cvtColor(binary_image, cv2.COLOR_GRAY2BGR)
+
+        # Inverse binary image if the background is black
+        if np.mean(binary_image) < 127:
+            binary_image = cv2.bitwise_not(binary_image)
+
+        segmented = binary_image
+
+        # Get image file path
+        ground_truth_path = preprocessing.image_ground_truth.path
+
+        # Muat gambar sebagai array numerik
+        ground_truth = cv2.imread(ground_truth_path)
+        ground_truth_array = np.array(ground_truth)
+        segmented_array = np.zeros((segmented.shape[0], segmented.shape[1], 3))
+        segmented_array = np.array(segmented_array)
+
+        print("ground_truth:", ground_truth_array.shape)
+        print("segmented:", segmented_array.shape)
+        # Flatten array of images
+        ground_truth_array = ground_truth_array.flatten()
+        segmented_array = segmented_array.flatten()
+
+        print("ground_truth_array:", ground_truth_array.shape)
+        print("segmented_array:", segmented_array.shape)
+
+        # Call the calculate_scores function
+        type = "sobel"
+        average = "binary"
+        zero_division = 1
+        scores = calculate_scores(
+            ground_truth_array, segmented_array, type, average, zero_division
+        )
+
+        # save to model Segmentation()
+        # Create a new Segmentation object
+        segmentation_instance = Segmentation()
+        segmentation_instance.image_preprocessing = preprocessing
+        segmentation_instance.segmentation_type = "sobel"
+
+        segmented_image = PILImage.fromarray(segmented)
+        segmented_stream = io.BytesIO()
+        segmented_image.save(segmented_stream, format="JPEG")
+        segmented_stream.seek(0)
+
+        # Set the segmented image
+        segmentation_instance.image_segmented.save(
+            str(counter) + "_" + uuid.uuid4().hex + ".jpg",
+            ContentFile(segmented_stream.getvalue()),
+            save=False,
+        )
+        # Set the scores
+        segmentation_instance.f1_score = scores["f1_score"]
+        segmentation_instance.accuracy = scores["accuracy"]
+        segmentation_instance.precision = scores["precision"]
+        segmentation_instance.recall = scores["recall"]
+        segmentation_instance.rand_score = scores["rand_score"]
+        segmentation_instance.jaccard_score = scores["jaccard_score"]
+        segmentation_instance.mse = scores["mse"]
+        segmentation_instance.psnr = scores["psnr"]
+        segmentation_instance.mae = scores["mae"]
+        segmentation_instance.rmse = scores["rmse"]
+
+        # Save the Segmentation object
+        segmentation_instance.save()
+
+        # # Save the result to /static/images/dump/
+        # image_path = os.path.join("static", "images", "dump", f"sobel_{counter}.jpg")
+        # cv2.imwrite(image_path, binary_image)
+
+        counter += 1

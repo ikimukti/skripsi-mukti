@@ -125,17 +125,41 @@
                                 <div class="flex flex-row space-x-2">
                                     <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700" href="{{ image.image.url }}" download>
                                         <i class="fas fa-download"></i>
+                                        <span class="ml-2">Download</span>
                                     </a>
                                     <!-- segmented -->
                                     {% if image.segmented %}
                                     <a class="flex flex-row justify-center items-center bg-yellow-200 hover:bg-yellow-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:segmentation_detail' image.id %}">
                                         <i class="fas fa-check"></i>
+                                        <span class="ml-2">Segmented</span>
                                     </a>
                                     {% else %}
                                     <a class="flex flex-row justify-center items-center bg-yellow-200 hover:bg-yellow-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:segmentation_detail' image.id %}">
                                         <i class="fas fa-times"></i>
+                                        <span class="ml-2">Not Segmented</span>
                                     </a>
                                     {% endif %}
+                                    {% if image.segmented_count > 0 %}
+                                    <span class="flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700">
+                                        <i class="fas fa-layer-group"></i>
+                                        <span class="ml-2">{{ image.segmented_count }}</span>
+                                    </span>
+                                    {% endif %}
+                                    <!-- print report -->
+                                    <a class="flex flex-row justify-center items-center bg-purple-200 hover:bg-purple-300 rounded-md px-4 py-2 text-gray-700 border" href="" target="_blank">
+                                        <i class="fas fa-print"></i>
+                                        <span class="ml-2">Report</span>
+                                    </a>
+                                    <!-- excel -->
+                                    <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700 border" href="" target="_blank">
+                                        <i class="fas fa-file-excel"></i>
+                                        <span class="ml-2">Excel</span>
+                                    </a>
+                                    <!-- delete -->
+                                    <a class="flex flex-row justify-center items-center bg-red-200 hover:bg-red-300 rounded-md px-4 py-2 text-gray-700 border" href="">
+                                        <i class="fas fa-trash"></i>
+                                        <span class="ml-2">Delete</span>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
