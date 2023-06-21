@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from myapp.menus import menus, set_user_menus
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_protect
 
 
 class SystemBaseView(View):

@@ -9,6 +9,9 @@ from myapp.utils.segmentation import (
     perform_adaptive_segmentation,
     perform_otsu_segmentation,
     perform_sobel_segmentation,
+    perform_canny_segmentation,
+    perform_prewitt_segmentation,
+    get_segmentation_results_data,
 )
 import io
 from django.core.files.base import ContentFile
@@ -43,7 +46,7 @@ class SegmentationClassView(ListView):
     model = Image
     context_object_name = "segmentation"
     ordering = ["-created_at"]
-    paginate_by = 8
+    paginate_by = 10
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -163,33 +166,6 @@ def perform_segmentation(segmentation_type, segmentation_results_data, image):
             top_func(image, segmentation_type)
 
 
-def get_segmentation_results_data(image):
-    segmentation_types = ["kmeans", "adaptive", "otsu", "sobel", "prewitt", "canny"]
-
-    segmentation_results = Segmentation.objects.filter(
-        image_preprocessing__image=image, segmentation_type__in=segmentation_types
-    )
-
-    segmentation_count = {
-        segmentation_type: 0 for segmentation_type in segmentation_types
-    }
-
-    for segmentation_result in segmentation_results:
-        segmentation_type = segmentation_result.segmentation_type
-        if segmentation_type in segmentation_count:
-            segmentation_count[segmentation_type] += 1
-
-    segmentation_results_data = {
-        segmentation_type: {
-            "available": segmentation_count[segmentation_type] > 0,
-            "count": segmentation_count[segmentation_type],
-        }
-        for segmentation_type in segmentation_types
-    }
-
-    return segmentation_results_data
-
-
 class SegmentationDetailClassView(DetailView):
     model = Image
     template_name = "myapp/segmentation/segmentation_detail.html"
@@ -243,225 +219,89 @@ class SegmentationDetailClassView(DetailView):
         pass
 
 
-def perform_prewitt_segmentation(image):
-    # Get the associated ImagePreprocessing object
-    preprocessings = ImagePreprocessing.objects.filter(image=image)
-
-    # Count Preprocessing objects
-    preprocessing_count = preprocessings.count()
-    print("preprocessing_count:", preprocessing_count)
-
-    # Iterate over each preprocessing object
-    counter = 0
-    for preprocessing in preprocessings:
-        # Perform prewitt segmentation on the image
-        img = preprocessing.image_preprocessing_gray
-        img_file = cv2.imread(img.path)
-
-        # Convert the image to grayscale
-        img_file = cv2.cvtColor(img_file, cv2.COLOR_BGR2GRAY)
-        print("img_file shape:", img_file.shape)
-
-        # Apply Prewitt operator
-        # Filter Prewitt horizontal dan vertikal
-        prewitt_x = np.array([[1, 0, -1], [1, 0, -1], [1, 0, -1]], dtype=np.float32)
-        prewitt_y = np.array([[1, 1, 1], [0, 0, 0], [-1, -1, -1]], dtype=np.float32)
-
-        # Konvolusi dengan filter Prewitt
-        prewitt_x_result = cv2.filter2D(img_file, -1, prewitt_x)
-        prewitt_y_result = cv2.filter2D(img_file, -1, prewitt_y)
-
-        # Menggabungkan hasil Prewitt x dan y
-        prewitt_combined = cv2.addWeighted(
-            cv2.convertScaleAbs(prewitt_x_result),
-            0.5,
-            cv2.convertScaleAbs(prewitt_y_result),
-            0.5,
-            0,
-        )
-
-        # Melakukan segmentasi menggunakan thresholding
-        _, segmented = cv2.threshold(
-            prewitt_combined, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
-        )
-
-        # Get image file path
-        ground_truth_path = preprocessing.image_ground_truth.path
-
-        # Muat gambar sebagai array numerik
-        ground_truth = cv2.imread(ground_truth_path)
-        ground_truth_array = np.array(ground_truth)
-        segmented_array = np.zeros((segmented.shape[0], segmented.shape[1], 3))
-        segmented_array = np.array(segmented_array)
-
-        print("ground_truth:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
-        # Flatten array of images
-        ground_truth_array = ground_truth_array.flatten()
-        segmented_array = segmented_array.flatten()
-
-        print("ground_truth_array:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
-
-        # Call the calculate_scores function
-        type = "prewitt"
-        average = "binary"
-        zero_division = 1
-        scores = calculate_scores(
-            ground_truth_array, segmented_array, type, average, zero_division
-        )
-
-        # save to model Segmentation()
-        # Create a new Segmentation object
-        segmentation_instance = Segmentation()
-        segmentation_instance.image_preprocessing = preprocessing
-        segmentation_instance.segmentation_type = "prewitt"
-
-        segmented_image = PILImage.fromarray(segmented)
-        segmented_stream = io.BytesIO()
-        segmented_image.save(segmented_stream, format="JPEG")
-        segmented_stream.seek(0)
-
-        # Set the segmented image
-        segmentation_instance.image_segmented.save(
-            str(counter) + "_" + uuid.uuid4().hex + ".jpg",
-            ContentFile(segmented_stream.getvalue()),
-            save=False,
-        )
-        # Set the scores
-        segmentation_instance.f1_score = scores["f1_score"]
-        segmentation_instance.accuracy = scores["accuracy"]
-        segmentation_instance.precision = scores["precision"]
-        segmentation_instance.recall = scores["recall"]
-        segmentation_instance.rand_score = scores["rand_score"]
-        segmentation_instance.jaccard_score = scores["jaccard_score"]
-        segmentation_instance.mse = scores["mse"]
-        segmentation_instance.psnr = scores["psnr"]
-        segmentation_instance.mae = scores["mae"]
-        segmentation_instance.rmse = scores["rmse"]
-
-        # Save the Segmentation object
-        segmentation_instance.save()
-
-        # Save the result to /static/images/dump/
-        # image_path = os.path.join("static", "images", "dump", f"prewitt_{counter}.jpg")
-        # cv2.imwrite(image_path, segmented)
-
-        counter += 1
-
-
-def perform_canny_segmentation(image):
-    preprocessings = ImagePreprocessing.objects.filter(image=image)
-    preprocessing_count = preprocessings.count()
-    print("preprocessing_count:", preprocessing_count)
-    counter = 0
-    for preprocessing in preprocessings:
-        img = preprocessing.image_preprocessing_gray
-        img_file = cv2.imread(img.path)
-
-        # Apply Otsu's thresholding to get optimal threshold values
-        img_gray = cv2.cvtColor(img_file, cv2.COLOR_BGR2GRAY)
-        threshold_value, _ = cv2.threshold(
-            img_gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
-        )
-
-        # Calculate low and high threshold values
-        low_threshold = 0.5 * threshold_value
-        high_threshold = 1.5 * threshold_value
-
-        # Apply Canny edge detection
-        canny_edges = cv2.Canny(
-            img_gray, low_threshold, high_threshold, L2gradient=True
-        )
-
-        # Perform dilation on the edges
-        kernel_size = (int(img_file.shape[0] / 100), int(img_file.shape[1] / 100))
-        kernel = np.ones(kernel_size, np.uint8)
-        dilated_edges = cv2.dilate(canny_edges, kernel, iterations=1)
-
-        segmented = cv2.bitwise_not(dilated_edges)
-
-        ground_truth_path = preprocessing.image_ground_truth.path
-
-        # Muat gambar sebagai array numerik
-        ground_truth = cv2.imread(ground_truth_path)
-        ground_truth_array = np.array(ground_truth)
-        segmented_array = np.zeros((segmented.shape[0], segmented.shape[1], 3))
-        segmented_array = np.array(segmented_array)
-
-        print("ground_truth:", ground_truth_array.shape)
-        print("segmented:", segmented_array.shape)
-        # Flatten array of images
-        ground_truth_array = ground_truth_array.flatten()
-        segmented_array = segmented_array.flatten()
-
-        print("ground_truth_array:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
-
-        # Call the calculate_scores function
-        type = "canny"
-        average = "binary"
-        zero_division = 1
-        scores = calculate_scores(
-            ground_truth_array, segmented_array, type, average, zero_division
-        )
-
-        # save to model Segmentation()
-        # Create a new Segmentation object
-        segmentation_instance = Segmentation()
-        segmentation_instance.image_preprocessing = preprocessing
-        segmentation_instance.segmentation_type = "canny"
-
-        segmented_image = PILImage.fromarray(segmented)
-        segmented_stream = io.BytesIO()
-        segmented_image.save(segmented_stream, format="JPEG")
-        segmented_stream.seek(0)
-
-        # Set the segmented image
-        segmentation_instance.image_segmented.save(
-            str(counter) + "_" + uuid.uuid4().hex + ".jpg",
-            ContentFile(segmented_stream.getvalue()),
-            save=False,
-        )
-        # Set the scores
-        segmentation_instance.f1_score = scores["f1_score"]
-        segmentation_instance.accuracy = scores["accuracy"]
-        segmentation_instance.precision = scores["precision"]
-        segmentation_instance.recall = scores["recall"]
-        segmentation_instance.rand_score = scores["rand_score"]
-        segmentation_instance.jaccard_score = scores["jaccard_score"]
-        segmentation_instance.mse = scores["mse"]
-        segmentation_instance.psnr = scores["psnr"]
-        segmentation_instance.mae = scores["mae"]
-        segmentation_instance.rmse = scores["rmse"]
-
-        # Save the Segmentation object
-        segmentation_instance.save()
-
-        # Save the result to /static/images/dump/
-        # image_path = os.path.join("static", "images", "dump", f"canny_{counter}.jpg")
-        # cv2.imwrite(image_path, segmented)
-
-        counter += 1
-
-
-class SegmentationSummaryClassView(View):
-    context = {}
+class SegmentationSummaryClassView(ListView):
     template_name = "myapp/segmentation/segmentation_summary.html"
+    model = Image
+    context_object_name = "segmentation"
+    ordering = ["-created_at"]
+    paginate_by = 10
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect("myapp:signin")
         else:
-            set_user_menus(request, self.context)
-            self.extra_context = {
-                "title": "Segmentation Summary",
-                "contributor": "WeeAI Team",
-                "content": "Welcome to WeeAI! This is a website for image segmentation.",
-                "app_css": "myapp/css/styles.css",
-                "app_js": "myapp/js/scripts.js",
-                "logo": "myapp/images/Logo.png",
-            }
-            context = self.context
-            context.update(self.extra_context)
+            self.object_list = self.get_queryset()
+            context = self.get_context_data(**kwargs)
+            set_user_menus(request, context)
+            self.customize_context(context)  # Call the customize_context method
             return render(request, self.template_name, context)
+
+    def get_queryset(self):
+        queryset = super().get_queryset().prefetch_related("segmentation_results")
+
+        # Get categories uploader name with name of uploader in User model
+        uploaders_name = (
+            User.objects.filter(image__isnull=False)
+            .distinct()
+            .values_list("username", flat=True)
+        )
+        # Count Image by uploader
+        uploaders_count = Image.objects.filter(uploader__isnull=False)
+        print(uploaders_count)
+        # Prepare uploaders data as a list of dictionaries
+        uploaders = []
+        for name, count in zip(uploaders_name, uploaders_count):
+            uploaders.append({"name": name, "count": count})
+        print(uploaders)
+        # Get categories color name
+        colors = queryset.values_list("color", flat=True).distinct()
+
+        # Chart data for User Uploaders
+        image_preprocessing = ImagePreprocessing.objects.filter(
+            image__in=queryset,
+        )
+        segmentation = (
+            Segmentation.objects.filter(
+                image_preprocessing__in=image_preprocessing,
+            )
+            .prefetch_related("image_preprocessing")
+            .prefetch_related("image_preprocessing__image")
+        )
+        # Get data user uploaders
+        uploaders_name = segmentation.values_list(
+            "image_preprocessing__image__uploader__username",
+            flat=True,
+        ).distinct()
+        # Count data user uploaders
+        uploaders_count = segmentation.values_list(
+            "image_preprocessing__image__uploader__username",
+        ).annotate(count=Count("image_preprocessing__image__uploader__username"))
+        print(uploaders_count)
+
+        chartjs_data = {
+            "labels_user": uploaders_name,
+            "data_user": uploaders_count,
+        }
+
+        self.extra_context = {
+            "uploaders": uploaders,
+            "colors": colors,
+            "title": "Segmentation Summary",
+            "contributor": "WeeAI Team",
+            "content": "Welcome to WeeAI! This is a website for image segmentation.",
+            "app_css": "myapp/css/styles.css",
+            "app_js": "myapp/js/scripts.js",
+            "logo": "myapp/images/Logo.png",
+            "chartjs": chartjs_data,
+        }
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.extra_context)
+        return context
+
+    def customize_context(self, context):
+        # Override this method in derived views to customize the context
+        pass

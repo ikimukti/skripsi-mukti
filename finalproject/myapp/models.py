@@ -121,7 +121,7 @@ class Image(models.Model):
         return reverse("myapp:image_detail", kwargs={"pk": self.pk})
 
     def __str__(self):
-        return "{}. {}".format(self.id, self.image.name, self.uploader.username)
+        return "{}. {}".format(self.id, self.uploader.username)
 
 
 class ImagePreprocessing(models.Model):

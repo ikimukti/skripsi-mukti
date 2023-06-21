@@ -1,8 +1,6 @@
 {% extends "myapp/core_base2.html" %}
 {% load static %}
 {% load humanize %}
-
-
 {% block content %}
 <div class="flex flex-col w-5/6 fixed right-0 top-14 h-[calc(100vh-3.5rem)] px-4 py-4 overflow-y-auto overflow-hidden" id="content">
     <div class="flex flex-col m-2 bg-white rounded-md p-4 shadow-md z-10 mb-48 pb-20">
@@ -19,16 +17,12 @@
             </div>
         </div>
         <hr class="border-gray-200 mb-2">
-        <div class="flex flex-col space-y-2">
+        <div class="flex flex-col space-y-2 w-auto">
             <!-- list Image Upload -->
             <div class="flex flex-row justify-between items-center">
                 <div class="flex flex-row space-x-2">
                     <div class="flex flex-col space-y-1">
                         <h1 class="text-lg font-bold text-gray-700">Image Details</h1>
-                        <p class="text-sm text-gray-500">
-                            <i class="fas fa-user"></i>	
-                            <span class="ml-2">Uploaded by {{ image.uploader|title }}</span>
-                        </p>
                     </div>
                 </div>
             </div>
@@ -46,7 +40,7 @@
                     </div>
                 </div>
                 <!-- Two column with shadow -->
-                <div class="flex flex-col space-y-2">
+                <div class="flex-1 flex-col space-y-2">
                     <h1 class="text-lg font-bold text-gray-700">{{ image.slug }}</h1>
                     <div class="flex flex-row space-x-2">
                         <div class="flex flex-col space-y-1">
@@ -96,53 +90,236 @@
                             </p>
                         </div>
                     </div>
+                    <p>
+                        The Best Way to Segmentation this Image is 
+                        <span class="text-red-500 font-bold">{{ chartjs.best.segmentation_type|title }}</span> 
+                        that has score of F1-Score <span class="text-red-500 font-bold">{{ chartjs.best.f1_score|floatformat:2 }}</span> 
+                        and Rand Score <span class="text-red-500 font-bold">{{ chartjs.best.rand_score|floatformat:2 }}</span> 
+                        and Jaccard Score <span class="text-red-500 font-bold">{{ chartjs.best.jaccard_score|floatformat:2 }}</span>. 
+                        Image is Preprocessing with resize image to <span class="text-red-500 font-bold">{{ chartjs.best.image_preprocessing.resize_percent|intcomma }}%</span> 
+                        and brightness ajustment to <span class="text-red-500 font-bold">{{ chartjs.best.image_preprocessing.brightness_percent|intcomma }}%</span> 
+                        and contrast ajustment to <span class="text-red-500 font-bold">{{ chartjs.best.image_preprocessing.contrast_percent|intcomma }}%</span>. 
+                        Use image improvement with <span class="text-red-500 font-bold">
+                            {% if chartjs.best.image_preprocessing.gaussian_filter %}Gaussian Filter
+                            {% elif chartjs.best.image_preprocessing.median_filter %}Median Filter
+                            {% elif chartjs.best.image_preprocessing.mean_filter %}Mean Filter
+                            {% endif %}
+                        </span> to improve image quality.
                 </div>
             </div>
             <!-- List Segmentation Image -->
-            <div class="flex flex-col space-y-2">
-                <h1 class="text-lg font-bold text-gray-700">Segmentation Image</h1>
-                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
-                    <h2 class="text-md font-bold text-gray-700">Segmentation Image K-Means <span class="text-sm text-gray-500">K = 2</span></h2>
-                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
-                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
-                        <p class="text-sm text-gray-500">Segmentation Image K-Means <span class="text-sm text-gray-500">K = 2</span></p>
+            <div class="flex flex-col space-y-2 w-auto">
+                <!-- Segmentation View selected -->
+                <div class="flex-1 flex-col space-y-2">
+                    <div class="flex flex-col space-y-2">
+                        <h1 class="text-lg font-bold text-gray-700">Segmentation Graph {{ request.GET.segmentation|title }}</h1>
+                    </div>
+                    <div class="flex flex-col flex-wrap justify-start items-start" id="chartContainer">
+                        <canvas id="chartku" class="w-full" height="230"></canvas>
                     </div>
                 </div>
-                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
-                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Thresholding Adaptive</h2>
-                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
-                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
-                        <p class="text-sm text-gray-500">Segmentation Image Thresholding Adaptive</p>
+                <!-- Segmentation View selected -->
+                <div class="flex flex-row justify-between items-center mb-2">
+                    <div class="flex flex-col space-y-2">
+                        <h1 class="text-lg font-bold text-gray-700">Segmentation Image</h1>
+                    </div>
+                    <div class="flex flex-row space-x-2 w-auto">
+                        <!-- button export Segmentation -->
+                        <a href="" class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700">
+                            <i class="fas fa-download"></i>
+                            <span class="ml-2">Export</span>
+                        </a>
+                        <!-- button selected Segmentation -->
+                        <form class="flex flex-row justify-center items-center space-x-2 w-auto" action="" method="GET">
+                            <!-- input select option -->
+                            <select name="segmentation" class="flex flex-row justify-center items-center rounded-md px-4 py-2 text-gray-700 w-60">
+                                <option value="all" {% if request.GET.segmentation == 'all' %} selected {% endif %}>All Segmentation</option>
+                                <option value="kmeans" {% if request.GET.segmentation == 'kmeans' %} selected {% endif %}>K-Means Clustering</option>
+                                <option value="adaptive" {% if request.GET.segmentation == 'adaptive' %} selected {% endif %}>Adaptive Threshold</option>
+                                <option value="otsu" {% if request.GET.segmentation == 'otsu' %} selected {% endif %}>Otsu Threshold</option>
+                                <option value="sobel" {% if request.GET.segmentation == 'sobel' %} selected {% endif %}>Sobel Edge Detection</option>
+                                <option value="canny" {% if request.GET.segmentation == 'canny' %} selected {% endif %}>Canny Edge Detection</option>
+                                <option value="prewitt" {% if request.GET.segmentation == 'prewitt' %} selected {% endif %}>Prewitt Edge Detection</option>
+                            </select>
+                            <!-- button selected Segmentation -->
+                            <button class="flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700">
+                                <i class="fas fa-search"></i>
+                                <span class="ml-2">Segmentation</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
-                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
-                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Thresholding Otsu</h2>
-                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
-                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
-                        <p class="text-sm text-gray-500">Segmentation Image Thresholding Otsu</p>
+                {% if page_obj %}
+                <div class="flex flex-row flex-wrap justify-center items-center space-x-2">
+                    <table class="table-auto w-full">
+                        <thead>
+                            <tr>
+                                <th class="px-2 py-1 text-xs border">
+                                    <i class="fas fa-check"></i>
+                                    <span class="ml-2">No</span>
+                                </th>
+                                <th class="px-2 py-1 text-xs border">
+                                    <i class="fas fa-image"></i>
+                                    <span class="ml-2">Image</span>
+                                </th>
+                                <th class="px-2 py-1 text-xs border">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="ml-2">Information Preprocessing</span>
+                                </th>
+                                <th class="px-2 py-1 text-xs border">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="ml-2">Information Segmentation</span>
+                                </th>
+                                <th class="px-2 py-1 text-xs border">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span class="ml-2">Date</span>
+                                </th>
+                                <th class="px-2 py-1 text-xs border">
+                                    <i class="fas fa-cog"></i>
+                                    <span class="ml-2">Action</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for seg in page_obj %}
+                            <tr>
+                                <td class="border px-2 py-1 text-xs">{{ forloop.counter }}</td>
+                                <td class="border px-2 py-1 text-xs flex flex-row justify-center items-center space-x-2">
+                                    <img src="{{ seg.image_segmented.url }}" class="w-9 h-9 object-cover object-center rounded-md">
+                                    <a href="{{ seg.image_segmented.url }}" class="text-xs text-blue-500 hover:text-blue-600">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                </td>
+                                <td class="border px-2 py-1 text-xs space-x-2">
+                                    <!-- span pils information-->
+                                    {% if seg.image_preprocessing.resize %}
+                                        <span class="px-2 py-1 rounded-md bg-blue-200 text-blue-700 text-xs">
+                                            {{ seg.image_preprocessing.resize_width }} x {{ seg.image_preprocessing.resize_height }} | {{ seg.image_preprocessing.resize_percent }}%
+                                        </span>
+                                    {% endif %}
+                                    {% if seg.image_preprocessing.gaussian_filter %}
+                                        <span class="px-2 py-1 rounded-md bg-red-200 text-red-700 text-xs">
+                                            {{ seg.image_preprocessing.gaussian_filter_size }}
+                                        </span>
+                                    {% elif seg.image_preprocessing.median_filter %}
+                                        <span class="px-2 py-1 rounded-md bg-purple-200 text-purple-700 text-xs">
+                                            {{ seg.image_preprocessing.median_filter_size }}
+                                        </span>
+                                    {% elif seg.image_preprocessing.mean_filter %}
+                                        <span class="px-2 py-1 rounded-md bg-green-200 text-green-700 text-xs">
+                                            {{ seg.image_preprocessing.mean_filter_size }}
+                                        </span>
+                                    {% else %}
+                                        <span class="px-2 py-1 rounded-md bg-gray-200 text-gray-700 text-xs">
+                                            No Filter
+                                        </span>
+                                    {% endif %}
+                                    {% if seg.image_preprocessing.brightness %}
+                                        <span class="px-2 py-1 rounded-md bg-yellow-200 text-yellow-700 text-xs">
+                                            {{ seg.image_preprocessing.brightness_percent }}%
+                                        </span>
+                                    {% else %}
+                                        <span class="px-2 py-1 rounded-md bg-gray-200 text-gray-700 text-xs">
+                                            No Brightness
+                                        </span>
+                                    {% endif %}
+                                    {% if seg.image_preprocessing.contrast %}
+                                        <span class="px-2 py-1 rounded-md bg-indigo-200 text-indigo-700 text-xs">
+                                            {{ seg.image_preprocessing.contrast_percent }}%
+                                        </span>
+                                    {% else %}
+                                        <span class="px-2 py-1 rounded-md bg-gray-200 text-gray-700 text-xs">
+                                            No Contrast
+                                        </span>
+                                    {% endif %}
+                                    <!-- view image alt -->
+                                    <a href="{{ seg.image_preprocessing.image_preprocessing_color.url }}" class="text-xs text-blue-500 hover:text-blue-600">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        Color
+                                    </a>
+                                    <a href="{{ seg.image_preprocessing.image_preprocessing_gray.url }}" class="text-xs text-blue-500 hover:text-blue-600">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        Gray
+                                    </a>
+                                    
+                                </td>
+                                <td class="border px-2 py-1 text-xs space-x-2">
+                                    <span class="px-2 py-1 rounded-md {% if seg.segmentation_type == 'otsu' %}bg-blue-200 text-blue-700{% elif seg.segmentation_type == 'kmeans' %}bg-red-200 text-red-700{% elif seg.segmentation_type == 'adaptive' %}bg-purple-200 text-purple-700{% elif seg.segmentation_type == 'sobel' %}bg-green-200 text-green-700{% elif seg.segmentation_type == 'canny' %}bg-yellow-200 text-yellow-700 {% elif seg.segmentation_type == 'prewitt' %}bg-indigo-200 text-indigo-700{% else %}bg-gray-200 text-gray-700{% endif %} text-xs">
+                                        {{ seg.segmentation_type|capfirst }}
+                                    </span>
+                                    <!-- span score -->
+                                    <span class="px-2 py-1 rounded-md bg-gray-200 text-gray-700 text-xs">
+                                        F1: {{ seg.f1_score|floatformat:2 }}
+                                    </span>
+                                    <span class="px-2 py-1 rounded-md bg-gray-200 text-gray-700 text-xs">
+                                        Jaccard: {{ seg.jaccard_score|floatformat:2 }}
+                                    </span>
+                                    <span class="px-2 py-1 rounded-md bg-gray-200 text-gray-700 text-xs">
+                                        Rand: {{ seg.rand_score|floatformat:2 }}
+                                    </span>
+                                </td>
+                                <td class="border px-2 py-1 text-xs">{{ seg.created_at|naturaltime }}</td>
+                                <td class="border px-2 py-1 text-xs">
+                                    <div class="flex flex-row space-x-2">
+                                        <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700" href="{{ seg.image_segmented.url }}" download>
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="flex flex-row justify-center items-center space-x-2">
+                    <div class="flex flex-col justify-center items-center space-y-2">
+                        <i class="fas fa-images text-4xl text-gray-500"></i>
+                        <span class="text-sm text-gray-500">No Images Segmented</span>
+                        <!-- Button Segmented-->
+                        <a href="{% url 'myapp:segmentation' %}" class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700">
+                            <i class="fas fa-images mr-2"></i>
+                            Segmented Now
+                        </a>
                     </div>
                 </div>
-                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
-                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Edge Detection Canny</h2>
-                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
-                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
-                        <p class="text-sm text-gray-500">Segmentation Image Edge Detection Canny</p>
+                {% endif %}
+                {% if is_paginated %}
+                    <div class="flex flex-row justify-between items-center space-x-2">
+                        <div class="flex flex-row space-x-2">
+                            <span class="text-xs text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+                        </div>
+                        <div class="flex flex-row space-x-2">
+                            {% if page_obj.has_previous %}
+                                <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page=1&segmentation={{ request.GET.segmentation }}">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                                <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.previous_page_number }}&segmentation={{ request.GET.segmentation }}">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            {% endif %}
+                            {% for page in page_obj.paginator.page_range %}
+                                {% if page_obj.number == page %}
+                                    <a class="text-xs flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page }}&segmentation={{ request.GET.segmentation }}">{{ page }}</a>
+                                {% elif page > page_obj.number|add:'-3' and page < page_obj.number|add:'3' %}
+                                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page }}&segmentation={{ request.GET.segmentation }}">{{ page }}</a>
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.next_page_number }}&segmentation={{ request.GET.segmentation }}">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                                <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.paginator.num_pages }}&segmentation={{ request.GET.segmentation }}">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                        <div class="flex flex-row space-x-2">
+                            <span class="text-xs text-gray-500">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} entries.</span>
+                        </div>
                     </div>
-                </div>
-                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
-                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Edge Detection Sobel</h2>
-                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
-                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
-                        <p class="text-sm text-gray-500">Segmentation Image Edge Detection Sobel</p>
-                    </div>
-                </div>
-                <div class="flex flex-col flex-wrap justify-start items-start space-x-2">
-                    <h2 class="text-md font-bold text-gray-700">Segmentation Image Edge Detection Prewitt</h2>
-                    <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
-                        <img src="{{ image.image.url }}" class="w-40 h-4w-40 object-cover rounded-md shadow-md">
-                        <p class="text-sm text-gray-500">Segmentation Image Edge Detection Prewitt</p>
-                    </div>
-                </div>
+                {% endif %}
+
             </div>
             <!-- List Image From Uploader User 5 Image latest -->
             <div class="flex flex-col space-y-2">
@@ -167,3 +344,83 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block chartjs %} 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to find the maximum value in an array
+    const findMaxValue = (arr) => Math.max(...arr);
+    const ctx = document.getElementById('chartku').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chartjs.labels | safe }},
+            datasets: [
+                {
+                    label: 'F1 Score',
+                    data: {{ chartjs.data_f1_score | safe }},
+                    borderWidth: 1,
+                    tension: 0,
+                    fill: true,
+                },
+                {
+                    label: 'Rand Score',
+                    data: {{ chartjs.data_rand_score | safe }},
+                    borderWidth: 1,
+                    tension: 0,
+                    fill: true,
+                },
+                {
+                    label: 'Jaccard Score',
+                    data: {{ chartjs.data_jaccard_score | safe }},
+                    borderWidth: 1,
+                    tension: 0,
+                    fill: true,
+                },
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    display: false
+                },
+                x: {
+                    beginAtZero: true,
+                    display: false
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Segmentation Graph',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                annotation: {
+                    annotations: {
+                        highestDataPoint: {
+                            type: 'line',
+                            mode: 'vertical',
+                            scaleID: 'y',
+                            value: findMaxValue({{ chartjs.data_f1_score | safe }}),
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            label: {
+                                enabled: true,
+                                content: 'Tertinggi',
+                                position: 'top'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock chartjs %}

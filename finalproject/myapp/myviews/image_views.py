@@ -1,3 +1,5 @@
+import json
+import random
 from django.shortcuts import redirect, render
 from django.views import View
 from myapp.menus import menus, set_user_menus
@@ -7,10 +9,13 @@ from django.views.generic import (
     CreateView,
     UpdateView,
     DeleteView,
+    FormView,
 )
 
+from django.core.paginator import Paginator
+
 # models import
-from myapp.models import Image, ImagePreprocessing
+from myapp.models import Image, ImagePreprocessing, Segmentation, SegmentationResult
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db import transaction
@@ -319,7 +324,8 @@ def process_and_save_image_preprocessing(image_obj, image_array, parameters):
                 )
 
         # set black area is the background, inverse of the image and background is the biggest area
-        ground_truth = cv2.bitwise_not(ground_truth)
+        if np.sum(ground_truth) < np.sum(255 - ground_truth):
+            ground_truth = 255 - ground_truth
 
         # Save the processed image
         ground_truth = PILImage.fromarray(ground_truth)
@@ -375,8 +381,22 @@ class ImageUploadView(CreateView):
             ]
         ]
 
-        process_and_save_image_preprocessing(image_obj, image_array, parameters)
+        total_combinations = len(parameters)
+        target_count = 50
+        step = total_combinations // target_count
 
+        selected_parameters = []
+
+        for i in range(0, total_combinations, step):
+            selected_parameters.append(parameters[i])
+
+        random.shuffle(selected_parameters)
+
+        print("selected_parameters", selected_parameters)
+
+        process_and_save_image_preprocessing(
+            image_obj, image_array, selected_parameters
+        )
         return redirect("myapp:image_list")
 
     # update context
@@ -407,7 +427,7 @@ class ImageSummaryView(ListView):
     template_name = "myapp/image/image_summary.html"
     context_object_name = "images"
     ordering = ["-created_at"]
-    paginate_by = 8
+    paginate_by = 10
 
     # update context
     def get_context_data(self, *args, **kwargs):
@@ -451,7 +471,7 @@ class ImageListView(ListView):
     template_name = "myapp/image/image_list.html"
     context_object_name = "images"
     ordering = ["-created_at"]
-    paginate_by = 8
+    paginate_by = 10
 
     # update context
     def get_context_data(self, *args, **kwargs):
@@ -493,7 +513,7 @@ class ImageUploaderView(ListView):
     template_name = "myapp/image/image_by_uploader.html"
     context_object_name = "images"
     ordering = ["-created_at"]
-    paginate_by = 8
+    paginate_by = 10
 
     # get queryset
     def get_queryset(self):
@@ -552,6 +572,67 @@ class ImageDetailView(DetailView):
     model = Image
     template_name = "myapp/image/image_detail.html"
     context_object_name = "image"
+    paginate_by = 10  # Menampilkan 10 gambar per halaman
+
+    def get_segmentation_data(self, segmentation_type):
+        image_preprocessing = ImagePreprocessing.objects.filter(image=self.object)
+        if segmentation_type == "all":
+            segmentation = Segmentation.objects.filter(
+                image_preprocessing__in=image_preprocessing,
+            )
+        else:
+            segmentation = Segmentation.objects.filter(
+                image_preprocessing__in=image_preprocessing,
+                segmentation_type=segmentation_type,
+            )
+
+        segmentation = segmentation.order_by(
+            "-f1_score",
+            "-rand_score",
+            "-jaccard_score",
+            "-mse",
+            "-psnr",
+            "-mae",
+            "-rmse",
+        )
+        # Urutkan dari terendah ke tertinggi
+        segmentation = sorted(
+            segmentation,
+            key=lambda x: (
+                x.f1_score,
+                x.rand_score,
+                x.jaccard_score,
+                x.mse,
+                x.psnr,
+                x.mae,
+                x.rmse,
+            ),
+        )
+
+        labels = [seg.segmentation_type for seg in segmentation]
+        f1_score = [seg.f1_score for seg in segmentation]
+        rand_score = [seg.rand_score for seg in segmentation]
+        jaccard_score = [seg.jaccard_score for seg in segmentation]
+        mse = [seg.mse for seg in segmentation]
+        psnr = [seg.psnr for seg in segmentation]
+        mae = [seg.mae for seg in segmentation]
+        rmse = [seg.rmse for seg in segmentation]
+
+        # get 1st segmentation data as best
+        data_length = len(labels)
+        best = segmentation[data_length - 1]
+
+        return {
+            "labels": json.dumps(list(labels)),
+            "data_f1_score": json.dumps(list(f1_score)),
+            "data_rand_score": json.dumps(list(rand_score)),
+            "data_jaccard_score": json.dumps(list(jaccard_score)),
+            "data_mse": json.dumps(list(mse)),
+            "data_psnr": json.dumps(list(psnr)),
+            "data_mae": json.dumps(list(mae)),
+            "data_rmse": json.dumps(list(rmse)),
+            "best": best,
+        }
 
     # update context
     def get_context_data(self, **kwargs):
@@ -570,6 +651,53 @@ class ImageDetailView(DetailView):
         context["images"] = Image.objects.filter(
             uploader_id=self.object.uploader_id
         ).order_by("-created_at")[:5]
+
+        # Get all images by image id
+        image_list = ImagePreprocessing.objects.filter(image=self.object)
+        # get segmentation by imagepreprocessing id and add related imagepreprocessing to image_list
+        seg_type = self.request.GET.get("segmentation")
+        print(seg_type)
+        if seg_type is None or seg_type == "all":
+            segmentation = (
+                Segmentation.objects.filter(image_preprocessing__in=image_list)
+                .prefetch_related("image_preprocessing")
+                .order_by("-created_at")
+            )
+        else:
+            segmentation = (
+                Segmentation.objects.filter(
+                    image_preprocessing__in=image_list,
+                    segmentation_type=seg_type,
+                )
+                .prefetch_related("image_preprocessing")
+                .order_by("-created_at")
+            )
+
+        # Create paginator object
+        paginator = Paginator(segmentation, self.paginate_by)
+
+        # Get the current page number from the request's GET parameters
+        page_number = self.request.GET.get("page")
+
+        # Get the page object for the current page number
+        page_obj = paginator.get_page(page_number)
+
+        # Add the paginated images to the context and add image_list and paginator
+        # to the context as well
+        context["image_list"] = page_obj.object_list
+        context["page_obj"] = page_obj
+        # if page_obj is_paginated
+        context["is_paginated"] = page_obj.has_other_pages()
+
+        chartjs_data = {}
+
+        if seg_type is None or seg_type == "all":
+            chartjs_data = self.get_segmentation_data("all")
+            # get 1st segmentation chartjs data
+        else:
+            chartjs_data = self.get_segmentation_data(seg_type)
+
+        context["chartjs"] = chartjs_data
 
         return context
 
