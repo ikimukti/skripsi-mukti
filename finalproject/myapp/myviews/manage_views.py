@@ -1,100 +1,59 @@
 from django.shortcuts import redirect, render
 from django.views import View
 from myapp.menus import menus, set_user_menus
+from django.views.generic import ListView
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+
+base_context = {
+    "content": "Welcome to WeeAI!",
+    "contributor": "WeeAI Team",
+    "app_css": "myapp/css/styles.css",
+    "app_js": "myapp/js/scripts.js",
+    "menus": menus,
+    "logo": "myapp/images/Logo.png",
+}
 
 
-class ManageBaseView(View):
-    base_context = {
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
-        "app_css": "myapp/css/styles.css",
-        "app_js": "myapp/js/scripts.js",
-        "menus": menus,
-        "logo": "myapp/images/Logo.png",
+class ManageClassView(View):
+    template_name = "myapp/manage/manage.html"
+    context = {
+        "title": "Manage",
+        **base_context,
     }
 
     def get(self, request):
-        return render(request, self.template_name, self.context)
+        if not request.user.is_authenticated:
+            return redirect("myapp:signin")
+        else:
+            set_user_menus(request, self.context)
+            return render(request, self.template_name, self.context)
 
     def post(self, request):
         return render(request, self.template_name, self.context)
 
 
-class ManageClassView(ManageBaseView):
-    template_name = "myapp/manage/manage.html"
-    context = {
-        "title": "Manage",
-        **ManageBaseView.base_context,
-    }
-
-    # override get method
-    def get(self, request):
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return super().get(request)
-
-
-class ManageUsersClassView(ManageBaseView):
+class ManageUsersClassView(ListView):
     template_name = "myapp/manage/manage_users.html"
-    context = {
+    context_object_name = "users"
+    paginate_by = 10
+    extra_context = {
         "title": "Manage Users",
-        **ManageBaseView.base_context,
+        "menus": menus,
+        "logo": "myapp/images/Logo.png",
+        "content": "Welcome to WeeAI!",
+        "contributor": "WeeAI Team",
+        "app_css": "myapp/css/styles.css",
+        "app_js": "myapp/js/scripts.js",
     }
 
-    # override get method
-    def get(self, request):
+    def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect("myapp:signin")
         else:
-            set_user_menus(request, self.context)
-            return super().get(request)
+            set_user_menus(request, self.extra_context)
+            return super().dispatch(request, *args, **kwargs)
 
-
-class ManagePermissionsClassView(ManageBaseView):
-    template_name = "myapp/manage/manage_permissions.html"
-    context = {
-        "title": "Manage Permissions",
-        **ManageBaseView.base_context,
-    }
-
-    # override get method
-    def get(self, request):
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return super().get(request)
-
-
-class ManageRoleClassView(ManageBaseView):
-    template_name = "myapp/manage/manage_role.html"
-    context = {
-        "title": "Manage Settings",
-        **ManageBaseView.base_context,
-    }
-
-    # override get method
-    def get(self, request):
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return super().get(request)
-
-
-class ManageGroupClassView(ManageBaseView):
-    template_name = "myapp/manage/manage_group.html"
-    context = {
-        "title": "Manage Group",
-        **ManageBaseView.base_context,
-    }
-
-    # override get method
-    def get(self, request):
-        if not request.user.is_authenticated:
-            return redirect("myapp:signin")
-        else:
-            set_user_menus(request, self.context)
-            return super().get(request)
+    def get_queryset(self):
+        queryset = User.objects.all()
+        return queryset

@@ -1,6 +1,6 @@
 {% extends "myapp/core_base2.html" %}
 {% load static %}
-
+{% load humanize %}
 {% block content %}
 <!-- content overflow -->
 <div class="flex flex-col w-5/6 fixed right-0 top-14 h-[calc(100vh-3.5rem)] px-4 py-4 overflow-y-auto overflow-hidden" id="content">
@@ -10,20 +10,23 @@
                 <h1 class="text-2xl font-bold text-gray-700">{{ title }}</h1>
             </div>
             <div class="flex flex-row space-x-2">
+                <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700 space-x-2" onclick="window.history.back();">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
                 <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700">
                     <i class="fas fa-ellipsis-v"></i>
                 </button>
             </div>
         </div>
         <hr class="border-gray-200 mb-2">
-        <div class="flex flex-col space-y-2">
-        <!-- content Profile -->
+        <div class="flex flex-col space-y-2">  
             <div class="flex flex-col space-y-2">
                 <div class="flex flex-row justify-between items-center">
                     <div class="flex flex-row space-x-2">
                         <div class="flex flex-col space-y-1">
-                            <h1 class="text-lg font-bold text-gray-700">Profile {{ account.first_name|title }} {{ account.last_name|title }}</h1>
-                            <p class="text-sm text-gray-500">Some info may be visible to other people</p>
+                            <h1 class="text-lg font-bold text-gray-700">Add New User Personal Information</h1>
+                            <p class="text-sm text-gray-500">Set up your personal information, and apply to join the community.</p>
                         </div>
                     </div>
                 </div>
@@ -51,7 +54,8 @@
                         <label class="text-sm font-semibold text-gray-700">Photo</label>
                         <div class="flex flex-row space-x-2">
                             <div class="flex flex-col space-y-1">
-                                <img src="{{ account.userprofile.profile_pic.url }}" class="w-20 h-20 rounded-full object-cover" alt="profile">
+                                <!-- image profile default if not change /static/iamges'/profile_pics/default.jpg -->
+                                <img src="{% if form.profile_pic.value %}{{ form.profile_pic.url.value }}{% else %}{% static 'images/profile_pics/default.jpg' %}{% endif %}" class="w-20 h-20 rounded-full object-cover" alt="profile">
                             </div>
                         </div>
                         <div class="flex flex-row space-x-2">
@@ -77,7 +81,7 @@
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
                             hover:file:bg-blue-100
-                            " placeholder="Choose a username" value="{{ account.username }}" name="username"/>
+                            " placeholder="Choose a username" value="{{ form.username.value }}" name="username"/>
                         </div>
                         <!-- email -->
                         <div class="flex flex-col space-y-1">
@@ -88,7 +92,7 @@
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
                             hover:file:bg-blue-100
-                            " placeholder="Your email address"  value="{{ account.email }}" name="email"/>
+                            " placeholder="Your email address"  value="{{ form.email.value }}" name="email"/>
                         </div>
                         <!-- first name and last name -->
                         <div class="flex flex-row space-x-2">
@@ -100,7 +104,7 @@
                                 file:text-sm file:font-semibold
                                 file:bg-blue-50 file:text-blue-700
                                 hover:file:bg-blue-100
-                                " placeholder="Your first name" value="{{ account.first_name }}" name="first_name"/>
+                                " placeholder="Your first name" value="{{ form.first_name.value }}" name="first_name"/>
                             </div>
                             <div class="flex flex-col space-y-1 w-1/2">
                                 <label class="text-sm font-semibold text-gray-700">Last name <span class="text-red-500">*</span></label>
@@ -110,7 +114,7 @@
                                 file:text-sm file:font-semibold
                                 file:bg-blue-50 file:text-blue-700
                                 hover:file:bg-blue-100
-                                " placeholder="Your last name" value="{{ account.last_name }}" name="last_name"/>
+                                " placeholder="Your last name" value="{{ form.last_name.value }}" name="last_name"/>
                             </div>
                         </div>
                         <h2 class="text-lg font-bold text-gray-700">Personal information</h2>
@@ -123,7 +127,7 @@
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
                             hover:file:bg-blue-100
-                            " placeholder="Your phone number" value="{{ account.userprofile.phone_number }} " name="phone_number"/>
+                            " placeholder="Your phone number" value="{{ form.userprofile.phone_number.value }} " name="phone_number"/>
                         </div>
                         <!-- address -->
                         <div class="flex flex-col space-y-1">
@@ -134,7 +138,7 @@
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
                             hover:file:bg-blue-100
-                            " placeholder="Your address" name="address">{{ account.userprofile.address }}</textarea>
+                            " placeholder="Your address" name="address">{{ form.userprofile.address.value }}</textarea>
                         </div>
                         <!-- Date of birth -->
                         <div class="flex flex-col space-y-1">
@@ -145,7 +149,7 @@
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
                             hover:file:bg-blue-100
-                            " placeholder="Your date of birth" value="{{ account.userprofile.date_of_birth|date:'Y-m-d' }}"  name="date_of_birth"/>
+                            " placeholder="Your date of birth" value="{{ form.userprofile.date_of_birth.value|date:'Y-m-d' }}"  name="date_of_birth"/>
                         </div>
                         <!-- Bio -->
                         <div class="flex flex-col space-y-1">
@@ -156,7 +160,7 @@
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
                             hover:file:bg-blue-100
-                            " placeholder="Your bio" rows="5" name="bio">{{ account.userprofile.bio }}</textarea>
+                            " placeholder="Your bio" rows="5" name="bio">{{ form.userprofile.bio.value }}</textarea>
                         <div class="flex flex-row-reverse pt-4">
                             <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
                                 <i class="fas fa-save"></i>
@@ -165,7 +169,7 @@
                         </div>
                     </div>
                 </form>
-            </div>    
+            </div>
         </div>
     </div>
 </div>

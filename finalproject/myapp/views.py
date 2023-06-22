@@ -1,9 +1,15 @@
 from myapp.myviews.manage_views import (
     ManageClassView,
     ManageUsersClassView,
-    ManageRoleClassView,
-    ManagePermissionsClassView,
-    ManageGroupClassView,
+)
+
+from myapp.myviews.manage_user_views import (
+    ManageUserAddClassView,
+    ManageUserDeleteClassView,
+    ManageUserDetailClassView,
+    ManageUserEditClassView,
+    ManageUserResetPasswordClassView,
+    ManageUserGroupEditClassView,
 )
 
 from myapp.myviews.report_views import (

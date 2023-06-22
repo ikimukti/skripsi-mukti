@@ -4,10 +4,45 @@ from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 
 # models User
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
+
+# models UserProfile
+from myapp.models import UserProfile
+
+
+class ManageUserGroupEditForm(forms.ModelForm):
+    groups = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
+    class Meta:
+        model = User
+        fields = []
+
+
+class UserResetPasswordForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "email",
+        ]
+
+        labels = {
+            "username": "Username",
+            "email": "Email",
+        }
 
 
 class UserForm(forms.ModelForm):
+    bio = forms.CharField(label="Bio", required=False)
+    phone_number = forms.CharField(label="Phone Number", required=False)
+    address = forms.CharField(label="Address", required=False)
+    date_of_birth = forms.DateField(label="Date of Birth", required=False)
+    profile_pic = forms.ImageField(label="Profile Picture", required=False)
+
     class Meta:
         model = User
         fields = [
@@ -15,7 +50,6 @@ class UserForm(forms.ModelForm):
             "first_name",
             "last_name",
             "email",
-            "password",
         ]
 
         labels = {
@@ -23,8 +57,29 @@ class UserForm(forms.ModelForm):
             "first_name": "First Name",
             "last_name": "Last Name",
             "email": "Email",
-            "password": "Password",
         }
+
+
+class UserChangePasswordForm(forms.ModelForm):
+    old_password = forms.CharField(
+        label="Old Password", widget=forms.PasswordInput(), required=True
+    )
+    new_password = forms.CharField(
+        label="New Password", widget=forms.PasswordInput(), required=True
+    )
+    confirm_password = forms.CharField(
+        label="Confirm New Password", widget=forms.PasswordInput(), required=True
+    )
+
+    class Meta:
+        model = User
+        fields = []
+
+    def clean(self):
+        cleaned_data = super().clean()
+        old_password = cleaned_data.get("old_password")
+        cleaned_data["password"] = old_password
+        return cleaned_data
 
 
 class VisibleMultipleHiddenInput(forms.widgets.HiddenInput):

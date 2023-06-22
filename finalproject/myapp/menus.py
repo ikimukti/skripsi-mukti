@@ -65,22 +65,10 @@ it_admin_menus = [
         ],
     ),
     create_menu(
-        "Manage",
-        "/manage/",
-        "fas fa-cogs",
-        dropdown=True,
-        id="manage",
-        submenus=[
-            create_menu("User", "/manage/user/", "fas fa-user", id="manage_user"),
-            create_menu("Role", "/manage/role/", "fas fa-user-tag", id="manage_role"),
-            create_menu(
-                "Permission",
-                "/manage/permission/",
-                "fas fa-user-lock",
-                id="manage_permission",
-            ),
-            create_menu("Group", "/manage/group/", "fas fa-users", id="manage_group"),
-        ],
+        "Manage User",
+        "/manage/user/",
+        "fa-solid fa-users-between-lines",
+        id="manage_user",
     ),
     create_menu(
         "Images",

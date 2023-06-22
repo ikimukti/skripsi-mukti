@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 21, 2023 at 03:02 AM
+-- Generation Time: Jun 23, 2023 at 12:52 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -207,12 +207,17 @@ CREATE TABLE `auth_user` (
 --
 
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
-(1, 'pbkdf2_sha256$600000$4QRJGG1kIZudwe1OIihPJu$bFClQtuTtWZsgOzhXGeYbXOuDSlty37N2PGo3r3fyM0=', '2023-06-20 19:28:49.289210', 1, 'admin', 'Firmansyah Mukti', 'Wijaya', 'mukti@ikimukti.com', 1, 1, '2023-06-03 15:17:53.000000'),
-(2, 'pbkdf2_sha256$600000$rQK8tSWClGRBPPjBZtbvwq$2UoFvxMgtes5b0Pl2e9YyBTPg7DbFUZa7/I8vRFNBV0=', '2023-06-19 16:15:54.958783', 0, 'mukti', 'Firmansyah Mukti', 'Wijaya', 'iki.mukti@gmail.com', 1, 1, '2023-06-06 15:04:34.000000'),
+(1, 'pbkdf2_sha256$600000$FDMoMl2valNySX4FDODnk5$22DLSma3Ll9CDhhgkbgL469pGZpCH3XLLlyV36CR5N0=', '2023-06-22 22:48:59.122152', 1, 'admin', 'Firmansyah Mukti', 'Wijaya', 'mukti@ikimukti.com', 1, 1, '2023-06-03 15:17:53.000000'),
+(2, 'pbkdf2_sha256$600000$hE4OfuOscXppsTO3nBQHgi$9J1wNOXPvlItdwZUxd3aTLfEjxmd+oYOS9SI3MK8bfs=', '2023-06-22 18:05:14.065034', 1, 'mukti', 'Firmansyah Mukti', 'Wijaya', 'iki.mukti@gmail.com', 1, 1, '2023-06-06 15:04:34.000000'),
 (3, 'pbkdf2_sha256$600000$AlyZgCGc0aIYFATNes8ht1$BuQ84dnS9rjJY6/Z/a2Cpheq3x2FOPmhHTqWSlqZkJM=', '2023-06-08 16:19:41.000000', 0, 'adminapp', 'Admin App', 'Mukti', 'adminapp@ikimukti.com', 1, 1, '2023-06-08 16:18:38.000000'),
-(4, 'pbkdf2_sha256$600000$kS5qXWMRmZhIVA3jRCoX6t$yE+R/7JChFlozmItCEhgZVaajFPe/u4qAFlWD5YKNVY=', '2023-06-08 18:49:34.287779', 0, 'user1', 'User', 'Satu', 'user1@ikimukti.com', 0, 1, '2023-06-08 16:18:48.000000'),
+(4, 'pbkdf2_sha256$600000$kS5qXWMRmZhIVA3jRCoX6t$yE+R/7JChFlozmItCEhgZVaajFPe/u4qAFlWD5YKNVY=', '2023-06-08 18:49:34.287779', 0, 'user11', 'User', 'Satu', 'user1@ikimukti.com', 0, 1, '2023-06-08 16:18:48.000000'),
 (5, 'pbkdf2_sha256$600000$G3bAZYksDXNKcNdArTCSoP$pzOITB2jdE8Q9rJCMB2XXOUs6kjEU8Zksb/nbd3ABJY=', NULL, 0, 'staff', 'Staff', 'Mukti', 'staff@ikimukti.com', 1, 1, '2023-06-08 16:19:00.000000'),
-(6, 'pbkdf2_sha256$600000$VD6F3MaEIoo9VUqiegQ5jF$Ago42b0ZCd3r0tR9MhXs+Lw5Zr7iclhUJECVlUHTyzg=', NULL, 0, 'user2', 'User', 'Dua', 'user2@ikimukti.com', 0, 1, '2023-06-08 16:35:55.000000');
+(6, 'pbkdf2_sha256$600000$VD6F3MaEIoo9VUqiegQ5jF$Ago42b0ZCd3r0tR9MhXs+Lw5Zr7iclhUJECVlUHTyzg=', NULL, 0, 'user2', 'User', 'Dua', 'user2@ikimukti.com', 0, 1, '2023-06-08 16:35:55.000000'),
+(8, 'pbkdf2_sha256$600000$2FP8vkgdiexa8xbg5x1twh$+ri/oFsPy7PjkVkIXFG4SdS2WaZ2rjT/yA5jTy+kOOE=', NULL, 0, 'arip', 'Arip', 'Dwi', 'arip@ikimukti.com', 0, 1, '2023-06-22 20:40:23.203505'),
+(10, 'pbkdf2_sha256$600000$xSIPpGc4VXYwinC2ADKb9g$mfkd0yB+FmJepFpkjx859TdWuATJ415wllZhFEtbAJ8=', NULL, 0, 'malik', '', '', '', 0, 1, '2023-06-22 21:09:19.000000'),
+(11, 'pbkdf2_sha256$600000$31PYWhz0ZM7Ead4nrwF6Vo$1XtZoVHcbFQxSq6p6bUa/tDj2uoVH+h4ebtYhCBIfZo=', NULL, 0, 'sakur', '', '', '', 0, 1, '2023-06-22 21:09:37.151381'),
+(12, 'pbkdf2_sha256$600000$mjJwTXzstLwvzfLRO4GanU$8H6RkMzG2LSrbaqcDL6qgLQCkgu2JqhmjSetmMttXeo=', NULL, 0, 'irawan', '', '', '', 0, 1, '2023-06-22 21:09:49.833205'),
+(15, 'pbkdf2_sha256$600000$oOueutiUrkZjslJEXeBDBW$V/WiJwfHJAvIz1TCASlTQ9u/vaEPpAx5zTvagZlmpsg=', NULL, 0, 'Paijan', 'None', 'None', 'paijan@mail.com', 0, 1, '2023-06-22 22:23:00.714186');
 
 -- --------------------------------------------------------
 
@@ -236,7 +241,8 @@ INSERT INTO `auth_user_groups` (`id`, `user_id`, `group_id`) VALUES
 (2, 3, 1),
 (5, 4, 3),
 (4, 5, 2),
-(6, 6, 2);
+(6, 6, 2),
+(13, 12, 3);
 
 -- --------------------------------------------------------
 
@@ -1604,7 +1610,15 @@ INSERT INTO `django_admin_log` (`id`, `action_time`, `object_id`, `object_repr`,
 (1328, '2023-06-20 20:22:07.250826', '62', '62. static/images/uploads/be09bb0be20b9c5938d9e597d5893464d7623367130a0df851e97f11fdb756c6.jpg', 3, '', 7, 1),
 (1329, '2023-06-20 20:22:07.251826', '61', '61. static/images/uploads/7ce86e777d0668043ccd929b95dfaba850a74960d94def2325fca66976d976d8.jpg', 3, '', 7, 1),
 (1330, '2023-06-20 20:22:07.252827', '60', '60. static/images/uploads/71fa2d94cae05a4b406695c59c703529559fcdfeef8299acd7e4dcd994471659.jpg', 3, '', 7, 1),
-(1331, '2023-06-21 00:58:30.409145', '94', '94. mukti', 3, '', 7, 1);
+(1331, '2023-06-21 00:58:30.409145', '94', '94. mukti', 3, '', 7, 1),
+(1332, '2023-06-22 14:13:29.015877', '1', 'admin', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 4, 2),
+(1333, '2023-06-22 14:37:05.327002', '1', 'admin', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 4, 2),
+(1334, '2023-06-22 21:09:19.631996', '10', 'malik', 1, '[{\"added\": {}}]', 4, 1),
+(1335, '2023-06-22 21:09:23.317891', '10', 'malik', 2, '[]', 4, 1),
+(1336, '2023-06-22 21:09:37.402847', '11', 'sakur', 1, '[{\"added\": {}}]', 4, 1),
+(1337, '2023-06-22 21:09:50.083369', '12', 'irawan', 1, '[{\"added\": {}}]', 4, 1),
+(1338, '2023-06-22 21:10:06.060616', '13', 'pralam', 1, '[{\"added\": {}}]', 4, 1),
+(1339, '2023-06-22 21:10:15.696810', '14', 'pragos', 1, '[{\"added\": {}}]', 4, 1);
 
 -- --------------------------------------------------------
 
@@ -1704,11 +1718,14 @@ CREATE TABLE `django_session` (
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
 ('1pti3ybgjnnxq0xqudnf4ksaq6aoknrb', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q9loX:ijw7mfmDtvwntfj62ycJtx_255dQA7wspMFuv15mB0Q', '2023-06-29 12:10:57.757678'),
+('24m6uf7viv01lqoxud97bjmjc9xhd1zf', '.eJxVjDsOwyAQBe9CHSF2wWBSpvcZEMsnOIlAMnYV5e4RkoukfTPz3sz5Yy_u6Glza2RXBuzyu5EPz1QHiA9f742HVvdtJT4UftLOlxbT63a6fwfF9zJqG2aYpAGUGoWeCRC8ApmRxKRMFgJBBNLoTc6K0AYAEJYIDESlkH2-pIE2Tw:1qCT6p:4AwhdVRX8fcR3ZGi3bAY7QsRWNQMR0qD_PlrqAZ5H_U', '2023-07-06 22:48:59.124625'),
 ('34lm3w8iwafn5y867ym5cj0ia6ulg8o0', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q8Dkh:N3I8gNZF9mVtuh02LINL2IaeUSVtg0FeHmCjfpVWoho', '2023-06-25 05:36:35.757368'),
 ('3fc392xjz17mqvoie6vacegn9f6yagcl', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q9smu:lQfOpH5dgZ317nIfBgS8m0bryP-Gamy0KcYsx-xek04', '2023-06-29 19:37:44.121206'),
 ('3jfsmeelmosu7qvh7b3656ody74zjr6m', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q7b8T:V-jVZCRIa8gXyHJYXhB5wVaA8SYbIsnm-SaxtqjmHyg', '2023-06-23 12:22:33.520048'),
+('3piicnpb1bq4g1ng2yzsyz3mlgz37eq3', '.eJxVjDsOwyAQBe9CHSF2wWBSpvcZEMsnOIlAMnYV5e4RkoukfTPz3sz5Yy_u6Glza2RXBuzyu5EPz1QHiA9f742HVvdtJT4UftLOlxbT63a6fwfF9zJqG2aYpAGUGoWeCRC8ApmRxKRMFgJBBNLoTc6K0AYAEJYIDESlkH2-pIE2Tw:1qCQWp:3ZTZkPGdrnUyCOQNUsLxVafkYVAp9122wMSY9TcCjnY', '2023-07-06 20:03:39.236707'),
 ('3rwmdp09vxi1z9qscmvmodmkdt3fufvy', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q9OFO:m_wfankW72P5DgyUcAxRyKnbwPXqge2xGeBL7d08r14', '2023-06-28 11:01:06.581789'),
 ('5jt0iw0ey20jhmqhc1nfds819uqf79e1', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q7w09:Lw-2pkOt9yoVmFuBzDHjJDpImTCn2b0OBtk5Xkh34qg', '2023-06-24 10:39:21.116675'),
+('6e1s7pylz6fcwqck1gugz9mwbc8x9ws5', '.eJxVjDsOwyAQBe9CHSF2wWBSpvcZEMsnOIlAMnYV5e4RkoukfTPz3sz5Yy_u6Glza2RXBuzyu5EPz1QHiA9f742HVvdtJT4UftLOlxbT63a6fwfF9zJqG2aYpAGUGoWeCRC8ApmRxKRMFgJBBNLoTc6K0AYAEJYIDESlkH2-pIE2Tw:1qCOii:1Lpke4_sce5NEYvEAshJTdi1_yhG63Yy56XZfZ9QTMs', '2023-07-06 18:07:48.653732'),
 ('6i3gk5jbca3wqt8oywq5gxgehkravpqi', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q7w4I:VbvL7w-oFCvYo9xy29yvsJKHzy37oElah0XCAQmCTIA', '2023-06-24 10:43:38.716906'),
 ('87fcsqcvqac4inrmjoj36z10lsdfszuq', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q9snj:7xykEZFCmHR8OBqJaocPJgUTxIN8ygaQaseoASuFL5E', '2023-06-29 19:38:35.181665'),
 ('8aqig9a7ogdn2epypuycvuvqnbwilxxm', '.eJxVjDsOwjAQBe_iGlnOJv5R0nMGa727IQFkS3FSIe4OkVJA-2bevFTCbZ3S1mRJM6uzAnX63TLSQ8oO-I7lVjXVsi5z1ruiD9r0tbI8L4f7F5iwTXs2CscQcSDpyHddhNwH8WgAXbZCbEYKZDgPDGCdh96a0ZnRh--PvFHvD-2YOAY:1q7JeG:Bhg5gYlcW79MkGRmtZlW-1hRDh1jFx1xM8xzkupvl-I', '2023-06-22 17:42:12.176611'),
@@ -1759,26 +1776,26 @@ CREATE TABLE `myapp_image` (
 --
 
 INSERT INTO `myapp_image` (`id`, `image`, `slug`, `created_at`, `updated_at`, `width`, `height`, `size`, `channel`, `format`, `dpi`, `distance`, `uploader_id`, `segmented`, `color`) VALUES
-(64, 'static/images/uploads/01ede6021251053cf1212868c6fd0a033fb6255915738a5fa7d90c46af2d22e8.jpg', '01ede6021251053cf1212868c6fd0a033fb6255915738a5fa7d90c46af2d22e8jpg', '2023-06-20 20:24:10.239281', '2023-06-20 20:24:10.239281', 500, 500, 341572, '3', 'jpg', 500, 15, 1, 0, 'mud-brown'),
-(65, 'static/images/uploads/1eed0524dea517d9c091c68945eb434b2ab00cff0c04ea29e78b10e8edc357f2.jpg', '1eed0524dea517d9c091c68945eb434b2ab00cff0c04ea29e78b10e8edc357f2jpg', '2023-06-20 20:24:22.163380', '2023-06-20 20:24:22.163380', 500, 500, 345548, '3', 'jpg', 500, 15, 1, 0, 'mud-brown'),
-(66, 'static/images/uploads/58ab54ebe4376e86b81a8a3c6c957c82b121716ffeab4f65ba6dabc33a2a22cc.jpg', '58ab54ebe4376e86b81a8a3c6c957c82b121716ffeab4f65ba6dabc33a2a22ccjpg', '2023-06-20 20:24:34.217129', '2023-06-20 20:24:34.217129', 500, 500, 347936, '3', 'jpg', 500, 15, 1, 0, 'mud-brown'),
-(67, 'static/images/uploads/29f524e531be8c52df502a25763572065ec8373f0317d74f29329af394912ca9.jpg', '29f524e531be8c52df502a25763572065ec8373f0317d74f29329af394912ca9jpg', '2023-06-20 20:24:51.451930', '2023-06-20 20:24:51.451930', 500, 500, 346697, '3', 'jpg', 500, 15, 1, 0, 'mud-brown'),
-(68, 'static/images/uploads/41a4856a7f8e62803001152b26ace6ad4bf8dcc8f93c15ceccf61e4ff08e4298.jpg', '41a4856a7f8e62803001152b26ace6ad4bf8dcc8f93c15ceccf61e4ff08e4298jpg', '2023-06-20 20:26:15.847694', '2023-06-20 20:26:15.847694', 500, 500, 351587, '3', 'jpg', 500, 15, 1, 0, 'mud-brown'),
-(69, 'static/images/uploads/5d3e3bc971340adaa25331c7f4db325202ed020fd67f5b6510e41de507c558b2.jpg', '5d3e3bc971340adaa25331c7f4db325202ed020fd67f5b6510e41de507c558b2jpg', '2023-06-20 20:27:47.336325', '2023-06-20 20:27:47.336325', 500, 500, 186349, '3', 'jpg', 500, 15, 1, 0, 'dark-mud-brown'),
-(70, 'static/images/uploads/d15c618364963c887127e119206638294ebf53ba32787b36e7a46a6fc794eb99.jpg', 'd15c618364963c887127e119206638294ebf53ba32787b36e7a46a6fc794eb99jpg', '2023-06-20 20:28:09.486070', '2023-06-20 20:28:09.486070', 500, 500, 182828, '3', 'jpg', 500, 15, 1, 0, 'dark-mud-brown'),
-(71, 'static/images/uploads/4e948c323d5571efbb9d7bf856eec4a8d251243233d15f7b7c7f9178dc9da0e8.jpg', '4e948c323d5571efbb9d7bf856eec4a8d251243233d15f7b7c7f9178dc9da0e8jpg', '2023-06-20 20:28:28.464868', '2023-06-20 20:28:28.464868', 500, 500, 169737, '3', 'jpg', 500, 15, 1, 0, 'dark-mud-brown'),
-(72, 'static/images/uploads/cad96caccfdcfb48d744d70e6e99a04f709239cfeae9e098654f31c4b1b24331.jpg', 'cad96caccfdcfb48d744d70e6e99a04f709239cfeae9e098654f31c4b1b24331jpg', '2023-06-20 20:28:39.140593', '2023-06-20 20:28:39.140593', 500, 500, 187988, '3', 'jpg', 500, 15, 1, 0, 'dark-mud-brown'),
-(73, 'static/images/uploads/8323c4c5cedfab1adc5341b6a69c194113e969f14c5361812e49b9d2e32edfde.jpg', '8323c4c5cedfab1adc5341b6a69c194113e969f14c5361812e49b9d2e32edfdejpg', '2023-06-20 20:29:06.795432', '2023-06-20 20:29:06.795432', 500, 500, 187667, '3', 'jpg', 500, 15, 1, 0, 'dark-mud-brown'),
-(74, 'static/images/uploads/71fa2d94cae05a4b406695c59c703529559fcdfeef8299acd7e4dcd994471659.jpg', '71fa2d94cae05a4b406695c59c703529559fcdfeef8299acd7e4dcd994471659jpg', '2023-06-20 20:29:50.114390', '2023-06-20 20:29:50.114390', 500, 500, 140974, '3', 'jpg', 500, 15, 1, 0, 'white'),
-(75, 'static/images/uploads/be09bb0be20b9c5938d9e597d5893464d7623367130a0df851e97f11fdb756c6.jpg', 'be09bb0be20b9c5938d9e597d5893464d7623367130a0df851e97f11fdb756c6jpg', '2023-06-20 20:29:58.901118', '2023-06-20 20:29:58.901118', 500, 500, 144280, '3', 'jpg', 500, 15, 1, 0, 'white'),
-(76, 'static/images/uploads/50b32b6b9cbfa9136f1d5a54909f5999d76ce155d518df8a91e8177e190cf830.jpg', '50b32b6b9cbfa9136f1d5a54909f5999d76ce155d518df8a91e8177e190cf830jpg', '2023-06-20 20:30:12.755793', '2023-06-20 20:30:12.755793', 500, 500, 148165, '3', 'jpg', 500, 15, 1, 0, 'white'),
-(77, 'static/images/uploads/a825e9689b0c459db913a549d8e29c3a27251d063c0dc5c5e4231743b3dbe22b.jpg', 'a825e9689b0c459db913a549d8e29c3a27251d063c0dc5c5e4231743b3dbe22bjpg', '2023-06-20 20:30:23.610937', '2023-06-20 20:30:23.610937', 500, 500, 151589, '3', 'jpg', 500, 15, 1, 0, 'white'),
-(78, 'static/images/uploads/a6a9aae0729d05a0f248d31066aa5727af159fcb2c7b1c3187b8a4600138db37.jpg', 'a6a9aae0729d05a0f248d31066aa5727af159fcb2c7b1c3187b8a4600138db37jpg', '2023-06-20 20:30:36.207695', '2023-06-20 20:30:36.207695', 500, 500, 144646, '3', 'jpg', 500, 15, 1, 0, 'white'),
-(79, 'static/images/uploads/4c468b3b16999fd9578189576d5f770cb4a16ad9fca0e798a251f00a54a87c5d.jpg', '4c468b3b16999fd9578189576d5f770cb4a16ad9fca0e798a251f00a54a87c5djpg', '2023-06-20 20:31:03.113118', '2023-06-20 20:31:03.113118', 500, 500, 141683, '3', 'jpg', 500, 15, 1, 0, 'dark-white'),
-(80, 'static/images/uploads/88a5d4f503b26504ed25f8cf38a0b97ddfd234c4f024896a96a3fa363de0660b.jpg', '88a5d4f503b26504ed25f8cf38a0b97ddfd234c4f024896a96a3fa363de0660bjpg', '2023-06-20 20:31:13.765524', '2023-06-20 20:31:13.765524', 500, 500, 143366, '3', 'jpg', 500, 15, 1, 0, 'dark-white'),
-(81, 'static/images/uploads/da877ea96a7e8f7c9bced14ac791f424af4b0b4eab101ef636545c20e9eed116.jpg', 'da877ea96a7e8f7c9bced14ac791f424af4b0b4eab101ef636545c20e9eed116jpg', '2023-06-20 20:31:25.259526', '2023-06-20 20:31:25.259526', 500, 500, 146449, '3', 'jpg', 500, 15, 1, 0, 'dark-white'),
-(82, 'static/images/uploads/acf116f09554c5c3652b89f246234edb358ce68a27c0f4e4c0279e9429b50825.jpg', 'acf116f09554c5c3652b89f246234edb358ce68a27c0f4e4c0279e9429b50825jpg', '2023-06-20 20:31:39.304127', '2023-06-20 20:31:39.304127', 500, 500, 153293, '3', 'jpg', 500, 15, 1, 0, 'dark-white'),
-(83, 'static/images/uploads/3fd572d0b363e04fb0441fafa3d63f8d2d7763903f09ba1b59b3229acd3ccf84.jpg', '3fd572d0b363e04fb0441fafa3d63f8d2d7763903f09ba1b59b3229acd3ccf84jpg', '2023-06-20 20:31:51.275363', '2023-06-20 20:31:51.275363', 500, 500, 149013, '3', 'jpg', 500, 15, 1, 0, 'dark-white'),
+(64, 'static/images/uploads/01ede6021251053cf1212868c6fd0a033fb6255915738a5fa7d90c46af2d22e8.jpg', '01ede6021251053cf1212868c6fd0a033fb6255915738a5fa7d90c46af2d22e8jpg', '2023-06-20 20:24:10.239281', '2023-06-20 20:24:10.239281', 500, 500, 341572, '3', 'jpg', 500, 15, 2, 0, 'mud-brown'),
+(65, 'static/images/uploads/1eed0524dea517d9c091c68945eb434b2ab00cff0c04ea29e78b10e8edc357f2.jpg', '1eed0524dea517d9c091c68945eb434b2ab00cff0c04ea29e78b10e8edc357f2jpg', '2023-06-20 20:24:22.163380', '2023-06-20 20:24:22.163380', 500, 500, 345548, '3', 'jpg', 500, 15, 2, 0, 'mud-brown'),
+(66, 'static/images/uploads/58ab54ebe4376e86b81a8a3c6c957c82b121716ffeab4f65ba6dabc33a2a22cc.jpg', '58ab54ebe4376e86b81a8a3c6c957c82b121716ffeab4f65ba6dabc33a2a22ccjpg', '2023-06-20 20:24:34.217129', '2023-06-20 20:24:34.217129', 500, 500, 347936, '3', 'jpg', 500, 15, 2, 0, 'mud-brown'),
+(67, 'static/images/uploads/29f524e531be8c52df502a25763572065ec8373f0317d74f29329af394912ca9.jpg', '29f524e531be8c52df502a25763572065ec8373f0317d74f29329af394912ca9jpg', '2023-06-20 20:24:51.451930', '2023-06-20 20:24:51.451930', 500, 500, 346697, '3', 'jpg', 500, 15, 2, 0, 'mud-brown'),
+(68, 'static/images/uploads/41a4856a7f8e62803001152b26ace6ad4bf8dcc8f93c15ceccf61e4ff08e4298.jpg', '41a4856a7f8e62803001152b26ace6ad4bf8dcc8f93c15ceccf61e4ff08e4298jpg', '2023-06-20 20:26:15.847694', '2023-06-20 20:26:15.847694', 500, 500, 351587, '3', 'jpg', 500, 15, 2, 0, 'mud-brown'),
+(69, 'static/images/uploads/5d3e3bc971340adaa25331c7f4db325202ed020fd67f5b6510e41de507c558b2.jpg', '5d3e3bc971340adaa25331c7f4db325202ed020fd67f5b6510e41de507c558b2jpg', '2023-06-20 20:27:47.336325', '2023-06-20 20:27:47.336325', 500, 500, 186349, '3', 'jpg', 500, 15, 3, 0, 'dark-mud-brown'),
+(70, 'static/images/uploads/d15c618364963c887127e119206638294ebf53ba32787b36e7a46a6fc794eb99.jpg', 'd15c618364963c887127e119206638294ebf53ba32787b36e7a46a6fc794eb99jpg', '2023-06-20 20:28:09.486070', '2023-06-20 20:28:09.486070', 500, 500, 182828, '3', 'jpg', 500, 15, 3, 0, 'dark-mud-brown'),
+(71, 'static/images/uploads/4e948c323d5571efbb9d7bf856eec4a8d251243233d15f7b7c7f9178dc9da0e8.jpg', '4e948c323d5571efbb9d7bf856eec4a8d251243233d15f7b7c7f9178dc9da0e8jpg', '2023-06-20 20:28:28.464868', '2023-06-20 20:28:28.464868', 500, 500, 169737, '3', 'jpg', 500, 15, 3, 0, 'dark-mud-brown'),
+(72, 'static/images/uploads/cad96caccfdcfb48d744d70e6e99a04f709239cfeae9e098654f31c4b1b24331.jpg', 'cad96caccfdcfb48d744d70e6e99a04f709239cfeae9e098654f31c4b1b24331jpg', '2023-06-20 20:28:39.140593', '2023-06-20 20:28:39.140593', 500, 500, 187988, '3', 'jpg', 500, 15, 3, 0, 'dark-mud-brown'),
+(73, 'static/images/uploads/8323c4c5cedfab1adc5341b6a69c194113e969f14c5361812e49b9d2e32edfde.jpg', '8323c4c5cedfab1adc5341b6a69c194113e969f14c5361812e49b9d2e32edfdejpg', '2023-06-20 20:29:06.795432', '2023-06-20 20:29:06.795432', 500, 500, 187667, '3', 'jpg', 500, 15, 3, 0, 'dark-mud-brown'),
+(74, 'static/images/uploads/71fa2d94cae05a4b406695c59c703529559fcdfeef8299acd7e4dcd994471659.jpg', '71fa2d94cae05a4b406695c59c703529559fcdfeef8299acd7e4dcd994471659jpg', '2023-06-20 20:29:50.114390', '2023-06-20 20:29:50.114390', 500, 500, 140974, '3', 'jpg', 500, 15, 4, 0, 'white'),
+(75, 'static/images/uploads/be09bb0be20b9c5938d9e597d5893464d7623367130a0df851e97f11fdb756c6.jpg', 'be09bb0be20b9c5938d9e597d5893464d7623367130a0df851e97f11fdb756c6jpg', '2023-06-20 20:29:58.901118', '2023-06-20 20:29:58.901118', 500, 500, 144280, '3', 'jpg', 500, 15, 4, 0, 'white'),
+(76, 'static/images/uploads/50b32b6b9cbfa9136f1d5a54909f5999d76ce155d518df8a91e8177e190cf830.jpg', '50b32b6b9cbfa9136f1d5a54909f5999d76ce155d518df8a91e8177e190cf830jpg', '2023-06-20 20:30:12.755793', '2023-06-20 20:30:12.755793', 500, 500, 148165, '3', 'jpg', 500, 15, 4, 0, 'white'),
+(77, 'static/images/uploads/a825e9689b0c459db913a549d8e29c3a27251d063c0dc5c5e4231743b3dbe22b.jpg', 'a825e9689b0c459db913a549d8e29c3a27251d063c0dc5c5e4231743b3dbe22bjpg', '2023-06-20 20:30:23.610937', '2023-06-20 20:30:23.610937', 500, 500, 151589, '3', 'jpg', 500, 15, 4, 0, 'white'),
+(78, 'static/images/uploads/a6a9aae0729d05a0f248d31066aa5727af159fcb2c7b1c3187b8a4600138db37.jpg', 'a6a9aae0729d05a0f248d31066aa5727af159fcb2c7b1c3187b8a4600138db37jpg', '2023-06-20 20:30:36.207695', '2023-06-20 20:30:36.207695', 500, 500, 144646, '3', 'jpg', 500, 15, 4, 0, 'white'),
+(79, 'static/images/uploads/4c468b3b16999fd9578189576d5f770cb4a16ad9fca0e798a251f00a54a87c5d.jpg', '4c468b3b16999fd9578189576d5f770cb4a16ad9fca0e798a251f00a54a87c5djpg', '2023-06-20 20:31:03.113118', '2023-06-20 20:31:03.113118', 500, 500, 141683, '3', 'jpg', 500, 15, 6, 0, 'dark-white'),
+(80, 'static/images/uploads/88a5d4f503b26504ed25f8cf38a0b97ddfd234c4f024896a96a3fa363de0660b.jpg', '88a5d4f503b26504ed25f8cf38a0b97ddfd234c4f024896a96a3fa363de0660bjpg', '2023-06-20 20:31:13.765524', '2023-06-20 20:31:13.765524', 500, 500, 143366, '3', 'jpg', 500, 15, 6, 0, 'dark-white'),
+(81, 'static/images/uploads/da877ea96a7e8f7c9bced14ac791f424af4b0b4eab101ef636545c20e9eed116.jpg', 'da877ea96a7e8f7c9bced14ac791f424af4b0b4eab101ef636545c20e9eed116jpg', '2023-06-20 20:31:25.259526', '2023-06-20 20:31:25.259526', 500, 500, 146449, '3', 'jpg', 500, 15, 6, 0, 'dark-white'),
+(82, 'static/images/uploads/acf116f09554c5c3652b89f246234edb358ce68a27c0f4e4c0279e9429b50825.jpg', 'acf116f09554c5c3652b89f246234edb358ce68a27c0f4e4c0279e9429b50825jpg', '2023-06-20 20:31:39.304127', '2023-06-20 20:31:39.304127', 500, 500, 153293, '3', 'jpg', 500, 15, 6, 0, 'dark-white'),
+(83, 'static/images/uploads/3fd572d0b363e04fb0441fafa3d63f8d2d7763903f09ba1b59b3229acd3ccf84.jpg', '3fd572d0b363e04fb0441fafa3d63f8d2d7763903f09ba1b59b3229acd3ccf84jpg', '2023-06-20 20:31:51.275363', '2023-06-20 20:31:51.275363', 500, 500, 149013, '3', 'jpg', 500, 15, 6, 0, 'dark-white'),
 (84, 'static/images/uploads/4f0823a7217285f69002b46a5fbcb4c5494e72a9c5320d5874be6425f661a9b5.jpg', '4f0823a7217285f69002b46a5fbcb4c5494e72a9c5320d5874be6425f661a9b5jpg', '2023-06-20 20:32:23.157110', '2023-06-20 20:32:23.157110', 500, 500, 251312, '3', 'jpg', 500, 10, 1, 0, 'random'),
 (85, 'static/images/uploads/a5e4ac29b581e7d85d67980f8c9b7b8c23d8e74d9dfb6d2db690d9c8493d6412.jpg', 'a5e4ac29b581e7d85d67980f8c9b7b8c23d8e74d9dfb6d2db690d9c8493d6412jpg', '2023-06-20 20:32:39.482583', '2023-06-20 20:32:39.482583', 500, 500, 267243, '3', 'jpg', 500, 13, 1, 0, 'random'),
 (86, 'static/images/uploads/96f4ca505624ad174b94900efd482cf5f0f9e743711a0a9146300a1cc1531cd7.jpg', '96f4ca505624ad174b94900efd482cf5f0f9e743711a0a9146300a1cc1531cd7jpg', '2023-06-20 20:32:56.389218', '2023-06-20 20:32:56.389218', 500, 500, 282009, '3', 'jpg', 500, 8, 1, 0, 'random'),
@@ -18716,12 +18733,14 @@ CREATE TABLE `myapp_userprofile` (
 --
 
 INSERT INTO `myapp_userprofile` (`id`, `profile_pic`, `address`, `phone_number`, `date_of_birth`, `bio`, `user_id`) VALUES
-(1, 'static/images/profile_pics/4bf900cfc3b386181b7f266d2298e2a5.jpg', 'Nglaban', '081216318022', '2023-06-15', 'Nolep', 1),
+(1, 'static/images/profile_pics/53_59f12e50bb2d4505890151c648e7256b.jpg', 'Nglaban', '081216318022', '2023-06-15', 'Nolep Is My Life', 1),
 (2, 'static/images/profile_pics/2911a32b5862304c4f5aeb3eea6e0b5b.png', 'Nglaban', '081216318022', '2023-03-08', 'Nolep', 3),
 (3, 'static/images/profile_pics/25fc00e265aadeb7c8ca19ad6575182f.jpg', 'Nglaban', '081216318022', '2023-06-09', 'Nolep', 2),
 (4, 'static/images/profile_pics/a73b3d77e2fdca58f57e568ddcfab1a5.jpg', 'Nglaban', '081216318022', '2023-06-09', 'Nolep', 5),
-(5, 'static/images/profile_pics/4620f940cbcc9d3229792c54cba45acf.jpg', 'Nglaban', '081216318022', '2023-06-09', 'Nolep', 4),
-(6, 'static/images/profile_pics/4a6acb8ab84a58ca85ef817b02de7067.jpg', 'Nglaban', '081216318022', '2023-06-09', 'Nolep', 6);
+(5, 'static/images/profile_pics/4620f940cbcc9d3229792c54cba45acf.jpg', 'Nglaban Jaya', '081216318022', '2023-06-09', 'Nolep 11', 4),
+(6, 'static/images/profile_pics/4a6acb8ab84a58ca85ef817b02de7067.jpg', 'Nglaban', '081216318022', '2023-06-09', 'Nolep', 6),
+(7, 'static/images/profile_pics/4a6acb8ab84a58ca85ef817b02de7067.jpg', 'Wonojoyo', '03842400234', '2000-03-11', 'Wonojoyo Pride', 8),
+(9, '', 'fsdeds', '0234808', '2000-02-01', '324234', 15);
 
 --
 -- Indexes for dumped tables
@@ -18870,13 +18889,13 @@ ALTER TABLE `auth_permission`
 -- AUTO_INCREMENT for table `auth_user`
 --
 ALTER TABLE `auth_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `auth_user_groups`
 --
 ALTER TABLE `auth_user_groups`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `auth_user_user_permissions`
@@ -18888,7 +18907,7 @@ ALTER TABLE `auth_user_user_permissions`
 -- AUTO_INCREMENT for table `django_admin_log`
 --
 ALTER TABLE `django_admin_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1332;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1340;
 
 --
 -- AUTO_INCREMENT for table `django_content_type`
@@ -18936,7 +18955,7 @@ ALTER TABLE `myapp_segmentationresult_segmentations`
 -- AUTO_INCREMENT for table `myapp_userprofile`
 --
 ALTER TABLE `myapp_userprofile`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables

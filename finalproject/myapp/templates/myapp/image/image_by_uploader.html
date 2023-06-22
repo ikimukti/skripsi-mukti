@@ -112,30 +112,39 @@
                                 </a>
                             </td>
                             <td class="border px-2 py-1 text-xs">{{ image.uploader|capfirst }}</td>
-                            <td class="border px-2 py-1 text-xs">
-                                <!-- image width style 1,000px * 1,000px -->
-                                {{ image.width|intcomma }} x {{ image.height|intcomma }} px |
-                                {{ image.size|filesizeformat }} |
-                                {{ image.channel }} | 
-                                {{ image.dpi }} dpi | 
-                                {{ image.color|capfirst }}
+                            <td class="border px-2 py-1 text-xs space-x-2">
+                                <span class="px-2 py-1 rounded-md bg-blue-200 text-blue-700 text-xs">
+                                     {{ image.width|intcomma }} x {{ image.height|intcomma }} px
+                                </span>
+                                <span class="px-2 py-1 rounded-md bg-orange-200 text-orange-700 text-xs">
+                                     {{ image.size|filesizeformat }}
+                                </span>
+                                <span class="px-2 py-1 rounded-md bg-green-200 text-green-700 text-xs">
+                                     {{ image.channel }} Ch
+                                </span>
+                                <span class="px-2 py-1 rounded-md bg-yellow-200 text-yellow-700 text-xs">
+                                    {{ image.dpi }} dpi
+                                </span>
+                                <span class="px-2 py-1 rounded-md bg-purple-200 text-purple-700 text-xs">
+                                    {{ image.color|capfirst }}
+                                </span>
                             </td>
                             <td class="border px-2 py-1 text-xs">{{ image.created_at|naturaltime }}</td>
                             <td class="border px-2 py-1 text-xs">
                                 <div class="flex flex-row space-x-2">
-                                    <a class="flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:image_update' image.id %}">
+                                    <a class="flex flex-row justify-center items-center bg-blue-500 hover:bg-blue-600 rounded-md px-2 py-1 text-white" href="{% url 'myapp:image_update' image.id %}">
                                         <i class="fas fa-edit"></i>
                                         <span class="ml-2">Edit</span>
                                     </a>
-                                    <a class="flex flex-row justify-center items-center bg-red-200 hover:bg-red-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:image_delete' image.id %}">
+                                    <a class="flex flex-row justify-center items-center bg-red-500 hover:bg-red-600 rounded-md px-2 py-1 text-white" href="{% url 'myapp:image_delete' image.id %}">
                                         <i class="fas fa-trash"></i>
                                         <span class="ml-2">Delete</span>
                                     </a>
-                                    <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700" href="{{ image.image.url }}" download>
+                                    <a class="flex flex-row justify-center items-center bg-green-500 hover:bg-green-600 rounded-md px-2 py-1 text-white" href="{{ image.image.url }}" download>
                                         <i class="fas fa-download"></i>
                                         <span class="ml-2">Download</span>
                                     </a>
-                                    <a class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:image_detail' image.id %}">
+                                    <a class="flex flex-row justify-center items-center bg-gray-500 hover:bg-gray-600 rounded-md px-2 py-1 text-white" href="{% url 'myapp:image_detail' image.id %}">
                                         <i class="fas fa-eye"></i>
                                         <span class="ml-2">Detail</span>
                                     </a>

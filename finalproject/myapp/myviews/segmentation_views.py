@@ -1,3 +1,4 @@
+import json
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -247,40 +248,121 @@ class SegmentationSummaryClassView(ListView):
         )
         # Count Image by uploader
         uploaders_count = Image.objects.filter(uploader__isnull=False)
-        print(uploaders_count)
         # Prepare uploaders data as a list of dictionaries
         uploaders = []
         for name, count in zip(uploaders_name, uploaders_count):
             uploaders.append({"name": name, "count": count})
-        print(uploaders)
         # Get categories color name
         colors = queryset.values_list("color", flat=True).distinct()
 
-        # Chart data for User Uploaders
-        image_preprocessing = ImagePreprocessing.objects.filter(
-            image__in=queryset,
-        )
-        segmentation = (
-            Segmentation.objects.filter(
-                image_preprocessing__in=image_preprocessing,
-            )
-            .prefetch_related("image_preprocessing")
-            .prefetch_related("image_preprocessing__image")
-        )
-        # Get data user uploaders
-        uploaders_name = segmentation.values_list(
-            "image_preprocessing__image__uploader__username",
-            flat=True,
+        # Mengambil data Image yang memiliki ImagePreprocessing dan minimal satu Segmentation
+        images_segmented = Image.objects.filter(
+            imagepreprocessing__isnull=False,
+            imagepreprocessing__segmentations__isnull=False,
         ).distinct()
-        # Count data user uploaders
-        uploaders_count = segmentation.values_list(
-            "image_preprocessing__image__uploader__username",
-        ).annotate(count=Count("image_preprocessing__image__uploader__username"))
-        print(uploaders_count)
+
+        # Menginisialisasi dictionary untuk menyimpan jumlah data berdasarkan pengguna
+        data_count = {}
+
+        # Menghitung jumlah data Image yang telah di-segmentasi berdasarkan pengguna
+        for image in images_segmented:
+            uploader = image.uploader.first_name + " " + image.uploader.last_name
+            if uploader in data_count:
+                data_count[uploader] += 1
+            else:
+                data_count[uploader] = 1
+
+        # Menyusun label dan data
+        labels_user = []
+        data_user = []
+
+        for uploader, count in data_count.items():
+            labels_user.append(uploader)
+            data_user.append(count)
+
+        # Hitung label
+        num_labels_user = len(labels_user)
+
+        # Mengambil data Image yang belum memiliki segmentasi
+        images_not_segmented = Image.objects.filter(
+            imagepreprocessing__isnull=False,
+            imagepreprocessing__segmentations__isnull=True,
+        )
+
+        # Menghitung jumlah data Image yang belum di-segmentasi
+        num_images_not_segmented_user = images_not_segmented.count()
+
+        # Menghitung jumlah data Image yang telah di-segmentasi berdasarkan pengguna
+        for image in images_segmented:
+            uploader = image.uploader.first_name + " " + image.uploader.last_name
+            if uploader in data_count:
+                data_count[uploader] += 1
+            else:
+                data_count[uploader] = 1
+
+        # Menghitung jumlah data Image yang belum di-segmentasi
+        num_images_not_segmented_user = images_not_segmented.count()
+
+        # Mengambil data Image yang memiliki ImagePreprocessing
+        images_with_preprocessing = Image.objects.filter(
+            imagepreprocessing__isnull=False
+        )
+
+        # Menghitung distribusi warna gambar yang diunggah oleh pengguna
+        color_distribution = {}
+
+        for image in images_with_preprocessing:
+            color = image.color
+            if color in color_distribution:
+                color_distribution[color] += 1
+            else:
+                color_distribution[color] = 1
+
+        # Menyusun label dan data
+        labels_color = list(color_distribution.keys())
+        data_color = list(color_distribution.values())
+
+        # ubah data dari dark-mud-brown menjadi Dark Mud Brown
+        labels_color = [label.replace("-", " ").title() for label in labels_color]
+
+        # Mengambil data Segmentation
+        segmentations = Segmentation.objects.all()
+
+        # Menghitung jumlah segmentasi untuk setiap jenis segmentasi
+        segmentation_count = {}
+
+        for segmentation in segmentations:
+            segmentation_type = segmentation.segmentation_type
+            if segmentation_type in segmentation_count:
+                segmentation_count[segmentation_type] += 1
+            else:
+                segmentation_count[segmentation_type] = 1
+
+        # Menyusun label dan data
+        labels_segmentation_result = list(segmentation_count.keys())
+        data_segmentation_result = list(segmentation_count.values())
+
+        # ubah data dari sobel menjadi Sobel
+        labels_segmentation_result = [
+            label.replace("-", " ").title() for label in labels_segmentation_result
+        ]
 
         chartjs_data = {
-            "labels_user": uploaders_name,
-            "data_user": uploaders_count,
+            "labels_user": json.dumps(list(labels_user)),
+            "data_user": json.dumps(list(data_user)),
+            "num_labels_user": num_labels_user,
+            "num_images_not_segmented_user": num_images_not_segmented_user,
+            "labels_segmentation": json.dumps(["Segmented", "Not Segmented"]),
+            "data_segmentation": json.dumps(
+                [num_labels_user, num_images_not_segmented_user]
+            ),
+            "num_labels_segmentation": num_labels_user,
+            "labels_color": json.dumps(labels_color),
+            "data_color": json.dumps(data_color),
+            "num_labels_color": len(labels_color),
+            "labels_segmentation_result": json.dumps(labels_segmentation_result),
+            "data_segmentation_result": json.dumps(data_segmentation_result),
+            "num_labels_segmentation_result": len(labels_segmentation_result),
         }
 
         self.extra_context = {
