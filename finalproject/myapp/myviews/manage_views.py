@@ -4,6 +4,8 @@ from myapp.menus import menus, set_user_menus
 from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from django.db.models import Q
+
 
 base_context = {
     "content": "Welcome to WeeAI!",
@@ -55,5 +57,18 @@ class ManageUsersClassView(ListView):
             return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
+        search_query = self.request.GET.get("search")
         queryset = User.objects.all()
+
+        if search_query:
+            # Jika ada parameter pencarian, filter queryset berdasarkan kondisi yang diinginkan.
+            queryset = queryset.filter(
+                Q(username__icontains=search_query)
+                | Q(email__icontains=search_query)
+                | Q(first_name__icontains=search_query)
+                | Q(last_name__icontains=search_query)
+            )
+            # change the page_obj add the search_query
+            self.extra_context["search"] = search_query
+
         return queryset

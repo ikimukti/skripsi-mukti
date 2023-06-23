@@ -135,6 +135,9 @@ class DashboardClassView(ListView):
         labels_color = list(color_distribution.keys())
         data_color = list(color_distribution.values())
 
+        # bagi data_color dengan jumlah step preprocessing (54)
+        data_color = [data / 54 for data in data_color]
+
         # ubah data dari dark-mud-brown menjadi Dark Mud Brown
         labels_color = [label.replace("-", " ").title() for label in labels_color]
 
@@ -154,6 +157,9 @@ class DashboardClassView(ListView):
         # Menyusun label dan data
         labels_segmentation_result = list(segmentation_count.keys())
         data_segmentation_result = list(segmentation_count.values())
+
+        # bagi data_segmentation_result dengan jumlah step preprocessing (54)
+        data_segmentation_result = [data / 54 for data in data_segmentation_result]
 
         # ubah data dari sobel menjadi Sobel
         labels_segmentation_result = [

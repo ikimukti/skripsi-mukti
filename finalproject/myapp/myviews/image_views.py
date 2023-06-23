@@ -17,7 +17,8 @@ from django.core.paginator import Paginator
 # models import
 from myapp.models import Image, ImagePreprocessing, Segmentation, SegmentationResult
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, Q
+
 
 # forms import
 from myapp.forms import ImageForm
@@ -276,6 +277,26 @@ class ImageListView(ListView):
         else:
             return super().get(request, *args, **kwargs)
 
+    def get_queryset(self):
+        search_query = self.request.GET.get("search")
+        queryset = super().get_queryset()
+
+        if search_query:
+            # Jika ada parameter pencarian, filter queryset berdasarkan kondisi yang diinginkan.
+            queryset = queryset.filter(
+                Q(image__icontains=search_query)
+                | Q(uploader__username__icontains=search_query)
+                | Q(color__icontains=search_query)
+                | Q(width__icontains=search_query)
+                | Q(height__icontains=search_query)
+                | Q(distance__icontains=search_query)
+                | Q(format__icontains=search_query)
+                | Q(size__icontains=search_query)
+                | Q(channel__icontains=search_query)
+            )
+
+        return queryset
+
 
 class ImageUploaderView(ListView):
     model = Image
@@ -287,7 +308,25 @@ class ImageUploaderView(ListView):
     # get queryset
     def get_queryset(self):
         uploader = self.kwargs["uploader"]
-        return Image.objects.filter(uploader__username=uploader)
+        search_query = self.request.GET.get("search")
+        queryset = super().get_queryset()
+
+        if search_query:
+            queryset = Image.objects.filter(
+                Q(uploader__username=uploader)
+                & (
+                    Q(image__icontains=search_query)
+                    | Q(uploader__username__icontains=search_query)
+                    | Q(color__icontains=search_query)
+                    | Q(width__icontains=search_query)
+                    | Q(height__icontains=search_query)
+                    | Q(distance__icontains=search_query)
+                    | Q(format__icontains=search_query)
+                    | Q(size__icontains=search_query)
+                    | Q(channel__icontains=search_query)
+                )
+            )
+        return queryset
 
     # update context
     def get_context_data(self, *args, **kwargs):

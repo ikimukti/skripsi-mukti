@@ -10,6 +10,10 @@
                 <h1 class="text-2xl font-bold text-gray-700">{{ title }}</h1>
             </div>
             <div class="flex flex-row space-x-2">
+                <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700 space-x-2" onclick="window.history.back();">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
                 <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700">
                     <i class="fas fa-ellipsis-v"></i>
                 </button>
@@ -40,10 +44,12 @@
             <form method='POST' enctype="multipart/form-data" class="flex flex-col space-y-2 w-full">
                 {% csrf_token %}
                 {{ form.as_table }}
-                <button type="submit" class="flex flex-row justify-center items-center bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2 text-white">
-                    <i class="fas fa-upload"></i>
-                    <span class="ml-2">Upload</span>
-                </button>
+                <div class="flex flex-row justify-end items-center space-x-2">
+                    <button type="submit" class="flex flex-row justify-center items-center bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2 text-white">
+                        <i class="fas fa-upload"></i>
+                        <span class="ml-2">Upload</span>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
