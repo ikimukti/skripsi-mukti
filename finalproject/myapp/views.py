@@ -61,3 +61,8 @@ from myapp.myviews.image_views import (
     ImageSummaryView,
     ImageUploaderView,
 )
+
+from myapp.myviews.image_graph_views import (
+    ImageGraphClassView,
+    ImageGraphColorClassView,
+)

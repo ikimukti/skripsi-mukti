@@ -24,13 +24,20 @@
         <!-- content Profile -->
             <div class="flex flex-col space-y-2">
                 <div class="flex flex-row justify-between items-center">
-                    <div class="flex flex-row space-x-2">
+                    <div class="flex-1 flex-row space-x-2">
                         <div class="flex flex-col space-y-1">
                             <h1 class="text-lg font-bold text-gray-700">Profile {{ account.first_name|title }} {{ account.last_name|title }}</h1>
-                            <p class="text-sm text-gray-500">Some info may be visible to other people</p>
+                            <h1 class="text-lg font-bold text-gray-700">Profile</h1>
+                            <p class="text-sm text-gray-500">Welcome to your account profile! Here, you can customize and manage your personal information to enhance your overall experience. Please note that certain details may be visible to other users of the platform.</p>
+                            <p class="font-bold">Profile information :</p>
+                            <ul class="list-disc list-inside ml-4 space-y-2">
+                                <li class="text-sm text-gray-500">
+                                    In this section, you can provide and update your full name, allowing others to identify you accurately within the community.
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="flex flex-row space-x-2">
+                    <div class="flex flex-row space-x-2 w-auto">
                         <a class="flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:account_update' account.username %}">
                             <i class="fas fa-pencil-alt"></i>
                             <span class="ml-2">Edit Profile</span>

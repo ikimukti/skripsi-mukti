@@ -201,6 +201,31 @@ class ImageUploadView(CreateView):
             return super().get(request, *args, **kwargs)
 
 
+def hitung_total():
+    # Menghitung total Image
+    total_image = Image.objects.count()
+
+    # Menghitung total Image yang Di ImagePreprocessing
+    total_image_preprocessing = ImagePreprocessing.objects.count()
+
+    # Menghitung total Image yang Di ImagePreprocessing yang sudah Di Segmentation
+    total_segmented_image = Segmentation.objects.count()
+
+    return total_image, total_image_preprocessing, total_segmented_image
+
+
+def hitung_jumlah_segmentation_type():
+    # Mengambil semua objek Segmentation
+    segmentations = Segmentation.objects.all()
+
+    # Menghitung jumlah tipe segmentasi yang unik
+    jumlah_segmentation_type = (
+        segmentations.values("segmentation_type").distinct().count()
+    )
+
+    return jumlah_segmentation_type
+
+
 class ImageSummaryView(ListView):
     model = Image
     template_name = "myapp/image/image_summary.html"
@@ -224,6 +249,79 @@ class ImageSummaryView(ListView):
             User.objects.filter(image__isnull=False).values("username").distinct()
         )
         context["uploaders_name"] = uploaders_name
+
+        # Panggil fungsi hitung_total()
+        total_image, total_image_preprocessing, total_segmented_image = hitung_total()
+
+        context["total_image"] = total_image
+        context["total_image_preprocessing"] = total_image_preprocessing
+        context["total_segmented_image"] = total_segmented_image
+        jumlah_segmentation_type = hitung_jumlah_segmentation_type()
+        context["total_segmentation_type"] = jumlah_segmentation_type
+
+        # Mengambil data Image yang memiliki ImagePreprocessing dan minimal satu Segmentation
+        images_segmented = Image.objects.filter(
+            imagepreprocessing__isnull=False,
+            imagepreprocessing__segmentations__isnull=False,
+        ).distinct()
+
+        # Menginisialisasi dictionary untuk menyimpan jumlah data berdasarkan pengguna
+        data_count = {}
+
+        # Menghitung jumlah data Image yang telah di-segmentasi berdasarkan pengguna
+        for image in images_segmented:
+            uploader = image.uploader.first_name + " " + image.uploader.last_name
+            if uploader in data_count:
+                data_count[uploader] += 1
+            else:
+                data_count[uploader] = 1
+
+        # Menyusun label dan data
+        labels_user = []
+        data_user = []
+
+        for uploader, count in data_count.items():
+            labels_user.append(uploader)
+            data_user.append(count)
+
+        # Hitung label
+        num_labels_user = len(labels_user)
+
+        # Mengambil data Image yang memiliki ImagePreprocessing
+        images_with_preprocessing = Image.objects.filter(
+            imagepreprocessing__isnull=False
+        )
+
+        # Menghitung distribusi warna gambar yang diunggah oleh pengguna
+        color_distribution = {}
+
+        for image in images_with_preprocessing:
+            color = image.color
+            if color in color_distribution:
+                color_distribution[color] += 1
+            else:
+                color_distribution[color] = 1
+
+        # Menyusun label dan data
+        labels_color = list(color_distribution.keys())
+        data_color = list(color_distribution.values())
+
+        # bagi data_color dengan jumlah step preprocessing (54)
+        data_color = [data / 54 for data in data_color]
+
+        # ubah data dari dark-mud-brown menjadi Dark Mud Brown
+        labels_color = [label.replace("-", " ").title() for label in labels_color]
+
+        chartjs_data = {
+            "labels_user": json.dumps(list(labels_user)),
+            "data_user": json.dumps(list(data_user)),
+            "num_labels_user": num_labels_user,
+            "labels_color": json.dumps(labels_color),
+            "data_color": json.dumps(data_color),
+            "num_labels_color": len(labels_color),
+        }
+        context["chartjs"] = chartjs_data
+
         return context
 
     # override get method

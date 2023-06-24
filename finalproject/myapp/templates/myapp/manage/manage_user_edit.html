@@ -54,7 +54,7 @@
                         <label class="text-sm font-semibold text-gray-700">Photo</label>
                         <div class="flex flex-row space-x-2">
                             <div class="flex flex-col space-y-1">
-                                <img src="{{ data_user.userprofile.profile_pic.url }}" class="w-20 h-20 rounded-full object-cover" alt="profile">
+                                <img src="{% if data_user.userprofile.profile_pic %}{{ data_user.userprofile.profile_pic.url }}{% else %}{% static '/images/profile_pics/default.jpg' %}{% endif %}" class="w-20 h-20 rounded-full object-cover" alt="profile">
                             </div>
                         </div>
                         <div class="flex flex-row space-x-2">

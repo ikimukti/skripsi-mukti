@@ -250,7 +250,11 @@ class ManageUserDetailClassView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.object
-        user_profile = UserProfile.objects.get(user=user)
+        # user_profile does not exist
+        if hasattr(user, "userprofile"):
+            user_profile = UserProfile.objects.get(user=user)
+        else:
+            user_profile = None
         context["user_profile"] = user_profile
         return context
 
@@ -278,7 +282,11 @@ class ManageUserEditClassView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.object
-        user_profile = UserProfile.objects.get(user=user)
+        # user_profile does not exist
+        if hasattr(user, "userprofile"):
+            user_profile = UserProfile.objects.get(user=user)
+        else:
+            user_profile = None
         context["user_profile"] = user_profile
         set_user_menus(self.request, context)
         return context
@@ -303,8 +311,9 @@ class ManageUserEditClassView(UpdateView):
         # Update user
         username = data.get("username")
         if User.objects.filter(username=username).exists():
-            form.add_error("username", "Username already exists")
-            return self.form_invalid(form)
+            if username != user.username:
+                form.add_error("username", "Username already exists")
+                return self.form_invalid(form)
 
         first_name = data.get("first_name")
         if not first_name:

@@ -84,6 +84,12 @@ urlpatterns = [
     ),
     path("image/summary/", views.ImageSummaryView.as_view(), name="image_summary"),
     path(
+        "image/graph/color/",
+        views.ImageGraphColorClassView.as_view(),
+        name="image_graph_color",
+    ),
+    path("image/graph/", views.ImageGraphClassView.as_view(), name="image_graph"),
+    path(
         "image/delete/<int:pk>/", views.ImageDeleteView.as_view(), name="image_delete"
     ),
     path(
