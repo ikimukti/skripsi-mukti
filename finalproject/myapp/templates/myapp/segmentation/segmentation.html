@@ -10,20 +10,10 @@
                 <h1 class="text-2xl font-bold text-gray-700">{{ title }}</h1>
             </div>
             <div class="flex flex-row space-x-2">
-                <form class="flex flex-row justify-center items-center" method="GET">
-                    <!-- input -->
-                    <input type="text" class="block w-full text-sm text-slate-500 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 " placeholder="Search..." name="q" value="{{ request.GET.q }}">
-                    <!-- button search image -->
-                    <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700 ml-2" type="submit">
-                        <i class="fas fa-search"></i>
-                        <span class="ml-2">Search</span>
-                    </button>
-                </form>
-                <!-- button upload image -->
-                <a class="flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:image_upload' %}">
-                    <i class="fas fa-upload"></i>
-                    <span class="ml-2">Upload</span>
-                </a>
+                <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700 space-x-2" onclick="window.history.back();">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
                 <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700">
                     <i class="fas fa-ellipsis-v"></i>
                 </button>
@@ -41,8 +31,17 @@
                 </div>
                 <div class="">
             <!-- dropdown filter -->
-            <div>
-                <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-2" id="modalButton-1" aria-expanded="false" aria-haspopup="true" onclick="toggleModal(1)">
+            <div class="flex flex-row space-x-2">
+                <form class="flex flex-row justify-center items-center" method="GET">
+                    <!-- input -->
+                    <input type="text" class="block w-full text-sm text-slate-500 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 " placeholder="Search..." name="search" value="{{ request.GET.search }}">
+                    <!-- button search image -->
+                    <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700 ml-2" type="submit">
+                        <i class="fas fa-search"></i>
+                        <span class="ml-2">Search</span>
+                    </button>
+                </form>
+                <button type="button" id="modalButton-1" aria-expanded="false" aria-haspopup="true" onclick="toggleModal(1)" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Filter
                     <!-- icon filter-->
                     <i class="fas fa-filter ml-2 mt-1"></i>
@@ -112,20 +111,28 @@
                                 </a>
                             </td>
                             <td class="border px-2 py-1 text-xs">{{ image.uploader|capfirst }}</td>
-                            <td class="border px-2 py-1 text-xs">
-                                <!-- image width style 1,000px * 1,000px -->
-                                {{ image.width|intcomma }} x {{ image.height|intcomma }} px |
-                                {{ image.size|filesizeformat }} |
-                                {{ image.channel }} | 
-                                {{ image.dpi }} dpi | 
-                                {{ image.color|capfirst }}
+                            <td class="border px-2 py-1 text-xs space-x-2">
+                                <span class="px-2 py-1 rounded-md bg-blue-200 text-blue-700 text-xs">
+                                     {{ image.width|intcomma }} x {{ image.height|intcomma }} px
+                                </span>
+                                <span class="px-2 py-1 rounded-md bg-orange-200 text-orange-700 text-xs">
+                                     {{ image.size|filesizeformat }}
+                                </span>
+                                <span class="px-2 py-1 rounded-md bg-green-200 text-green-700 text-xs">
+                                     {{ image.channel }} Ch
+                                </span>
+                                <span class="px-2 py-1 rounded-md bg-yellow-200 text-yellow-700 text-xs">
+                                    {{ image.dpi }} dpi
+                                </span>
+                                <span class="px-2 py-1 rounded-md bg-purple-200 text-purple-700 text-xs">
+                                    {{ image.color|capfirst }}
+                                </span>
                             </td>
                             <td class="border px-2 py-1 text-xs">{{ image.created_at|naturaltime }}</td>
                             <td class="border px-2 py-1 text-xs">
                                 <div class="flex flex-row space-x-2">
                                     <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700" href="{{ image.image.url }}" download>
                                         <i class="fas fa-download"></i>
-                                        <span class="ml-2">Download</span>
                                     </a>
                                     <!-- segmented -->
                                     {% if image.segmented %}
@@ -148,17 +155,14 @@
                                     <!-- print report -->
                                     <a class="flex flex-row justify-center items-center bg-purple-200 hover:bg-purple-300 rounded-md px-4 py-2 text-gray-700 border" href="" target="_blank">
                                         <i class="fas fa-print"></i>
-                                        <span class="ml-2">Report</span>
                                     </a>
                                     <!-- excel -->
                                     <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700 border" href="" target="_blank">
                                         <i class="fas fa-file-excel"></i>
-                                        <span class="ml-2">Excel</span>
                                     </a>
                                     <!-- delete -->
                                     <a class="flex flex-row justify-center items-center bg-red-200 hover:bg-red-300 rounded-md px-4 py-2 text-gray-700 border" href="">
                                         <i class="fas fa-trash"></i>
-                                        <span class="ml-2">Delete</span>
                                     </a>
                                 </div>
                             </td>
@@ -183,25 +187,25 @@
                 </div>
                 <div class="flex flex-row space-x-2">
                     {% if page_obj.has_previous %}
-                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page=1">
+                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page=1&search={{ request.GET.search }}">
                         <i class="fas fa-angle-double-left"></i>
                     </a>
-                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.previous_page_number }}">
+                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.previous_page_number }}&search={{ request.GET.search }}">
                         <i class="fas fa-angle-left"></i>
                     </a>
                     {% endif %}
                     {% for page in page_obj.paginator.page_range %}
                     {% if page_obj.number == page %}
-                    <a class="text-xs flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page }}">{{ page }}</a>
+                    <a class="text-xs flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page }}&search={{ request.GET.search }}">{{ page }}</a>
                     {% elif page > page_obj.number|add:'-3' and page < page_obj.number|add:'3' %}
-                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page }}">{{ page }}</a>
+                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page }}&search={{ request.GET.search }}">{{ page }}</a>
                     {% endif %}
                     {% endfor %}
                     {% if page_obj.has_next %}
-                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.next_page_number }}">
+                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.next_page_number }}&search={{ request.GET.search }}">
                         <i class="fas fa-angle-right"></i>
                     </a>
-                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.paginator.num_pages }}">
+                    <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.paginator.num_pages }}&search={{ request.GET.search }}">
                         <i class="fas fa-angle-double-right"></i>
                     </a>
                     {% endif %}

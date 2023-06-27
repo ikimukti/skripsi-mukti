@@ -22,12 +22,129 @@
         <hr class="border-gray-200 mb-2">
         <div class="flex flex-col space-y-2">
             <div class="flex flex-row justify-between items-center">
-                <p class="text-gray-700">Graph of Image upload per day</p>
-                <!-- button Add User -->
+                <div class="flex flex-col space-y-2">
+                    <p class="text-gray-700">Graph of Image upload per day</p>
+                </div>
+                <div class="flex flex-row justify-between items-center mb-2">
+                    
+                    <div class="flex flex-row space-x-2 w-auto">
+                        <!-- button export Segmentation -->
+                        <a href="" class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700">
+                            <i class="fas fa-download"></i>
+                            <span class="ml-2">Export</span>
+                        </a>
+                        <!-- button selected Segmentation -->
+                        <form class="flex flex-row justify-center items-center space-x-2 w-auto" action="" method="GET">
+                            <!-- input select option -->
+                            <select name="search" class="flex flex-row justify-center items-center rounded-md px-4 py-2 text-gray-700 w-60">
+                                <option value="all" {% if request.GET.search == 'all' %} selected {% endif %}>All</option>
+                                {% for color in color_dict %}
+                                    <option value="{{ color }}" {% if request.GET.search == color %} selected {% endif %}>{{ color }}</option>
+                                {% endfor %}
+                            </select>
+                            <!-- button selected Segmentation -->
+                            <button class="flex flex-row justify-center items-center bg-blue-200 hover:bg-blue-300 rounded-md px-4 py-2 text-gray-700">
+                                <i class="fas fa-search"></i>
+                                <span class="ml-2">Search</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="container">
                 <canvas id="myChart"></canvas>
             </div>
+            <!-- Result -->
+            <div class="flex flex-col space-y-2">
+                <h1 class="text-xl font-bold text-gray-700">Result Best Segmentation</h1>
+                <p class="space-y-2 text-gray-700 space-x-2">
+                    From the uploaded image, there are 
+                    {% if total_data < 1 %} <span class="text-red-500 font-bold">no</span> 
+                    {% else %} <span class="text-red-500 font-bold"> {{ total_data|floatformat:0 }}</span>
+                    {% endif %} 
+                    uploaded images. The uploaded images have different colors: 
+                    {% if request.GET.search == 'all' %} <span class="text-red-500 font-bold">various</span> 
+                    {% elif request.GET.search %} <span class="text-red-500 font-bold">{{ request.GET.search }}</span> 
+                    {% else %} <span class="text-red-500 font-bold">various</span> {% endif %}. 
+                    The best image segmentation is with a background color of <span class="text-red-500 font-bold">{{ best.color }}</span> using segmentation 
+                    <span class="text-red-500 font-bold">
+                        {{ best.segmentation }}</span> with resized image preprocessing
+                    <span class="text-red-500 font-bold">
+                        {{ best.resize_percent }} %
+                    </span> and adjusted brightness
+                    <span class="text-red-500 font-bold">
+                        {{ best.brightness_percent }} %
+                    </span> as well as contrast adjustment
+                    <span class="text-red-500 font-bold">
+                        {{ best.contrast_percent }} %
+                    </span> and the distance between the captured image and the object is
+                    <span class="text-red-500 font-bold">
+                        {{ best.distance }} cm
+                    </span> using the 
+                    <span class="text-red-500 font-bold">
+                            {% if best.gaussian_filter %}Gaussian Filter
+                            {% elif best.median_filter %}Median Filter
+                            {% elif best.mean_filter %}Mean Filter
+                            {% endif %}
+                    </span>
+                    filter. It results in a Jaccard Score of 
+                    <span class="text-red-500 font-bold">
+                        {{ best.jaccard_score }} % 
+                    </span> with a Rand Score of
+                    <span class="text-red-500 font-bold">
+                        {{ best.rand_score }} %
+                    </span> and an F1 Score of
+                    <span class="text-red-500 font-bold">
+                        {{ best.f1_score }} %
+                    </span>.
+                </p>
+            </div>
+            <!-- Result -->
+            <div class="flex flex-col space-y-2">
+                <h1 class="text-xl font-bold text-gray-700">Result Worst Segmentation</h1>
+                <p class="space-y-2 text-gray-700 space-x-2">
+                    From the uploaded image, there are 
+                    {% if total_data < 1 %} <span class="text-red-500 font-bold">no</span> 
+                    {% else %} <span class="text-red-500 font-bold"> {{ total_data|floatformat:0 }}</span>
+                    {% endif %} 
+                    uploaded images. The uploaded images have different colors: 
+                    {% if request.GET.search == 'all' %} <span class="text-red-500 font-bold">various</span> 
+                    {% elif request.GET.search %} <span class="text-red-500 font-bold">{{ request.GET.search }}</span> 
+                    {% else %} <span class="text-red-500 font-bold">various</span> {% endif %}. 
+                    The worst image segmentation is with a background color of <span class="text-red-500 font-bold">{{ worst.color }}</span> using segmentation 
+                    <span class="text-red-500 font-bold">
+                        {{ worst.segmentation }}</span> with resized image preprocessing
+                    <span class="text-red-500 font-bold">
+                        {{ worst.resize_percent }} %
+                    </span> and adjusted brightness
+                    <span class="text-red-500 font-bold">
+                        {{ worst.brightness_percent }} %
+                    </span> as well as contrast adjustment
+                    <span class="text-red-500 font-bold">
+                        {{ worst.contrast_percent }} %
+                    </span> and the distance between the captured image and the object is
+                    <span class="text-red-500 font-bold">
+                        {{ worst.distance }} cm
+                    </span> using the 
+                    <span class="text-red-500 font-bold">
+                            {% if worst.gaussian_filter %}Gaussian Filter
+                            {% elif worst.median_filter %}Median Filter
+                            {% elif worst.mean_filter %}Mean Filter
+                            {% endif %}
+                    </span>
+                    filter. It results in a Jaccard Score of 
+                    <span class="text-red-500 font-bold">
+                        {{ worst.jaccard_score }} % 
+                    </span> with a Rand Score of
+                    <span class="text-red-500 font-bold">
+                        {{ worst.rand_score }} %
+                    </span> and an F1 Score of
+                    <span class="text-red-500 font-bold">
+                        {{ worst.f1_score }} %
+                    </span>.
+                </p>
+            </div>
+
         </div>
     </div>
 </div>
@@ -54,6 +171,11 @@
     const dict_distance = {{ chartjs.dict_distance|safe }};
     const data_uploader = {{ chartjs.data_uploader|safe }};
     const dict_uploader = {{ chartjs.dict_uploader|safe }};
+    const data_segmentation = {{ chartjs.data_segmentation|safe }};
+    const dict_segmentation = {{ chartjs.dict_segmentation|safe }};
+    const data_f1_score = {{ chartjs.data_f1_score|safe }};
+    const data_jaccard_score = {{ chartjs.data_jaccard_score|safe }};
+    const data_rand_score = {{ chartjs.data_rand_score|safe }};
 
     const data = {
         labels: labels,
@@ -74,7 +196,7 @@
                 borderColor:  '#0000ff',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
             },
             {
                 label: 'Height',
@@ -138,7 +260,43 @@
                 fill: false,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4
-            }
+            },
+            {
+                label: 'Segmentation',
+                data: data_segmentation,
+                // black
+                borderColor:  '#000000',
+                fill: false,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4
+            }, 
+            {
+                label: 'F1 Score',
+                data: data_f1_score,
+                // black
+                borderColor:  '#000000',
+                fill: false,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4
+            }, 
+            {
+                label: 'Jaccard Score',
+                data: data_jaccard_score,
+                // black
+                borderColor:  '#000000',
+                fill: false,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4
+            }, 
+            {
+                label: 'Rand Score',
+                data: data_rand_score,
+                // black
+                borderColor:  '#000000',
+                fill: false,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4
+            },
         ]
     };
   document.addEventListener('DOMContentLoaded', function() {
@@ -214,6 +372,26 @@
                                     pointStyle: 'circle',
                                     rotation: 0
                                 };
+                            } else if (context.dataset.label == 'Segmentation') {
+                                return {
+                                    pointStyle: 'crossRot',
+                                    rotation: 0
+                                };
+                            } else if (context.dataset.label == 'F1 Score') {
+                                return {
+                                    pointStyle: 'crossRot',
+                                    rotation: 0
+                                };
+                            } else if (context.dataset.label == 'Jaccard Score') {
+                                return {
+                                    pointStyle: 'crossRot',
+                                    rotation: 0
+                                };
+                            } else if (context.dataset.label == 'Rand Score') {
+                                return {
+                                    pointStyle: 'crossRot',
+                                    rotation: 0
+                                };
                             }
                         },
                         label: function(context) {
@@ -247,6 +425,14 @@
                                     label += dict_distance[context.parsed.y];
                                 } else if (context.dataset.label == 'Uploader') {
                                     label += dict_uploader[context.parsed.y];
+                                } else if (context.dataset.label == 'Segmentation') {
+                                    label += dict_segmentation[context.parsed.y];
+                                } else if (context.dataset.label == 'F1 Score') {
+                                    label += context.parsed.y;
+                                } else if (context.dataset.label == 'Jaccard Score') {
+                                    label += context.parsed.y;
+                                } else if (context.dataset.label == 'Rand Score') {
+                                    label += context.parsed.y;
                                 }
                             }
                             return label;

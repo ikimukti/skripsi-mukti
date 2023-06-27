@@ -91,7 +91,7 @@ class AccountUpdateClassView(BaseAccountView, UpdateView):
         if not last_name:
             last_name = user.last_name
         email = data.get("email")
-        if User.objects.filter(email=email).exists():
+        if User.objects.filter(email=email).exclude(pk=user.pk).exists():
             form.add_error("email", "Email already exists")
             return self.form_invalid(form)
 

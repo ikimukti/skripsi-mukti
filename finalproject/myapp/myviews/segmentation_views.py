@@ -61,6 +61,21 @@ class SegmentationClassView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().prefetch_related("segmentation_results")
+        search_query = self.request.GET.get("search")
+
+        if search_query:
+            # Jika ada parameter pencarian, filter queryset berdasarkan kondisi yang diinginkan.
+            queryset = queryset.filter(
+                Q(image__icontains=search_query)
+                | Q(uploader__username__icontains=search_query)
+                | Q(color__icontains=search_query)
+                | Q(width__icontains=search_query)
+                | Q(height__icontains=search_query)
+                | Q(distance__icontains=search_query)
+                | Q(format__icontains=search_query)
+                | Q(size__icontains=search_query)
+                | Q(channel__icontains=search_query)
+            )
 
         # Get categories uploader name with name of uploader in User model
         uploaders_name = (

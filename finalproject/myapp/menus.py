@@ -77,7 +77,7 @@ it_admin_menus = [
         dropdown=True,
         id="image",
         submenus=[
-            create_menu("Image All", "/image/", "fas fa-list", id="image"),
+            create_menu("Image List", "/image/", "fas fa-list", id="image"),
             create_menu(
                 "Image by Uploader",
                 "/image/uploader/",
@@ -98,7 +98,13 @@ it_admin_menus = [
         id="segmentation",
         submenus=[
             create_menu(
-                "Segmentation All", "/segmentation/", "fas fa-list", id="segmentation"
+                "Segmentation List", "/segmentation/", "fas fa-list", id="segmentation"
+            ),
+            create_menu(
+                "Segmentation by Color",
+                "/image/graph/color/",
+                "fas fa-palette",
+                id="color",
             ),
             create_menu(
                 "Summary",
@@ -145,9 +151,7 @@ it_admin_menus = [
         dropdown=True,
         id="preference",
         submenus=[
-            create_menu(
-                "Setting", "/preference/setting/", "fas fa-cog", id="preference_setting"
-            ),
+            create_menu("Setting", "/preference/", "fas fa-cog", id="preference"),
             create_menu("Help", "/help/", "fas fa-question-circle", id="help"),
             create_menu("Docs", "/docs/", "fas fa-book", id="docs"),
             create_menu("Blog", "/blog/", "fas fa-blog", id="blog"),

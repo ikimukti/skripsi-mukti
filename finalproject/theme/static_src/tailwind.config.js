@@ -48,6 +48,10 @@ module.exports = {
                 */
             fontFamily: {
                 inter: ['Inter'],
+                roboto: ['Roboto'],
+                poppins: ['Poppins'],
+                sans: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                serif: ['Merriweather', 'serif'],
             },  
         },
     },
