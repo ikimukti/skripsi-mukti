@@ -98,6 +98,29 @@
                         {{ best.f1_score }} %
                     </span>.
                 </p>
+                <!-- image flex-1 -->
+                <div class="flex flex-row justify-between items-center">
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image</p>
+                        <img src="/{{ best.image_url }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image Pre Color</p>
+                        <img src="/{{ best.image_pre_color_url }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image Pre Gray</p>
+                        <img src="/{{ best.image_pre_gray_url }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image Ground Truth</p>
+                        <img src="/{{ best.image_gt }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image Segmented</p>
+                        <img src="/{{ best.image_seg }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                </div>
             </div>
             <!-- Result -->
             <div class="flex flex-col space-y-2">
@@ -143,6 +166,29 @@
                         {{ worst.f1_score }} %
                     </span>.
                 </p>
+                <!-- image flex-1 -->
+                <div class="flex flex-row justify-between items-center">
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image</p>
+                        <img src="/{{ worst.image_url }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image Pre Color</p>
+                        <img src="/{{ worst.image_pre_color_url }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image Pre Gray</p>
+                        <img src="/{{ worst.image_pre_gray_url }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image Ground Truth</p>
+                        <img src="/{{ worst.image_gt }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                    <div class="flex-1 flex-col space-y-2">
+                        <p class="text-gray-700">Image Segmented</p>
+                        <img src="/{{ worst.image_seg }}" alt="image" class="w-40 h-40 object-cover rounded-md">
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -187,7 +233,8 @@
                 borderColor:  '#ff0000',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                hidden: true
             },
             {
                 label: 'Width',
@@ -197,6 +244,7 @@
                 fill: false,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4,
+                hidden: true
             },
             {
                 label: 'Height',
@@ -205,7 +253,8 @@
                 borderColor:  '#00ff00',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                hidden: true
             },
             {
                 label: 'Size',
@@ -214,7 +263,8 @@
                 borderColor:  '#ffff00',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                hidden: true
             },
             {
                 label: 'Channel',
@@ -223,7 +273,8 @@
                 borderColor:  '#800080',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                hidden: true
             },
             {
                 label: 'Format',
@@ -232,7 +283,8 @@
                 borderColor:  '#ffa500',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                hidden: true
             },
             {
                 label: 'DPI',
@@ -241,7 +293,8 @@
                 borderColor:  '#ff69b4',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                hidden: true
             },
             {
                 label: 'Distance',
@@ -250,7 +303,8 @@
                 borderColor:  '#a52a2a',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                hidden: true
             },
             {
                 label: 'Uploader',
@@ -259,7 +313,8 @@
                 borderColor:  '#808080',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                hidden: true
             },
             {
                 label: 'Segmentation',
@@ -268,7 +323,8 @@
                 borderColor:  '#000000',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                hidden: true
             }, 
             {
                 label: 'F1 Score',

@@ -598,7 +598,11 @@ class ImageDetailView(DetailView):
         chartjs_data = {}
 
         if seg_type is None or seg_type == "all":
-            chartjs_data = self.get_segmentation_data("all")
+            # if model Segmentation is not empty
+            if segmentation:
+                chartjs_data = self.get_segmentation_data("all")
+            else:
+                chartjs_data = ""
             # get 1st segmentation chartjs data
         else:
             chartjs_data = self.get_segmentation_data(seg_type)

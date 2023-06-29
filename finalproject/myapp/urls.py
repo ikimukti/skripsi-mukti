@@ -84,6 +84,11 @@ urlpatterns = [
     ),
     path("image/summary/", views.ImageSummaryView.as_view(), name="image_summary"),
     path(
+        "image/table/color/",
+        views.ImageTableColorClassView.as_view(),
+        name="image_table_color",
+    ),
+    path(
         "image/graph/color/",
         views.ImageGraphColorClassView.as_view(),
         name="image_graph_color",

@@ -65,4 +65,5 @@ from myapp.myviews.image_views import (
 from myapp.myviews.image_graph_views import (
     ImageGraphClassView,
     ImageGraphColorClassView,
+    ImageTableColorClassView,
 )

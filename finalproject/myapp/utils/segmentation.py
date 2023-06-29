@@ -146,14 +146,7 @@ def get_top_segmentations(Image, segmentation_type):
         Segmentation.objects.select_related("image_preprocessing__image")
         .filter(image_preprocessing__image=Image, segmentation_type=segmentation_type)
         .order_by(
-            F("image_preprocessing__resize").asc(),
-            F("image_preprocessing__resize_percent").asc(),
-            F("image_preprocessing__resize_width").asc(),
-            F("image_preprocessing__resize_height").asc(),
             F("f1_score").desc(),
-            F("accuracy").desc(),
-            F("precision").desc(),
-            F("recall").desc(),
             F("rand_score").desc(),
             F("jaccard_score").desc(),
             F("mse").desc(),
@@ -170,11 +163,12 @@ def get_top_segmentations(Image, segmentation_type):
         segmentation_instance = SegmentationResult.objects.create(
             image=Image,
             segmentation_type=segmentation_type,
+            segmentation=segmentation,
+            preprocessing=segmentation.image_preprocessing,
             rank=rank,
         )
 
-        segmentation_instance.segmentations.add(segmentation)
-        segmentation_instances.append(segmentation_instance)
+        segmentation_instance.save()
         rank += 1
 
     return segmentation_instances
@@ -186,8 +180,11 @@ def calculate_scores(ground_truth, segmented, type, average="binary", zero_divis
     average = "weighted" if type == "kmeans" else average
 
     # convert ground_truth and segmented to numpy array
-    segmented[segmented > 0] = 1
-    ground_truth[ground_truth > 0] = 1
+    segmented = np.array(segmented)
+    ground_truth = np.array(ground_truth)
+
+    segmented = np.where(segmented > 0, 1, segmented)
+    ground_truth = np.where(ground_truth > 0, 1, ground_truth)
 
     scores["f1_score"] = str(
         round(

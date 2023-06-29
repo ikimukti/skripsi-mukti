@@ -220,7 +220,18 @@ class SegmentationResult(models.Model):
     image = models.ForeignKey(
         "Image", on_delete=models.CASCADE, related_name="segmentation_results"
     )
-    segmentations = models.ManyToManyField(Segmentation)
+    segment = models.ForeignKey(
+        "Segmentation",
+        on_delete=models.CASCADE,
+        related_name="segmentation_results",
+        null=True,
+    )
+    preprocessing = models.ForeignKey(
+        "ImagePreprocessing",
+        on_delete=models.CASCADE,
+        related_name="segmentation_results",
+        null=True,
+    )
     # additional fields
     segmentation_type = models.CharField(max_length=255, blank=True, null=True)
     rank = models.IntegerField(blank=True, null=True)  # Add the rank field

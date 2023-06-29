@@ -107,6 +107,12 @@ it_admin_menus = [
                 id="color",
             ),
             create_menu(
+                "Segmentation Table",
+                "/image/table/color/",
+                "fas fa-table",
+                id="table",
+            ),
+            create_menu(
                 "Summary",
                 "/segmentation/summary/",
                 "fas fa-chart-bar",

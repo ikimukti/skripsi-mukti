@@ -183,8 +183,8 @@ class DashboardClassView(ListView):
             "num_labels_segmentation_result": len(labels_segmentation_result),
         }
 
-        print("labels_segmentation_result", labels_segmentation_result)
-        print("data_segmentation_result", data_segmentation_result)
+        # print("labels_segmentation_result", labels_segmentation_result)
+        # print("data_segmentation_result", data_segmentation_result)
 
         self.extra_context = {
             "uploaders": uploaders,
