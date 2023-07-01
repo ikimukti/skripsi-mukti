@@ -41,18 +41,50 @@
             </div>
             {% endif %}
             <!-- image upload form -->
-            <form method='POST' enctype="multipart/form-data" class="flex flex-col space-y-2 w-full">
-                {% csrf_token %}
-                {{ form.as_table }}
-                <div class="flex flex-row justify-end items-center space-x-2">
-                    <button type="submit" class="flex flex-row justify-center items-center bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2 text-white">
-                        <i class="fas fa-upload"></i>
-                        <span class="ml-2">Upload</span>
-                    </button>
+            <div class="flex flex-row justify-between items-start space-x-2">
+                <div class="flex flex-row justify-start items-start">
+                    <div class="flex flex-col space-y-2">
+                        <div class="flex flex-row justify-center items-center">
+                            <img src="{% static '/images/placeholder.png' %}" class="w-64 h-64 object-cover rounded-md border border-gray-200" id="image-preview">
+                        </div>
+                        <div class="flex flex-row justify-center items-center">
+                            <p class="text-sm text-gray-500">Image preview</p>
+                        </div>
+                    </div>
                 </div>
-            </form>
+                <form method='POST' enctype="multipart/form-data" class="flex-1 flex flex-col space-y-2">
+                    {% csrf_token %}
+                    {{ form.as_table }}
+                    <div class="flex flex-row justify-end items-center space-x-2">
+                        <button type="submit" class="flex flex-row justify-center items-center bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2 text-white">
+                            <i class="fas fa-upload"></i>
+                            <span class="ml-2">Upload</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
         </div>
     </div>
     <!-- image upload form end -->
 </div>
 {% endblock content %}
+{% block scriptcustom %} 
+<script>
+    // image preview
+    const imagePreview = document.getElementById('image-preview');
+    const imageUpload = document.getElementById('id_image');
+    imageUpload.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.addEventListener('load', function() {
+                imagePreview.setAttribute('src', this.result);
+            });
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.setAttribute('src', '/static/images/placeholder.png');
+        }
+    });
+</script>
+{% endblock scriptcustom %}

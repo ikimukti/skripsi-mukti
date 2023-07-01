@@ -27,8 +27,8 @@ class ImageGraphClassView(ListView):
         "title": "Image Graph",
         "menus": menus,
         "logo": "myapp/images/Logo.png",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
+        "content": "Welcome to VisionSlice!",
+        "contributor": "VisionSlice Team",
         "app_css": "myapp/css/styles.css",
         "app_js": "myapp/js/scripts.js",
     }
@@ -196,8 +196,8 @@ class ImageTableColorClassView(ListView):
         "title": "Image Table Color",
         "menus": menus,
         "logo": "myapp/images/Logo.png",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
+        "content": "Welcome to VisionSlice!",
+        "contributor": "VisionSlice Team",
         "app_css": "myapp/css/styles.css",
         "app_js": "myapp/js/scripts.js",
     }
@@ -265,10 +265,6 @@ class ImageTableColorClassView(ListView):
         avg_f1_score = average_scores["avg_f1_score"]
         self.extra_context["avg_f1_score"] = avg_f1_score
 
-        # hitung jumlah data
-        total_data = queryset.count()
-        print(total_data)
-
         return queryset
 
 
@@ -281,8 +277,8 @@ class ImageGraphColorClassView(ListView):
         "title": "Image Graph Color",
         "menus": menus,
         "logo": "myapp/images/Logo.png",
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
+        "content": "Welcome to VisionSlice!",
+        "contributor": "VisionSlice Team",
         "app_css": "myapp/css/styles.css",
         "app_js": "myapp/js/scripts.js",
     }

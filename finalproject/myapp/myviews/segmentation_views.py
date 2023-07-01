@@ -98,8 +98,8 @@ class SegmentationClassView(ListView):
             "uploaders": uploaders,
             "colors": colors,
             "title": "Segmentation",
-            "contributor": "WeeAI Team",
-            "content": "Welcome to WeeAI! This is a website for image segmentation.",
+            "contributor": "VisionSlice Team",
+            "content": "Welcome to VisionSlice! This is a website for image segmentation.",
             "app_css": "myapp/css/styles.css",
             "app_js": "myapp/js/scripts.js",
             "logo": "myapp/images/Logo.png",
@@ -193,10 +193,10 @@ class SegmentationDetailClassView(DetailView):
         self.customize_context(context)
 
         context["title"] = "Segmentation Detail"
-        context["contributor"] = "WeeAI Team"
+        context["contributor"] = "VisionSlice Team"
         context[
             "content"
-        ] = "Welcome to WeeAI! This is a website for image segmentation."
+        ] = "Welcome to VisionSlice! This is a website for image segmentation."
         context["app_css"] = "myapp/css/styles.css"
         context["app_js"] = "myapp/js/scripts.js"
         context["logo"] = "myapp/images/Logo.png"
@@ -390,8 +390,8 @@ class SegmentationSummaryClassView(ListView):
             "uploaders": uploaders,
             "colors": colors,
             "title": "Segmentation Summary",
-            "contributor": "WeeAI Team",
-            "content": "Welcome to WeeAI! This is a website for image segmentation.",
+            "contributor": "VisionSlice Team",
+            "content": "Welcome to VisionSlice! This is a website for image segmentation.",
             "app_css": "myapp/css/styles.css",
             "app_js": "myapp/js/scripts.js",
             "logo": "myapp/images/Logo.png",

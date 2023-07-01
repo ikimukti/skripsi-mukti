@@ -112,16 +112,24 @@ class ImageForm(forms.ModelForm):
             "color": "Color",
         }
         widgets = {
+            "uploader": forms.TextInput(
+                attrs={
+                    "class": "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                    "placeholder": "Uploader",
+                }
+            ),
             "image": forms.FileInput(
                 attrs={
-                    "class": "form-control",
+                    # tailwindcss
+                    "class": "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                     "placeholder": "Image",
+                    "id": "id_image",
                     "accept": "image/*",
                 }
             ),
             "distance": forms.NumberInput(
                 attrs={
-                    "class": "form-control",
+                    "class": "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                     "placeholder": "Distance",
                     "min": 0,
                     "max": 100,
@@ -130,7 +138,7 @@ class ImageForm(forms.ModelForm):
             ),
             "color": forms.Select(
                 attrs={
-                    "class": "form-control",
+                    "class": "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                     "placeholder": "Color",
                     "data-live-search": "true",
                     "data-size": "5",

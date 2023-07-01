@@ -49,8 +49,8 @@ class ImageUpdateView(UpdateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Image Update"
-        context["contributor"] = "WeeAI Team"
-        context["content"] = "Welcome to WeeAI! Update Image"
+        context["contributor"] = "VisionSlice Team"
+        context["content"] = "Welcome to VisionSlice! Update Image"
         context["app_css"] = "myapp/css/styles.css"
         context["app_js"] = "myapp/js/scripts.js"
         context["logo"] = "myapp/images/Logo.png"
@@ -100,8 +100,8 @@ class ImageDeleteView(DeleteView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Image Delete"
-        context["contributor"] = "WeeAI Team"
-        context["content"] = "Welcome to WeeAI! Delete Image"
+        context["contributor"] = "VisionSlice Team"
+        context["content"] = "Welcome to VisionSlice! Delete Image"
         context["app_css"] = "myapp/css/styles.css"
         context["app_js"] = "myapp/js/scripts.js"
         context["logo"] = "myapp/images/Logo.png"
@@ -182,8 +182,8 @@ class ImageUploadView(CreateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Image Upload"
-        context["contributor"] = "WeeAI Team"
-        context["content"] = "Welcome to WeeAI! Create Image"
+        context["contributor"] = "VisionSlice Team"
+        context["content"] = "Welcome to VisionSlice! Create Image"
         context["app_css"] = "myapp/css/styles.css"
         context["app_js"] = "myapp/js/scripts.js"
         context["logo"] = "myapp/images/Logo.png"
@@ -237,8 +237,8 @@ class ImageSummaryView(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Image Summary"
-        context["contributor"] = "WeeAI Team"
-        context["content"] = "Welcome to WeeAI! Image Summary"
+        context["contributor"] = "VisionSlice Team"
+        context["content"] = "Welcome to VisionSlice! Image Summary"
         context["app_css"] = "myapp/css/styles.css"
         context["app_js"] = "myapp/js/scripts.js"
         context["logo"] = "myapp/images/Logo.png"
@@ -345,8 +345,8 @@ class ImageListView(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Image List"
-        context["contributor"] = "WeeAI Team"
-        context["content"] = "Welcome to WeeAI!"
+        context["contributor"] = "VisionSlice Team"
+        context["content"] = "Welcome to VisionSlice!"
         context["app_css"] = "myapp/css/styles.css"
         context["app_js"] = "myapp/js/scripts.js"
         context["logo"] = "myapp/images/Logo.png"
@@ -432,8 +432,8 @@ class ImageUploaderView(ListView):
         # Capitalize first letter of uploader
         context["title"] = "Image Uploader " + self.kwargs["uploader"].capitalize()
         context["kwargs_uploader"] = self.kwargs["uploader"]
-        context["contributor"] = "WeeAI Team"
-        context["content"] = "Welcome to WeeAI!"
+        context["contributor"] = "VisionSlice Team"
+        context["content"] = "Welcome to VisionSlice!"
         context["app_css"] = "myapp/css/styles.css"
         context["app_js"] = "myapp/js/scripts.js"
         context["logo"] = "myapp/images/Logo.png"
@@ -544,8 +544,8 @@ class ImageDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Image Detail"
-        context["contributor"] = "WeeAI Team"
-        context["content"] = "Welcome to WeeAI!"
+        context["contributor"] = "VisionSlice Team"
+        context["content"] = "Welcome to VisionSlice!"
         context["app_css"] = "myapp/css/styles.css"
         context["app_js"] = "myapp/js/scripts.js"
         context["logo"] = "myapp/images/Logo.png"

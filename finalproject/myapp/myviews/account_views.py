@@ -25,8 +25,8 @@ class BaseAccountView(View):
     template_name = "myapp/account/base.html"
     context = {
         "title": "Account",
-        "content": "Welcome to WeeAI! Account",
-        "contributor": "WeeAI Team",
+        "content": "Welcome to VisionSlice! Account",
+        "contributor": "VisionSlice Team",
         "app_css": "myapp/css/styles.css",
         "app_js": "myapp/js/scripts.js",
         "menus": menus,

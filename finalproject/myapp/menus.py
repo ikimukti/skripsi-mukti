@@ -16,9 +16,8 @@ def set_user_menus(request, context):
                 if submenu["name"] == "Image by Uploader":
                     submenu["url"] = "/image/uploader/" + username + "/"
         if menu["name"] == "Account":
-            menu["url"] = "/account/" + username + "/"
             for submenu in menu["submenus"]:
-                if submenu["name"] == "Profile":
+                if submenu["name"] == "Account Profile":
                     submenu["url"] = "/account/" + username + "/"
                 if submenu["name"] == "Change Password":
                     submenu["url"] = "/account/" + username + "/change-password/"
@@ -45,14 +44,14 @@ it_admin_menus = [
     ),
     create_menu(
         "Account",
-        "/account/",
+        "",
         "fas fa-user",
         dropdown=True,
         id="account_detail",
         submenus=[
             create_menu(
-                "Profile",
-                "/account/profile/",
+                "Account Profile",
+                "/account/",
                 "fas fa-user-circle",
                 id="account_detail",
             ),
@@ -72,33 +71,36 @@ it_admin_menus = [
     ),
     create_menu(
         "Images",
-        "/image/",
+        "",
         "fas fa-image",
         dropdown=True,
         id="image",
         submenus=[
-            create_menu("Image List", "/image/", "fas fa-list", id="image"),
+            create_menu("Image Upload", "/image/upload/", "fas fa-upload", id="upload"),
+            create_menu("Image All", "/image/", "fas fa-list", id="image_all"),
             create_menu(
                 "Image by Uploader",
                 "/image/uploader/",
                 "fas fa-user",
                 id="image_by_uploader",
             ),
-            create_menu("Upload", "/image/upload/", "fas fa-upload", id="image_upload"),
             create_menu(
-                "Summary", "/image/summary/", "fas fa-chart-bar", id="image_summary"
+                "Image Summary",
+                "/image/summary/",
+                "fas fa-chart-bar",
+                id="image_summary",
             ),
         ],
     ),
     create_menu(
         "Segmentation",
-        "/segmentation/",
+        "",
         "fas fa-chart-pie",
         dropdown=True,
         id="segmentation",
         submenus=[
             create_menu(
-                "Segmentation List", "/segmentation/", "fas fa-list", id="segmentation"
+                "Do Segmentation", "/segmentation/", "fas fa-play", id="segmentation"
             ),
             create_menu(
                 "Segmentation by Color",
@@ -113,40 +115,10 @@ it_admin_menus = [
                 id="table",
             ),
             create_menu(
-                "Summary",
+                "Segmentation Summary",
                 "/segmentation/summary/",
                 "fas fa-chart-bar",
                 id="segmentation_summary",
-            ),
-        ],
-    ),
-    create_menu(
-        "Reports",
-        "/report/",
-        "fas fa-chart-bar",
-        dropdown=True,
-        id="report",
-        submenus=[
-            create_menu(
-                "Segmentation",
-                "/report/segmentation/",
-                "fas fa-chart-pie",
-                id="report_segmentation",
-            ),
-            create_menu(
-                "Export Image",
-                "/report/export/image/",
-                "fas fa-file-image",
-                id="report_export_image",
-            ),
-            create_menu(
-                "Export Report",
-                "/report/export/report/",
-                "fas fa-file-pdf",
-                id="report_export_report",
-            ),
-            create_menu(
-                "Summary", "/report/summary/", "fas fa-chart-bar", id="report_summary"
             ),
         ],
     ),
@@ -160,7 +132,7 @@ it_admin_menus = [
             create_menu("Setting", "/preference/", "fas fa-cog", id="preference"),
             create_menu("Help", "/help/", "fas fa-question-circle", id="help"),
             create_menu("Docs", "/docs/", "fas fa-book", id="docs"),
-            create_menu("Blog", "/blog/", "fas fa-blog", id="blog"),
+            create_menu("Blog", "https://www.ikimukti.com", "fas fa-blog", id="blog"),
             create_menu("Contact", "/contact/", "fas fa-phone", id="contact"),
             create_menu("About", "/about/", "fas fa-info-circle", id="about"),
         ],

@@ -5,8 +5,8 @@ from myapp.menus import menus, set_user_menus
 
 class ReportBaseView(View):
     base_context = {
-        "content": "Welcome to WeeAI!",
-        "contributor": "WeeAI Team",
+        "content": "Welcome to VisionSlice!",
+        "contributor": "VisionSlice Team",
         "app_css": "myapp/css/styles.css",
         "app_js": "myapp/js/scripts.js",
         "menus": menus,

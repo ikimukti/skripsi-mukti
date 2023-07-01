@@ -52,7 +52,7 @@
                 </div>
             </div>
             <div class="container">
-                <canvas id="myChart"></canvas>
+                <canvas id="myChart" height="100px"></canvas>
             </div>
             <!-- Result -->
             <div class="flex flex-col space-y-2">
@@ -319,8 +319,8 @@
             {
                 label: 'Segmentation',
                 data: data_segmentation,
-                // black
-                borderColor:  '#000000',
+                // red
+                borderColor:  '#ff0000',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4,
@@ -329,8 +329,8 @@
             {
                 label: 'F1 Score',
                 data: data_f1_score,
-                // black
-                borderColor:  '#000000',
+                // teal
+                borderColor: '#008080',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4
@@ -338,8 +338,8 @@
             {
                 label: 'Jaccard Score',
                 data: data_jaccard_score,
-                // black
-                borderColor:  '#000000',
+                // orange
+                borderColor:  '#ffa500',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4
@@ -347,8 +347,8 @@
             {
                 label: 'Rand Score',
                 data: data_rand_score,
-                // black
-                borderColor:  '#000000',
+                // purple
+                borderColor:  '#800080',
                 fill: false,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4
@@ -361,6 +361,15 @@
         type: 'line',
         data: data,
         options: {
+            animations: {
+                tension: {
+                    duration: 1000,
+                    easing: 'linear',
+                    from: 1,
+                    to: 0,
+                    loop: true
+                }
+            },
             responsive: true,
             scales: {
                 y: {

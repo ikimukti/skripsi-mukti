@@ -119,9 +119,10 @@
                                 <span class="px-2 py-1 rounded-md bg-purple-200 text-purple-700 text-xs hover:bg-purple-300 cursor-pointer">
                                     {{ image.image.color|capfirst }}
                                 </span>
-                                <span class="px-2 py-1 rounded-md bg-teal-200 text-teal-700 text-xs hover:bg-teal-300 cursor-pointer">
+                                <a class="px-2 py-1 rounded-md bg-teal-200 text-teal-700 text-xs hover:bg-teal-300 cursor-pointer" href="{{ image.segment.image_segmented.url }}">
+                                    {{ image.image.segmentation_type|capfirst }}
                                     {{ image.segmentation_type|capfirst }}
-                                </span>
+                                </a>
                             </td>
                             <td class="border px-2 py-1 text-xs space-x-2">
                                 <span class="px-2 py-1 rounded-md bg-sky-200 text-sky-700 text-xs hover:bg-sky-300 cursor-pointer">

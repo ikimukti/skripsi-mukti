@@ -9,7 +9,7 @@
                 </button>
             </div>
             <a class="text-2xl font-bold px-4 py-2" href="{% url 'myapp:index' %}">
-                WEE<span class="bg-gradient-to-t from-fuchsia-500 to-stone-400 bg-clip-text text-transparent">AI</span>
+                VISION<span class="bg-gradient-to-t from-teal-500 to-stone-400 bg-clip-text text-transparent">SLICE</span>
             </a>
         </div>
         <div class="">
@@ -26,44 +26,44 @@
                 <div class="flex flex-col items-center justify-center">
                     <div class="flex flex-row justify-between space-x-2">
                         <div>
-                            <img class="w-16 h-16 rounded-full object-cover border-2 border-gray-300" src="{% static 'myapp/assets/author.png' %}" alt="profile">
+                            <img class="w-16 h-16 rounded-full object-cover border-2 border-gray-300" alt="profile" src="{% if request.user.userprofile.profile_pic %}{{ request.user.userprofile.profile_pic.url }}{% else %}{% static 'myapp/assets/author.png' %}{% endif %}">
                         </div>
                         <div>
                             <h1 class="text-lg font-bold mt-2">{{ request.user.first_name|title }} {{ request.user.last_name|title }}</h1>
                             <h2 class="text-sm text-gray-500">
                                 {% if request.user.is_superuser %}
-                                    <i class="fas fa-user-shield text-fuchsia-500 mr-2"></i>
-                                    <span class="text-fuchsia-500">Admin</span>
+                                    <i class="fas fa-user-shield text-teal-500 mr-2"></i>
+                                    <span class="text-teal-500">Admin</span>
                                 {% else %}
-                                    <i class="fas fa-user text-fuchsia-500 mr-2"></i>
-                                    <span class="text-fuchsia-500">User</span>
+                                    <i class="fas fa-user text-teal-500 mr-2"></i>
+                                    <span class="text-teal-500">User</span>
                                 {% endif %}
                             </h2>
                         </div>
                     </div>
                     <!-- account menu -->
                     <ul class="space-y-2 w-full mt-4">
-                        <li class="flex flex-row justify-between items-center space-x-2 hover:bg-fuchsia-200 rounded-md p-2 cursor-pointer">
+                        <li class="flex flex-row justify-between items-center space-x-2 hover:bg-teal-200 rounded-md p-2 cursor-pointer">
                             <div>
-                                <i class="fas fa-user-circle text-fuchsia-500 mr-2"></i>
+                                <i class="fas fa-user-circle text-teal-500 mr-2"></i>
                                 <a href="{% url 'myapp:account_profile' %}" class="text-gray-500 hover:text-gray-900">
                                     Profile
                                 </a>
                             </div>
                         </li>
                         <hr class="border-gray-200">
-                        <li class="flex flex-row justify-between items-center space-x-2 hover:bg-fuchsia-200 rounded-md p-2 cursor-pointer">
+                        <li class="flex flex-row justify-between items-center space-x-2 hover:bg-teal-200 rounded-md p-2 cursor-pointer">
                             <div>
-                                <i class="fas fa-cog text-fuchsia-500 mr-2"></i>
+                                <i class="fas fa-cog text-teal-500 mr-2"></i>
                                 <a href="{% url 'myapp:setting' %}" class="text-gray-500 hover:text-gray-900">
                                     Settings
                                 </a>
                             </div>
                         </li>
                         <hr class="border-gray-200">
-                        <li class="flex flex-row justify-between items-center space-x-2 hover:bg-fuchsia-200 rounded-md p-2 cursor-pointer">
+                        <li class="flex flex-row justify-between items-center space-x-2 hover:bg-teal-200 rounded-md p-2 cursor-pointer">
                             <div>
-                                <i class="fas fa-sign-out-alt text-fuchsia-500 mr-2"></i>
+                                <i class="fas fa-sign-out-alt text-teal-500 mr-2"></i>
                                 <a href="{% url 'myapp:signout' %}" class="text-gray-500 hover:text-gray-900">
                                     Sign out
                                 </a>

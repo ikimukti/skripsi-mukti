@@ -38,6 +38,7 @@
         </div>
     </div>
     {% include 'myapp/snippets/scripts.html' %}
+    {% block scriptcustom %} {% endblock scriptcustom %}
     {% block chartjs %} {% endblock chartjs %}
     <script text="text/javascript">
         function toggleMenu() {

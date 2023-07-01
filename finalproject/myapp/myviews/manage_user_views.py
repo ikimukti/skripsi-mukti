@@ -26,8 +26,8 @@ from myapp.models import (
 )
 
 base_context = {
-    "content": "Welcome to WeeAI!",
-    "contributor": "WeeAI Team",
+    "content": "Welcome to VisionSlice!",
+    "contributor": "VisionSlice Team",
     "app_css": "myapp/css/styles.css",
     "app_js": "myapp/js/scripts.js",
     "menus": menus,
@@ -221,12 +221,21 @@ class ManageUserGroupEditClassView(UpdateView):
 
     def form_valid(self, form):
         # Lakukan tindakan yang diinginkan ketika form valid
+        print(form.cleaned_data)
         user = self.get_object()
         groups = form.cleaned_data["groups"]
         if user.groups.all().count() > 0:
             user.groups.clear()
         for group in groups:
             user.groups.add(group)
+        # is_staff and is_superuser and is_active
+        # is_staff = form.cleaned_data["is_staff"]
+        # is_superuser = form.cleaned_data["is_superuser"]
+        # is_active = form.cleaned_data["is_active"]
+        # user.is_staff = is_staff
+        # user.is_superuser = is_superuser
+        # user.is_active = is_active
+        user.save()
 
         return redirect(self.get_success_url())
 
