@@ -16,8 +16,24 @@
             </div>
         </div>
         <hr class="border-gray-200 mb-2">
-        <div class="flex flex-col space-y-2">  
+        <div class="flex flex-col space-y-2">
+          <button onclick="printDiv('divPrint')">Print this section</button>
+            <div id="divPrint">
+              
+            </div>  
         </div>
     </div>
 </div>
 {% endblock content %}
+
+{% block scriptcustom %} 
+<script>
+        function printDiv(divId) {
+            var printContents = document.getElementById(divId).innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+    </script>
+{% endblock scriptcustom %}

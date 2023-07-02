@@ -53,7 +53,7 @@ def perform_k_means_segmentation(image):
 
     # count Preprocessing objects
     preprocessing_count = preprocessings.count()
-    print("preprocessing_count:", preprocessing_count)
+    # print("preprocessing_count:", preprocessing_count)
     # Iterate over each preprocessing object
     counter = 0
     for preprocessing in preprocessings:
@@ -66,7 +66,7 @@ def perform_k_means_segmentation(image):
 
         # Print the shape of img_2d to check its dimensions
         counter += 1
-        print("img_2d shape:", img_2d.shape, "-->", counter)
+        # print("img_2d shape:", img_2d.shape, "-->", counter)
 
         img_2d = img_2d.reshape(img_2d.shape[0] * img_2d.shape[1], img_2d.shape[2])
 
@@ -159,11 +159,12 @@ def get_top_segmentations(Image, segmentation_type):
     segmentation_instances = []
     rank = 1  # Start with rank 1
 
+    # Iterate over each segmentation result
     for segmentation in top_segmentations:
         segmentation_instance = SegmentationResult.objects.create(
             image=Image,
             segmentation_type=segmentation_type,
-            segmentation=segmentation,
+            segment=segmentation,
             preprocessing=segmentation.image_preprocessing,
             rank=rank,
         )
@@ -318,7 +319,7 @@ def calculate_scores(ground_truth, segmented, type, average="binary", zero_divis
             )
         )
     )
-    print(scores)
+    # print(scores)
     return scores
 
 
@@ -328,7 +329,7 @@ def perform_adaptive_segmentation(image):
 
     # count Preprocessing objects
     preprocessing_count = preprocessings.count()
-    print("preprocessing_count:", preprocessing_count)
+    # print("preprocessing_count:", preprocessing_count)
     # Iterate over each preprocessing object
     counter = 0
     for preprocessing in preprocessings:
@@ -381,14 +382,14 @@ def perform_adaptive_segmentation(image):
         segmented_array = np.zeros((segmented.shape[0], segmented.shape[1], 3))
         segmented_array = np.array(segmented_array)
 
-        print("ground_truth:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
+        # print("ground_truth:", ground_truth_array.shape)
+        # print("segmented_array:", segmented_array.shape)
         # Flatten array of images
         ground_truth_array = ground_truth_array.flatten()
         segmented_array = segmented_array.flatten()
 
-        print("ground_truth_array:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
+        # print("ground_truth_array:", ground_truth_array.shape)
+        # print("segmented_array:", segmented_array.shape)
 
         # Call the calculate_scores function
         type = "adaptive"
@@ -439,7 +440,7 @@ def perform_otsu_segmentation(image):
 
     # count Preprocessing objects
     preprocessing_count = preprocessings.count()
-    print("preprocessing_count:", preprocessing_count)
+    # print("preprocessing_count:", preprocessing_count)
     # Iterate over each preprocessing object
     counter = 0
     for preprocessing in preprocessings:
@@ -487,14 +488,14 @@ def perform_otsu_segmentation(image):
         segmented_array = np.zeros((segmented.shape[0], segmented.shape[1], 3))
         segmented_array = np.array(segmented_array)
 
-        print("ground_truth:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
+        # print("ground_truth:", ground_truth_array.shape)
+        # print("segmented_array:", segmented_array.shape)
         # Flatten array of images
         ground_truth_array = ground_truth_array.flatten()
         segmented_array = segmented_array.flatten()
 
-        print("ground_truth_array:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
+        # print("ground_truth_array:", ground_truth_array.shape)
+        # print("segmented_array:", segmented_array.shape)
 
         # Call the calculate_scores function
         type = "otsu"
@@ -545,7 +546,7 @@ def perform_sobel_segmentation(image):
 
     # Count Preprocessing objects
     preprocessing_count = preprocessings.count()
-    print("preprocessing_count:", preprocessing_count)
+    # print("preprocessing_count:", preprocessing_count)
 
     # Iterate over each preprocessing object
     counter = 0
@@ -556,7 +557,7 @@ def perform_sobel_segmentation(image):
 
         # Convert the image to grayscale
         img_file = cv2.cvtColor(img_file, cv2.COLOR_BGR2GRAY)
-        print("img_file shape:", img_file.shape)
+        # print("img_file shape:", img_file.shape)
 
         # Apply Sobel operator
         sobel_x = cv2.Sobel(img_file, cv2.CV_64F, 1, 0, ksize=3)
@@ -596,14 +597,14 @@ def perform_sobel_segmentation(image):
         segmented_array = np.zeros((segmented.shape[0], segmented.shape[1], 3))
         segmented_array = np.array(segmented_array)
 
-        print("ground_truth:", ground_truth_array.shape)
-        print("segmented:", segmented_array.shape)
+        # print("ground_truth:", ground_truth_array.shape)
+        # print("segmented:", segmented_array.shape)
         # Flatten array of images
         ground_truth_array = ground_truth_array.flatten()
         segmented_array = segmented_array.flatten()
 
-        print("ground_truth_array:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
+        # print("ground_truth_array:", ground_truth_array.shape)
+        # print("segmented_array:", segmented_array.shape)
 
         # Call the calculate_scores function
         type = "sobel"
@@ -658,7 +659,7 @@ def perform_prewitt_segmentation(image):
 
     # Count Preprocessing objects
     preprocessing_count = preprocessings.count()
-    print("preprocessing_count:", preprocessing_count)
+    # print("preprocessing_count:", preprocessing_count)
 
     # Iterate over each preprocessing object
     counter = 0
@@ -669,7 +670,7 @@ def perform_prewitt_segmentation(image):
 
         # Convert the image to grayscale
         img_file = cv2.cvtColor(img_file, cv2.COLOR_BGR2GRAY)
-        print("img_file shape:", img_file.shape)
+        # print("img_file shape:", img_file.shape)
 
         # Apply Prewitt operator
         # Filter Prewitt horizontal dan vertikal
@@ -707,14 +708,14 @@ def perform_prewitt_segmentation(image):
         segmented_array = np.zeros((segmented.shape[0], segmented.shape[1], 3))
         segmented_array = np.array(segmented_array)
 
-        print("ground_truth:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
+        # print("ground_truth:", ground_truth_array.shape)
+        # print("segmented_array:", segmented_array.shape)
         # Flatten array of images
         ground_truth_array = ground_truth_array.flatten()
         segmented_array = segmented_array.flatten()
 
-        print("ground_truth_array:", ground_truth_array.shape)
-        print("segmented_array:", segmented_array.shape)
+        # print("ground_truth_array:", ground_truth_array.shape)
+        # print("segmented_array:", segmented_array.shape)
 
         # Call the calculate_scores function
         type = "prewitt"
@@ -766,7 +767,7 @@ def perform_prewitt_segmentation(image):
 def perform_canny_segmentation(image):
     preprocessings = ImagePreprocessing.objects.filter(image=image)
     preprocessing_count = preprocessings.count()
-    print("preprocessing_count:", preprocessing_count)
+    # print("preprocessing_count:", preprocessing_count)
     counter = 0
     for preprocessing in preprocessings:
         img = preprocessing.image_preprocessing_gray
@@ -809,7 +810,7 @@ def perform_canny_segmentation(image):
 
         # If the white area ratio is greater than 95%, adjust the threshold values and perform Canny segmentation again
         if white_area_ratio > 0.97:
-            print("white_area_ratio:", white_area_ratio)
+            # print("white_area_ratio:", white_area_ratio)
             low_threshold = 0.25 * threshold_value
             high_threshold = 1.75 * threshold_value
 
@@ -832,14 +833,14 @@ def perform_canny_segmentation(image):
         segmented_array = np.zeros((segmented.shape[0], segmented.shape[1], 3))
         segmented_array = np.array(segmented_array)
 
-        # print("ground_truth:", ground_truth_array.shape)
-        # print("segmented:", segmented_array.shape)
+        # #print("ground_truth:", ground_truth_array.shape)
+        # #print("segmented:", segmented_array.shape)
         # Flatten array of images
         ground_truth_array = ground_truth_array.flatten()
         segmented_array = segmented_array.flatten()
 
-        # print("ground_truth_array:", ground_truth_array.shape)
-        # print("segmented_array:", segmented_array.shape)
+        # #print("ground_truth_array:", ground_truth_array.shape)
+        # #print("segmented_array:", segmented_array.shape)
 
         # Call the calculate_scores function
         type = "canny"

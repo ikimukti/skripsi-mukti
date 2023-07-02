@@ -85,20 +85,19 @@ class Image(models.Model):
 
     # override update method
     def update(self, *args, **kwargs):
-        # hash image name to make it unique
-        unique_name = generate_unique_image_name(self.image.name)
-        # width, height, size, channel, format, dpi, distance, color
-        self.width = self.image.width
-        self.height = self.image.height
-        self.size = self.image.size
-        self.channel = 3
-        # shape to get channel
-        self.format = self.image.name.split(".")[-1]
-        # get dpi from image
-        self.dpi = 300
-        # set file format
-        self.slug = slugify(unique_name + "." + self.image.name.split(".")[-1])
-        self.image.name = unique_name + "." + self.image.name.split(".")[-1]
+        # # hash image name to make it unique
+        # unique_name = generate_unique_image_name(self.image.name)
+        # # width, height, size, channel, format, dpi, distance, color
+        # self.width = self.image.width
+        # self.height = self.image.height
+        # self.size = self.image.size
+        # # shape to get channel
+        # self.format = self.image.name.split(".")[-1]
+        # # get dpi from image
+        # # set file format
+        # self.slug = slugify(unique_name + "." + self.image.name.split(".")[-1])
+        # self.image.name = unique_name + "." + self.image.name.split(".")[-1]
+
         super(Image, self).save(*args, **kwargs)
 
     # override save method
@@ -171,6 +170,8 @@ class ImagePreprocessing(models.Model):
         self.image_preprocessing_gray.delete(False)
         self.image_preprocessing_color.delete(False)
         self.image_ground_truth.delete(False)
+
+        # Delete the ImagePreprocessing object
         super().delete(*args, **kwargs)
 
     def __str__(self):
@@ -209,6 +210,7 @@ class Segmentation(models.Model):
     def delete(self, *args, **kwargs):
         # delete image
         self.image_segmented.delete(False)
+
         super().delete(*args, **kwargs)
 
     def __str__(self):
@@ -240,9 +242,7 @@ class SegmentationResult(models.Model):
 
     # override delete method
     def delete(self, *args, **kwargs):
-        # delete image
-        for segmentation in self.segmentations.all():
-            segmentation.delete()
+        # Delete the SegmentationResult object
         super().delete(*args, **kwargs)
 
     def __str__(self):

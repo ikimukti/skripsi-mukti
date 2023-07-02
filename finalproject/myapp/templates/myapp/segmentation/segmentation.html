@@ -10,7 +10,7 @@
                 <h1 class="text-2xl font-bold text-gray-700">{{ title }}</h1>
             </div>
             <div class="flex flex-row space-x-2">
-                <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700 space-x-2" onclick="window.history.back();">
+                <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700 space-x-2" onclick="window.history.back(); window.location.reload();">
                     <i class="fas fa-arrow-left"></i>
                     <span>Back</span>
                 </button>
@@ -131,12 +131,9 @@
                             <td class="border px-2 py-1 text-xs">{{ image.created_at|naturaltime }}</td>
                             <td class="border px-2 py-1 text-xs">
                                 <div class="flex flex-row space-x-2">
-                                    <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700" href="{{ image.image.url }}" download>
-                                        <i class="fas fa-download"></i>
-                                    </a>
                                     <!-- segmented -->
                                     {% if image.segmented %}
-                                    <a class="flex flex-row justify-center items-center bg-yellow-200 hover:bg-yellow-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:segmentation_detail' image.id %}">
+                                    <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:segmentation_detail' image.id %}">
                                         <i class="fas fa-check"></i>
                                         <span class="ml-2">Segmented</span>
                                     </a>
@@ -152,18 +149,20 @@
                                         <span class="ml-2">{{ image.segmented_count }}</span>
                                     </span>
                                     {% endif %}
-                                    <!-- print report -->
-                                    <a class="flex flex-row justify-center items-center bg-purple-200 hover:bg-purple-300 rounded-md px-4 py-2 text-gray-700 border" href="" target="_blank">
-                                        <i class="fas fa-print"></i>
-                                    </a>
+                                    {% if image.segmented %}
+                                    {% if image.segmented_count > 0 %}
                                     <!-- excel -->
                                     <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700 border" href="" target="_blank">
                                         <i class="fas fa-file-excel"></i>
                                     </a>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if image.segmented_count > 0 %}
                                     <!-- delete -->
-                                    <a class="flex flex-row justify-center items-center bg-red-200 hover:bg-red-300 rounded-md px-4 py-2 text-gray-700 border" href="">
+                                    <a class="flex flex-row justify-center items-center bg-red-200 hover:bg-red-300 rounded-md px-4 py-2 text-gray-700 border" href="{% url 'myapp:segmentation_delete' image.id %}">
                                         <i class="fas fa-trash"></i>
                                     </a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>

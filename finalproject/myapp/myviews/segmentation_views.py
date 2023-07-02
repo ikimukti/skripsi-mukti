@@ -85,12 +85,12 @@ class SegmentationClassView(ListView):
         )
         # Count Image by uploader
         uploaders_count = Image.objects.filter(uploader__isnull=False)
-        print(uploaders_count)
+        # print(uploaders_count)
         # Prepare uploaders data as a list of dictionaries
         uploaders = []
         for name, count in zip(uploaders_name, uploaders_count):
             uploaders.append({"name": name, "count": count})
-        print(uploaders)
+        # print(uploaders)
         # Get categories color name
         colors = queryset.values_list("color", flat=True).distinct()
 
@@ -174,7 +174,7 @@ def perform_segmentation(segmentation_type, segmentation_results_data, image):
         segmentation_type in segmentations
         and not segmentation_results_data[segmentation_type]["available"]
     ):
-        print(f"Performing {segmentation_type} segmentation...")
+        # print(f"Performing {segmentation_type} segmentation...")
         perform_func = segmentations[segmentation_type]["perform"]
         perform_func(image)
         top_func = segmentations[segmentation_type]["top"]
@@ -218,16 +218,85 @@ class SegmentationDetailClassView(DetailView):
         image = self.get_object()
         selected_segmentation_types = request.POST.getlist("segmentation_types")
         segmentation_results_data = get_segmentation_results_data(image)
-        print("selected_segmentation_types:", selected_segmentation_types)
+        # print("selected_segmentation_types:", selected_segmentation_types)
 
         for segmentation_type in selected_segmentation_types:
             if SegmentationResult.objects.filter(
                 image=image, segmentation_type=segmentation_type
             ).exists():
-                print(f"Segmentation {segmentation_type} already exists.")
+                # print(f"Segmentation {segmentation_type} already exists.")
                 continue
 
             perform_segmentation(segmentation_type, segmentation_results_data, image)
+
+        return redirect("myapp:segmentation_detail", pk=image.pk)
+
+    def customize_context(self, context):
+        pass
+
+
+class SegmentationDeleteClassView(DeleteView):
+    model = Image
+    template_name = "myapp/segmentation/segmentation_delete.html"
+    context_object_name = "segmentation"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        set_user_menus(self.request, context)
+        self.customize_context(context)
+
+        context["title"] = "Segmentation Delete"
+        context["contributor"] = "VisionSlice Team"
+        context[
+            "content"
+        ] = "Welcome to VisionSlice! This is a website for image segmentation."
+        context["app_css"] = "myapp/css/styles.css"
+        context["app_js"] = "myapp/js/scripts.js"
+        context["logo"] = "myapp/images/Logo.png"
+
+        image = self.get_object()
+        segmentation_results_data = get_segmentation_results_data(image)
+        context["segmentation_results_data"] = segmentation_results_data
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("myapp:signin")
+        else:
+            self.object = self.get_object()
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        image = self.get_object()
+        segmentation_results_data = get_segmentation_results_data(image)
+        segmentation_types = segmentation_results_data.keys()
+        for segmentation_type in segmentation_types:
+            ipre = ImagePreprocessing.objects.filter(
+                image=image, segmentations__segmentation_type=segmentation_type
+            )
+            if ipre.exists():
+                # delete ImagePreprocessing records related to the Image
+                for ip in ipre:
+                    # print("image_preprocessing", image_preprocessing)
+                    # delete Segmentation records related to the ImagePreprocessing
+                    seg = Segmentation.objects.filter(
+                        image_preprocessing=ip, segmentation_type=segmentation_type
+                    )
+                    if seg.exists():
+                        for s in seg:
+                            seg_res = SegmentationResult.objects.filter(
+                                segment=s,
+                            )
+                            for sr in seg_res:
+                                sr.delete()
+                            img_seg_url = s.image_segmented.url
+                            if os.path.exists(img_seg_url):
+                                os.remove(img_seg_url)
+                            s.delete()
+                count = ipre.count()
+                print(f"Deleting {segmentation_type} segmentation...")
+                print(f"Deleting {count} ImagePreprocessing objects...")
 
         return redirect("myapp:segmentation_detail", pk=image.pk)
 

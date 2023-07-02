@@ -20,7 +20,26 @@
             </div>
         </div>
         <hr class="border-gray-200 mb-2">
-        <div class="flex flex-col space-y-2 w-auto">
+        <div class="flex flex-row justify-between items-center mb-2">
+            <button onclick="printDiv('divPrint')" class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700 space-x-2">
+                <i class="fas fa-print"></i>
+                <span>Print</span>
+            </button>
+            <form class="flex flex-row justify-center items-center space-x-2" method="GET">
+                    <select name="type" class="flex flex-row justify-center items-center rounded-md px-4 py-2 text-gray-700 w-60">
+                        <option value="all" {% if request.GET.type == 'all' %} selected {% endif %}>All</option>
+                        {% for segmentation_type in segmentation_type_dict %}
+                            <option value="{{ segmentation_type }}" {% if request.GET.type == segmentation_type %} selected {% endif %}>{{ segmentation_type }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700 ml-2" type="submit">
+                        <i class="fas fa-filter"></i>
+                        <span class="ml-2">Filter</span>
+                    </button>
+                </form>
+            
+        </div>	
+        <div class="flex flex-col space-y-2 w-auto" id="divPrint">
             <!-- list Image Upload -->
             <div class="flex flex-row justify-between items-center">
                 <div class="flex flex-row space-x-2">
@@ -93,6 +112,7 @@
                             </p>
                         </div>
                     </div>
+                    {% if chartjs %}
                     <p>
                         The Best Way to Segmentation this Image is 
                         <span class="text-red-500 font-bold">{{ chartjs.best.segmentation_type|title }}</span> 
@@ -108,12 +128,15 @@
                             {% elif chartjs.best.image_preprocessing.mean_filter %}Mean Filter
                             {% endif %}
                         </span> to improve image quality.
+                    </p>
+                    {% endif %}
                 </div>
             </div>
             <!-- List Segmentation Image -->
             <div class="flex flex-col space-y-2 w-auto">
+                {% if chartjs %}
                 <!-- Segmentation View selected -->
-                <div class="flex-1 flex-col space-y-2">
+                <div class="flex-1 flex-col space-y-2 segmentationView">
                     <div class="flex flex-col space-y-2">
                         <h1 class="text-lg font-bold text-gray-700">Segmentation Graph {{ request.GET.segmentation|title }}</h1>
                     </div>
@@ -121,6 +144,8 @@
                         <canvas id="chartku" class="w-full" height="230"></canvas>
                     </div>
                 </div>
+                {% endif %}
+                {% if image.segmentations %}
                 <!-- Segmentation View selected -->
                 <div class="flex flex-row justify-between items-center mb-2">
                     <div class="flex flex-col space-y-2">
@@ -152,12 +177,13 @@
                         </form>
                     </div>
                 </div>
+                {% endif %}
                 {% if page_obj %}
                 <div class="flex flex-row flex-wrap justify-center items-center space-x-2">
                     <table class="table-auto w-full">
                         <thead>
                             <tr>
-                                <th class="px-2 py-1 text-xs border">
+                                <th class="px-2 py-1 text-xs border segmentationView">
                                     <i class="fas fa-check"></i>
                                     <span class="ml-2">No</span>
                                 </th>
@@ -173,11 +199,11 @@
                                     <i class="fas fa-info-circle"></i>
                                     <span class="ml-2">Information Segmentation</span>
                                 </th>
-                                <th class="px-2 py-1 text-xs border">
+                                <th class="px-2 py-1 text-xs border segmentationView">
                                     <i class="fas fa-calendar-alt"></i>
                                     <span class="ml-2">Date</span>
                                 </th>
-                                <th class="px-2 py-1 text-xs border">
+                                <th class="px-2 py-1 text-xs border segmentationView">
                                     <i class="fas fa-cog"></i>
                                     <span class="ml-2">Action</span>
                                 </th>
@@ -186,10 +212,10 @@
                         <tbody>
                         {% for seg in page_obj %}
                             <tr>
-                                <td class="border px-2 py-1 text-xs">{{ forloop.counter }}</td>
+                                <td class="border px-2 py-1 text-xs segmentationView">{{ forloop.counter }}</td>
                                 <td class="border px-2 py-1 text-xs flex flex-row justify-center items-center space-x-2">
                                     <img src="{{ seg.image_segmented.url }}" class="w-9 h-9 object-cover object-center rounded-md">
-                                    <a href="{{ seg.image_segmented.url }}" class="text-xs text-blue-500 hover:text-blue-600">
+                                    <a href="{{ seg.image_segmented.url }}" class="text-xs text-blue-500 hover:text-blue-600 segmentationView">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>
                                 </td>
@@ -236,11 +262,11 @@
                                         </span>
                                     {% endif %}
                                     <!-- view image alt -->
-                                    <a href="{{ seg.image_preprocessing.image_preprocessing_color.url }}" class="text-xs text-blue-500 hover:text-blue-600">
+                                    <a href="{{ seg.image_preprocessing.image_preprocessing_color.url }}" class="text-xs text-blue-500 hover:text-blue-600 segmentationView">
                                         <i class="fas fa-external-link-alt"></i>
                                         Color
                                     </a>
-                                    <a href="{{ seg.image_preprocessing.image_preprocessing_gray.url }}" class="text-xs text-blue-500 hover:text-blue-600">
+                                    <a href="{{ seg.image_preprocessing.image_preprocessing_gray.url }}" class="text-xs text-blue-500 hover:text-blue-600 segmentationView">
                                         <i class="fas fa-external-link-alt"></i>
                                         Gray
                                     </a>
@@ -261,8 +287,8 @@
                                         Rand: {{ seg.rand_score|floatformat:2 }}
                                     </span>
                                 </td>
-                                <td class="border px-2 py-1 text-xs">{{ seg.created_at|naturaltime }}</td>
-                                <td class="border px-2 py-1 text-xs">
+                                <td class="border px-2 py-1 text-xs segmentationView">{{ seg.created_at|naturaltime }}</td>
+                                <td class="border px-2 py-1 text-xs segmentationView">
                                     <div class="flex flex-row space-x-2">
                                         <a class="flex flex-row justify-center items-center bg-green-200 hover:bg-green-300 rounded-md px-4 py-2 text-gray-700" href="{{ seg.image_segmented.url }}" download>
                                             <i class="fas fa-download"></i>
@@ -280,7 +306,7 @@
                         <i class="fas fa-images text-4xl text-gray-500"></i>
                         <span class="text-sm text-gray-500">No Images Segmented</span>
                         <!-- Button Segmented-->
-                        <a href="{% url 'myapp:segmentation' %}" class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700">
+                        <a  class="flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="{% url 'myapp:segmentation_detail' image.id %}">
                             <i class="fas fa-images mr-2"></i>
                             Segmented Now
                         </a>
@@ -288,7 +314,7 @@
                 </div>
                 {% endif %}
                 {% if is_paginated %}
-                    <div class="flex flex-row justify-between items-center space-x-2">
+                    <div class="flex flex-row justify-between items-center space-x-2 segmentationView">
                         <div class="flex flex-row space-x-2">
                             <span class="text-xs text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
                         </div>
@@ -297,7 +323,7 @@
                                 <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page=1&segmentation={{ request.GET.segmentation }}">
                                     <i class="fas fa-angle-double-left"></i>
                                 </a>
-                                <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.previous_page_number }}&segmentation={{ request.GET.segmentation }}">
+                                <a class="text-xs flex flex-row justify-center items-center bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2 text-gray-700" href="?page={{ page_obj.previous_page_number }}&segmentation={{ request.GET.segmentation }}" id="hidesementara">
                                     <i class="fas fa-angle-left"></i>
                                 </a>
                             {% endif %}
@@ -325,7 +351,7 @@
 
             </div>
             <!-- List Image From Uploader User 5 Image latest -->
-            <div class="flex flex-col space-y-2">
+            <div class="flex flex-col space-y-2 segmentationView">
                 <h1 class="text-lg font-bold text-gray-700">Image Latest From {{ image.uploader }}</h1>
                 <div class="flex flex-row flex-wrap justify-start items-start space-x-2">
                     {% for image in images %}
@@ -348,6 +374,39 @@
 </div>
 {% endblock content %}
 
+{% block scriptcustom %} 
+<script>
+    function printDiv(divId) {
+        // Hide all elements with the class "segmentationView"
+        var segmentationViews = document.getElementsByClassName("segmentationView");
+        var originalDisplayStyles = {};
+
+        for (var i = 0; i < segmentationViews.length; i++) {
+            originalDisplayStyles[i] = segmentationViews[i].style.display;
+            segmentationViews[i].style.display = "none";
+        }
+
+        var printContents = document.getElementById(divId).innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+
+        // Restore original content after printing is done
+        document.body.innerHTML = originalContents;
+
+        // Show all elements with the class "segmentationView" again
+        for (var i = 0; i < segmentationViews.length; i++) {
+            segmentationViews[i].style.display = originalDisplayStyles[i];
+        }
+    }
+
+    // Reload the page after printing is done
+    window.addEventListener("afterprint", function() {
+        location.reload();
+    });
+</script>
+{% endblock scriptcustom %}
 {% block chartjs %} 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -384,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ]
         },
         options: {
+            maintainAspectRatio:true,
             responsive: true,
             scales: {
                 y: {

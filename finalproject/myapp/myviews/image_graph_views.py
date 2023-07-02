@@ -60,27 +60,27 @@ class ImageGraphClassView(ListView):
         data = queryset.first()
 
         # Cetak informasi dari model Image
-        print("Image:")
-        print(f"ID: {data.id}")
-        print(f"Uploader: {data.uploader.username}")
+        # print("Image:")
+        # print(f"ID: {data.id}")
+        # print(f"Uploader: {data.uploader.username}")
         # Cetak informasi lainnya dari model Image
 
         # Cetak informasi dari model ImagePreprocessing
         image_preprocessing = data.imagepreprocessing_set.first()
-        print("\nImage Preprocessing:")
-        print(f"ID: {image_preprocessing.id}")
+        # print("\nImage Preprocessing:")
+        # print(f"ID: {image_preprocessing.id}")
         # Cetak informasi lainnya dari model ImagePreprocessing
 
         # Cetak informasi dari model Segmentation
         segmentation = image_preprocessing.segmentations.first()
-        print("\nSegmentation:")
-        print(f"ID: {segmentation.id}")
+        # print("\nSegmentation:")
+        # print(f"ID: {segmentation.id}")
         # Cetak informasi lainnya dari model Segmentation
 
         # Cetak informasi dari model SegmentationResult
         segmentation_result = segmentation.segmentationresult_set.first()
-        print("\nSegmentation Result:")
-        print(f"ID: {segmentation_result.id}")
+        # print("\nSegmentation Result:")
+        # print(f"ID: {segmentation_result.id}")
         # Cetak informasi lainnya dari model SegmentationResult
 
         # Ambil semua nilai unik dari field color, width, height
@@ -336,7 +336,7 @@ class ImageGraphColorClassView(ListView):
 
         # hitung jumlah data
         total_data = queryset.count()
-        print(total_data)
+        # print(total_data)
 
         # Ambil semua nilai unik dari field unik
         unique_fields = [

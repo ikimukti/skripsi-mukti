@@ -24,6 +24,7 @@ from myapp.myviews.segmentation_views import (
     SegmentationClassView,
     SegmentationDetailClassView,
     SegmentationSummaryClassView,
+    SegmentationDeleteClassView,
 )
 
 from myapp.myviews.system_views import (

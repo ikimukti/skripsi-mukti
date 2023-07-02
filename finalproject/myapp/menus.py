@@ -122,21 +122,6 @@ it_admin_menus = [
             ),
         ],
     ),
-    create_menu(
-        "Preferences",
-        "/preference/",
-        "fas fa-cog",
-        dropdown=True,
-        id="preference",
-        submenus=[
-            create_menu("Setting", "/preference/", "fas fa-cog", id="preference"),
-            create_menu("Help", "/help/", "fas fa-question-circle", id="help"),
-            create_menu("Docs", "/docs/", "fas fa-book", id="docs"),
-            create_menu("Blog", "https://www.ikimukti.com", "fas fa-blog", id="blog"),
-            create_menu("Contact", "/contact/", "fas fa-phone", id="contact"),
-            create_menu("About", "/about/", "fas fa-info-circle", id="about"),
-        ],
-    ),
 ]
 
 # Membuat menu untuk staff_menus

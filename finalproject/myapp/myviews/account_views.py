@@ -69,12 +69,12 @@ class AccountUpdateClassView(BaseAccountView, UpdateView):
         return context
 
     def form_invalid(self, form):
-        print("form_invalid", form.cleaned_data)
-        print(form.errors)
+        # print("form_invalid", form.cleaned_data)
+        # print(form.errors)
         return super().form_invalid(form)
 
     def form_valid(self, form):
-        print("form_valid", form.cleaned_data)
+        # print("form_valid", form.cleaned_data)
         data = form.cleaned_data
         user = self.get_object()
 
@@ -107,7 +107,7 @@ class AccountUpdateClassView(BaseAccountView, UpdateView):
 
         # Save user and print console
         user.save()
-        print(user)
+        # print(user)
 
         # Get user profile if exist or create new user profile by user
         if hasattr(user, "userprofile"):
@@ -189,12 +189,12 @@ class AccountChangePasswordClassView(BaseAccountView, UpdateView):
         return form_class(self.request.POST, initial=self.get_initial())
 
     def form_invalid(self, form):
-        print("form_invalid", form.cleaned_data)
-        print(form.errors)
+        # print("form_invalid", form.cleaned_data)
+        # print(form.errors)
         return super().form_invalid(form)
 
     def form_valid(self, form):
-        print("form_valid", form.cleaned_data)
+        # print("form_valid", form.cleaned_data)
         #  check old password
         old_password = form.cleaned_data.get("old_password")
         user = self.get_object()

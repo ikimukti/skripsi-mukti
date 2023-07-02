@@ -2,6 +2,12 @@ from django.shortcuts import redirect, render
 from django.views import View
 from myapp.menus import menus, set_user_menus
 
+from django.views.generic import DetailView
+
+from myapp.models import Image
+
+from django.shortcuts import get_object_or_404
+
 
 class ReportBaseView(View):
     base_context = {
@@ -38,7 +44,7 @@ class ReportClassView(ReportBaseView):
         return super().get(request)  # Call the parent's get method
 
 
-class ReportSegmentationClassView(ReportBaseView):
+class ReportSegmentationClassView(DetailView, ReportBaseView):
     template_name = "myapp/report/report_segmentation.html"
     context = {
         "title": "Segmentation Report",
@@ -46,22 +52,49 @@ class ReportSegmentationClassView(ReportBaseView):
     }
 
     # override get method
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         self.title = "Segmentation Report"  # Add this line
         return super().get(request)  # Call the parent's get method
 
 
-class ReportExportImageClassView(ReportBaseView):
-    template_name = "myapp/report/report_export_image.html"
-    context = {
-        "title": "Export Image Report",
-        **ReportBaseView.base_context,
+class ReportBaseMixin:
+    base_context = {
+        "content": "Welcome to VisionSlice!",
+        "contributor": "VisionSlice Team",
+        "app_css": "myapp/css/styles.css",
+        "app_js": "myapp/js/scripts.js",
+        "menus": menus,
+        "logo": "myapp/images/Logo.png",
     }
 
-    # override get method
-    def get(self, request):
-        self.title = "Export Image Report"  # Add this line
-        return super().get(request)  # Call the parent's get method
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        set_user_menus(self.request, context)
+        context["title"] = self.title
+        return context
+
+
+class ReportExportImageClassView(DetailView, ReportBaseMixin):
+    model = Image
+    template_name = "myapp/report/report_export_image.html"
+    title = "Export Image Report"
+
+    def get_object(self, queryset=None):
+        # Retrieve the object based on the requested URL
+        pk = self.kwargs.get("pk")
+        return get_object_or_404(Image, pk=pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        set_user_menus(self.request, context)
+        context["title"] = self.title
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("myapp:signin")
+        else:
+            return super().get(request, *args, **kwargs)
 
 
 class ReportExportReportClassView(ReportBaseView):

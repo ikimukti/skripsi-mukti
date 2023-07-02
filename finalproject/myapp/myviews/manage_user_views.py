@@ -60,12 +60,12 @@ class ManageUserAddClassView(CreateView):
             return super().get(request, *args, **kwargs)
 
     def form_invalid(self, form):
-        print("form_invalid", form.cleaned_data)
-        print(form.errors)
+        # print("form_invalid", form.cleaned_data)
+        # print(form.errors)
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        print("form_valid", form.cleaned_data)
+        # print("form_valid", form.cleaned_data)
         data = form.cleaned_data
 
         # Create user
@@ -221,7 +221,7 @@ class ManageUserGroupEditClassView(UpdateView):
 
     def form_valid(self, form):
         # Lakukan tindakan yang diinginkan ketika form valid
-        print(form.cleaned_data)
+        # print(form.cleaned_data)
         user = self.get_object()
         groups = form.cleaned_data["groups"]
         if user.groups.all().count() > 0:
@@ -307,13 +307,13 @@ class ManageUserEditClassView(UpdateView):
             return super().get(request, *args, **kwargs)
 
     def form_invalid(self, form):
-        print("form_invalid", form.cleaned_data)
-        print(form.errors)
+        # print("form_invalid", form.cleaned_data)
+        # print(form.errors)
         # return invalid form and got get and print form.errors
         return super().form_invalid(form)
 
     def form_valid(self, form):
-        print("form_valid", form.cleaned_data)
+        # print("form_valid", form.cleaned_data)
         data = form.cleaned_data
         user = self.get_object()
 
@@ -345,7 +345,7 @@ class ManageUserEditClassView(UpdateView):
 
         # Save user and print console
         user.save()
-        print(user)
+        # print(user)
 
         # Get user profile if exist or create new user profile by user
         if hasattr(user, "userprofile"):
@@ -401,7 +401,7 @@ class ManageUserResetPasswordClassView(UpdateView):
             return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        print(form.cleaned_data)
+        # print(form.cleaned_data)
         username = form.cleaned_data["username"]
         user = User.objects.get(username=username)
         id = user.id
@@ -410,6 +410,6 @@ class ManageUserResetPasswordClassView(UpdateView):
         return redirect(reverse_lazy("myapp:manage_user_detail", kwargs={"pk": id}))
 
     def form_invalid(self, form):
-        print(form.errors)
+        # print(form.errors)
         set_user_menus(self.request, self.extra_context)
         return super().get(self.request)

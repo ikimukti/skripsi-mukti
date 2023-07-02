@@ -1,4 +1,5 @@
 import json
+import os
 import random
 from django.shortcuts import redirect, render
 from django.views import View
@@ -60,25 +61,108 @@ class ImageUpdateView(UpdateView):
 
     # invalid form
     def form_invalid(self, form):
-        print(form.cleaned_data)
+        # print(form.cleaned_data)
         return super().form_invalid(form)
 
-    # form save
     def form_valid(self, form):
-        # rewrite save method in form
-        # get image channel from form data image file
-        # cv2 image channel get image channel from shape
-        image_channel = cv2.imread(
-            form.cleaned_data["image"].temporary_file_path()
-        ).shape[2]
-        # rewrite channel in form data
-        form.instance.channel = image_channel
-        # cv2 get dpi from image file
-        image_dpi = cv2.imread(form.cleaned_data["image"].temporary_file_path()).shape[
-            0
-        ]
-        # rewrite dpi in form data
+        # Get the Image instance being deleted
+        image = self.get_object()
+        # print("image", image)
+
+        imagePreprocessing = ImagePreprocessing.objects.filter(image=image)
+
+        # delete ImagePreprocessing records related to the Image
+        for image_preprocessing in imagePreprocessing:
+            # print("image_preprocessing", image_preprocessing)
+            # delete Segmentation records related to the ImagePreprocessing
+            segmentations = Segmentation.objects.filter(
+                image_preprocessing=image_preprocessing
+            )
+            for segmentation in segmentations:
+                # print("segmentation", segmentation)
+                # delete SegmentationResult records related to the Segmentation
+                segmentation_results = SegmentationResult.objects.filter(
+                    segment=segmentation
+                )
+                for segmentation_result in segmentation_results:
+                    segmentation_result.delete()
+                image_seg = segmentation.image_segmented.url
+                # print("image_seg", image_seg)
+                if os.path.exists(image_seg):
+                    os.remove(image_seg)
+                segmentation.delete()
+            image_precolor = image_preprocessing.image_preprocessing_color.url
+            # print("image_precolor", image_precolor)
+            if os.path.exists(image_precolor):
+                # print("image_precolor", os.path.exists(image_precolor), "deleted")
+                os.remove(image_precolor)
+            image_pregray = image_preprocessing.image_preprocessing_gray.url
+            # print("image_pregray", image_pregray)
+            if os.path.exists(image_pregray):
+                # print("image_pregray", os.path.exists(image_pregray), "deleted")
+                os.remove(image_pregray)
+            image_ground = image_preprocessing.image_ground_truth.url
+            # print("image_ground", image_ground)
+            if os.path.exists(image_ground):
+                # print("image_ground", os.path.exists(image_ground), "deleted")
+                os.remove(image_ground)
+            image_preprocessing.delete()
+
+        # delete Image instance
+
+        # image.delete()
+        # print("image", image, "deleted")
+        image_old = image.image.url
+        # print("image_old klaaaaaaaaaaaaaa", image_old)
+        if os.path.exists(image_old):
+            print("image_old", os.path.exists(image_old), "deleted")
+            os.remove(image_old)
+
+        image_data = form.cleaned_data["image"].read()
+        image_array = np.frombuffer(image_data, np.uint8)
+        image_channel = cv2.imdecode(image_array, cv2.IMREAD_UNCHANGED).shape[2]
+        image_dpi = cv2.imdecode(image_array, cv2.IMREAD_UNCHANGED).shape[0]
         form.instance.dpi = image_dpi
+        form.instance.channel = image_channel
+        form.instance.image = form.cleaned_data["image"]
+        image_obj = form.instance
+        # delete old image
+        image_old = image.image.url
+        # print("image_obj", image_obj)
+
+        parameters = [
+            {
+                "scale": scale,
+                "brightness": brightness,
+                "contrast": contrast,
+                "spatial_filter": spatial_filter,
+            }
+            for scale in [0.5, 0.75, 1.0, 1.25, 1.5]
+            for brightness in [0.5, 0.75, 1.0, 1.25, 1.5]
+            for contrast in [0.5, 0.75, 1.0, 1.25, 1.5]
+            for spatial_filter in [
+                ("mean_filter", 3),
+                ("median_filter", 3),
+                ("gaussian_filter", 3),
+            ]
+        ]
+
+        total_combinations = len(parameters)
+        target_count = 50
+        step = total_combinations // target_count
+
+        selected_parameters = []
+
+        for i in range(0, total_combinations, step):
+            selected_parameters.append(parameters[i])
+
+        random.shuffle(selected_parameters)
+
+        # print("selected_parameters", selected_parameters)
+
+        process_and_save_image_preprocessing(
+            image_obj, image_array, selected_parameters
+        )
         return super().form_valid(form)
 
     # override get method
@@ -120,7 +204,61 @@ class ImageDeleteView(DeleteView):
 
     # override post method
     def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+        # Get the Image instance being deleted
+        image = self.get_object()
+        # print("image", image)
+
+        imagePreprocessing = ImagePreprocessing.objects.filter(image=image)
+
+        # delete ImagePreprocessing records related to the Image
+        for image_preprocessing in imagePreprocessing:
+            # print("image_preprocessing", image_preprocessing)
+            # delete Segmentation records related to the ImagePreprocessing
+            segmentations = Segmentation.objects.filter(
+                image_preprocessing=image_preprocessing
+            )
+            for segmentation in segmentations:
+                # print("segmentation", segmentation)
+                # delete SegmentationResult records related to the Segmentation
+                segmentation_results = SegmentationResult.objects.filter(
+                    segment=segmentation
+                )
+                for segmentation_result in segmentation_results:
+                    segmentation_result.delete()
+                image_seg = segmentation.image_segmented.url
+                # print("image_seg", image_seg)
+                if os.path.exists(image_seg):
+                    os.remove(image_seg)
+                segmentation.delete()
+            image_precolor = image_preprocessing.image_preprocessing_color.url
+            # print("image_precolor", image_precolor)
+            if os.path.exists(image_precolor):
+                # print("image_precolor", os.path.exists(image_precolor), "deleted")
+                os.remove(image_precolor)
+            image_pregray = image_preprocessing.image_preprocessing_gray.url
+            # print("image_pregray", image_pregray)
+            if os.path.exists(image_pregray):
+                # print("image_pregray", os.path.exists(image_pregray), "deleted")
+                os.remove(image_pregray)
+            image_ground = image_preprocessing.image_ground_truth.url
+            # print("image_ground", image_ground)
+            if os.path.exists(image_ground):
+                # print("image_ground", os.path.exists(image_ground), "deleted")
+                os.remove(image_ground)
+            image_preprocessing.delete()
+
+        # delete the Image record and its associated image file
+        image_paths = [image.image.url]
+
+        for path in image_paths:
+            if os.path.exists(path):
+                os.remove(path)
+
+        # delete Image instance
+        image.delete()
+
+        # return to the image list page
+        return redirect("myapp:image_list")
 
 
 class ImageUploadView(CreateView):
@@ -131,7 +269,7 @@ class ImageUploadView(CreateView):
 
     # invalid form
     def form_invalid(self, form):
-        print(form.cleaned_data)
+        # print(form.cleaned_data)
         return super().form_invalid(form)
 
     def form_valid(self, form):
@@ -171,7 +309,7 @@ class ImageUploadView(CreateView):
 
         random.shuffle(selected_parameters)
 
-        print("selected_parameters", selected_parameters)
+        # print("selected_parameters", selected_parameters)
 
         process_and_save_image_preprocessing(
             image_obj, image_array, selected_parameters
@@ -478,7 +616,7 @@ class ImageDetailView(DetailView):
     model = Image
     template_name = "myapp/image/image_detail.html"
     context_object_name = "image"
-    paginate_by = 10  # Menampilkan 10 gambar per halaman
+    paginate_by = 54  # Menampilkan 10 gambar per halaman
 
     def get_segmentation_data(self, segmentation_type):
         image_preprocessing = ImagePreprocessing.objects.filter(image=self.object)
@@ -496,10 +634,6 @@ class ImageDetailView(DetailView):
             "-f1_score",
             "-rand_score",
             "-jaccard_score",
-            "-mse",
-            "-psnr",
-            "-mae",
-            "-rmse",
         )
         # Urutkan dari terendah ke tertinggi
         segmentation = sorted(
@@ -508,10 +642,6 @@ class ImageDetailView(DetailView):
                 x.f1_score,
                 x.rand_score,
                 x.jaccard_score,
-                x.mse,
-                x.psnr,
-                x.mae,
-                x.rmse,
             ),
         )
 
@@ -519,10 +649,6 @@ class ImageDetailView(DetailView):
         f1_score = [seg.f1_score for seg in segmentation]
         rand_score = [seg.rand_score for seg in segmentation]
         jaccard_score = [seg.jaccard_score for seg in segmentation]
-        mse = [seg.mse for seg in segmentation]
-        psnr = [seg.psnr for seg in segmentation]
-        mae = [seg.mae for seg in segmentation]
-        rmse = [seg.rmse for seg in segmentation]
 
         # get 1st segmentation data as best
         data_length = len(labels)
@@ -533,10 +659,6 @@ class ImageDetailView(DetailView):
             "data_f1_score": json.dumps(list(f1_score)),
             "data_rand_score": json.dumps(list(rand_score)),
             "data_jaccard_score": json.dumps(list(jaccard_score)),
-            "data_mse": json.dumps(list(mse)),
-            "data_psnr": json.dumps(list(psnr)),
-            "data_mae": json.dumps(list(mae)),
-            "data_rmse": json.dumps(list(rmse)),
             "best": best,
         }
 
@@ -561,9 +683,18 @@ class ImageDetailView(DetailView):
         # Get all images by image id
         image_list = ImagePreprocessing.objects.filter(image=self.object)
         # get segmentation by imagepreprocessing id and add related imagepreprocessing to image_list
-        seg_type = self.request.GET.get("segmentation")
-        print(seg_type)
-        if seg_type is None or seg_type == "all":
+        color_query = self.request.GET.get("color")
+        segmentation_type_query = self.request.GET.get("type")
+        segmentation = (
+            Segmentation.objects.filter(image_preprocessing__in=image_list)
+            .prefetch_related("image_preprocessing")
+            .order_by("-created_at")
+        )
+        type_dict = segmentation.values_list("segmentation_type", flat=True).distinct()
+        type_dict = list(set(type_dict))
+        context["segmentation_type_dict"] = type_dict
+        # print(segmentation_type_query)
+        if segmentation_type_query is None or segmentation_type_query == "all":
             segmentation = (
                 Segmentation.objects.filter(image_preprocessing__in=image_list)
                 .prefetch_related("image_preprocessing")
@@ -573,7 +704,7 @@ class ImageDetailView(DetailView):
             segmentation = (
                 Segmentation.objects.filter(
                     image_preprocessing__in=image_list,
-                    segmentation_type=seg_type,
+                    segmentation_type=segmentation_type_query,
                 )
                 .prefetch_related("image_preprocessing")
                 .order_by("-created_at")
@@ -597,7 +728,7 @@ class ImageDetailView(DetailView):
 
         chartjs_data = {}
 
-        if seg_type is None or seg_type == "all":
+        if segmentation_type_query is None or segmentation_type_query == "all":
             # if model Segmentation is not empty
             if segmentation:
                 chartjs_data = self.get_segmentation_data("all")
@@ -605,7 +736,7 @@ class ImageDetailView(DetailView):
                 chartjs_data = ""
             # get 1st segmentation chartjs data
         else:
-            chartjs_data = self.get_segmentation_data(seg_type)
+            chartjs_data = self.get_segmentation_data(segmentation_type_query)
 
         context["chartjs"] = chartjs_data
 

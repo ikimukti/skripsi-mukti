@@ -11,6 +11,11 @@ urlpatterns = [
         name="segmentation_summary",
     ),
     path(
+        "segmentation/delete/<int:pk>/",
+        views.SegmentationDeleteClassView.as_view(),
+        name="segmentation_delete",
+    ),
+    path(
         "segmentation/detail/<int:pk>/",
         views.SegmentationDetailClassView.as_view(),
         name="segmentation_detail",
@@ -31,7 +36,7 @@ urlpatterns = [
         name="report_export_report",
     ),
     path(
-        "report/export/image/",
+        "report/export/image/<int:pk>/",
         views.ReportExportImageClassView.as_view(),
         name="report_export_image",
     ),

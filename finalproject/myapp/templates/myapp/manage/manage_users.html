@@ -46,10 +46,6 @@
                         <thead>
                             <tr>
                                 <th class="px-2 py-1 text-xs border">
-                                    <i class="fas fa-check"></i>
-                                    <span class="ml-2">No</span>
-                                </th>
-                                <th class="px-2 py-1 text-xs border">
                                     <i class="fas fa-id-card"></i>
                                     ID
                                 </th>
@@ -82,7 +78,6 @@
                         <tbody>
                         {% for data in page_obj %}
                             <tr>
-                                <td class="border px-2 py-1 text-xs">{{ forloop.counter }}</td>
                                 <td class="border px-2 py-1 text-xs">
                                     <i class="fa-solid fa-fingerprint"></i>
                                 </td>

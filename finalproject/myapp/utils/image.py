@@ -81,14 +81,14 @@ def process_and_save_image_preprocessing(image_obj, image_array, parameters):
 
         # Adjust brightness
         enhanced_image = PILImageEnhance.Brightness(resized_image).enhance(brightness)
-        print("enhanced_image.shape brightness", enhanced_image.size, counter)
+        # print("enhanced_image.shape brightness", enhanced_image.size, counter)
 
         preprocessing_instance.brightness = True
         preprocessing_instance.brightness_percent = brightness * 100
 
         # Adjust contrast
         enhanced_image = PILImageEnhance.Contrast(enhanced_image).enhance(contrast)
-        print("enhanced_image.shape contrast", enhanced_image.size, counter)
+        # print("enhanced_image.shape contrast", enhanced_image.size, counter)
 
         preprocessing_instance.contrast = True
         preprocessing_instance.contrast_percent = contrast * 100
@@ -109,16 +109,8 @@ def process_and_save_image_preprocessing(image_obj, image_array, parameters):
             filtered_image_color = filters.uniform_filter(
                 enhanced_image_color, size=filter_size, mode="constant"
             )
-            print(
-                "filtered_image_gray.shape mean_filter",
-                filtered_image_gray.shape,
-                counter,
-            )
-            print(
-                "filtered_image_color.shape mean_filter",
-                filtered_image_color.shape,
-                counter,
-            )
+            # print( "filtered_image_gray.shape mean_filter",filtered_image_gray.shape, counter,)
+            # print("filtered_image_color.shape mean_filter", filtered_image_color.shape, counter,)
             preprocessing_instance.mean_filter = True
             preprocessing_instance.mean_filter_size = filter_size
             preprocessing_instance.median_filter = False
@@ -131,16 +123,8 @@ def process_and_save_image_preprocessing(image_obj, image_array, parameters):
             filtered_image_color = filters.median_filter(
                 enhanced_image_color, size=filter_size, mode="constant"
             )
-            print(
-                "filtered_image_gray.shape median_filter",
-                filtered_image_gray.shape,
-                counter,
-            )
-            print(
-                "filtered_image_color.shape median_filter",
-                filtered_image_color.shape,
-                counter,
-            )
+            # print("filtered_image_gray.shape median_filter",filtered_image_gray.shape,counter,)
+            # print("filtered_image_color.shape median_filter",filtered_image_color.shape,counter,)
             preprocessing_instance.median_filter = True
             preprocessing_instance.median_filter_size = filter_size
             preprocessing_instance.mean_filter = False
@@ -154,16 +138,8 @@ def process_and_save_image_preprocessing(image_obj, image_array, parameters):
             filtered_image_color = filters.gaussian_filter(
                 enhanced_image_color, sigma=sigma, mode="constant"
             )
-            print(
-                "filtered_image_gray.shape gaussian_filter",
-                filtered_image_gray.shape,
-                counter,
-            )
-            print(
-                "filtered_image_color.shape gaussian_filter",
-                filtered_image_color.shape,
-                counter,
-            )
+            # print("filtered_image_gray.shape gaussian_filter",filtered_image_gray.shape, counter,)
+            # print("filtered_image_color.shape gaussian_filter",filtered_image_color.shape,counter,)
             preprocessing_instance.gaussian_filter = True
             preprocessing_instance.gaussian_filter_size = filter_size
             preprocessing_instance.mean_filter = False
@@ -176,8 +152,8 @@ def process_and_save_image_preprocessing(image_obj, image_array, parameters):
         if filtered_image_color.getextrema()[0] == filtered_image_color.getextrema()[1]:
             filtered_image_color = resized_image
 
-        print("filtered_image_gray.shape", filtered_image_gray.size, counter)
-        print("filtered_image_color.shape", filtered_image_color.size, counter)
+        # print("filtered_image_gray.shape", filtered_image_gray.size, counter)
+        # print("filtered_image_color.shape", filtered_image_color.size, counter)
 
         # Save the processed image
         processed_image_gray_stream = io.BytesIO()
@@ -234,7 +210,7 @@ def process_and_save_image_preprocessing(image_obj, image_array, parameters):
 
         # Save the processed image
         ground_truth = PILImage.fromarray(ground_truth)
-        print("ground_truth.shape", ground_truth.size, counter)
+        # print("ground_truth.shape", ground_truth.size, counter)
         ground_truth_image_stream = io.BytesIO()
         ground_truth.save(ground_truth_image_stream, format="JPEG")
         ground_truth_image_stream.seek(0)
