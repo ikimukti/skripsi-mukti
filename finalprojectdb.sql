@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 02, 2023 at 02:56 PM
+-- Generation Time: Jul 03, 2023 at 03:45 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -207,7 +207,7 @@ CREATE TABLE `auth_user` (
 --
 
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
-(1, 'pbkdf2_sha256$600000$FDMoMl2valNySX4FDODnk5$22DLSma3Ll9CDhhgkbgL469pGZpCH3XLLlyV36CR5N0=', '2023-07-02 07:29:38.786189', 1, 'admin', 'Firmansyah Mukti', 'Wijaya', 'mukti@ikimukti.com', 1, 1, '2023-06-03 15:17:53.000000'),
+(1, 'pbkdf2_sha256$600000$FDMoMl2valNySX4FDODnk5$22DLSma3Ll9CDhhgkbgL469pGZpCH3XLLlyV36CR5N0=', '2023-07-02 16:02:55.847151', 1, 'admin', 'Firmansyah Mukti', 'Wijaya', 'mukti@ikimukti.com', 1, 1, '2023-06-03 15:17:53.000000'),
 (2, 'pbkdf2_sha256$600000$hE4OfuOscXppsTO3nBQHgi$9J1wNOXPvlItdwZUxd3aTLfEjxmd+oYOS9SI3MK8bfs=', '2023-06-22 18:05:14.065034', 1, 'mukti', 'Firmansyah Mukti', 'Wijaya', 'iki.mukti@gmail.com', 1, 1, '2023-06-06 15:04:34.000000'),
 (3, 'pbkdf2_sha256$600000$AlyZgCGc0aIYFATNes8ht1$BuQ84dnS9rjJY6/Z/a2Cpheq3x2FOPmhHTqWSlqZkJM=', '2023-06-08 16:19:41.000000', 0, 'adminapp', 'Admin App', 'Mukti', 'adminapp@ikimukti.com', 1, 1, '2023-06-08 16:18:38.000000'),
 (4, 'pbkdf2_sha256$600000$kS5qXWMRmZhIVA3jRCoX6t$yE+R/7JChFlozmItCEhgZVaajFPe/u4qAFlWD5YKNVY=', '2023-06-08 18:49:34.287779', 0, 'user11', 'User', 'Satu', 'user1@ikimukti.com', 0, 1, '2023-06-08 16:18:48.000000'),
@@ -1763,6 +1763,7 @@ INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALU
 ('uo40iwewax4tovs08rxdn58o478efvu5', '.eJxVjDsOwyAQBe9CHSF2wWBSpvcZEMsnOIlAMnYV5e4RkoukfTPz3sz5Yy_u6Glza2RXBuzyu5EPz1QHiA9f742HVvdtJT4UftLOlxbT63a6fwfF9zJqG2aYpAGUGoWeCRC8ApmRxKRMFgJBBNLoTc6K0AYAEJYIDESlkH2-pIE2Tw:1qFHxv:zVbgnymTkROybCGEBn9yiAiCbK4OThzMdGE8nG6lvRI', '2023-07-14 17:31:27.633552'),
 ('vfddvkh1t779116e8nirbpf71ydxbqdw', '.eJxVjDsOwyAQBe9CHSF2wWBSpvcZEMsnOIlAMnYV5e4RkoukfTPz3sz5Yy_u6Glza2RXBuzyu5EPz1QHiA9f742HVvdtJT4UftLOlxbT63a6fwfF9zJqG2aYpAGUGoWeCRC8ApmRxKRMFgJBBNLoTc6K0AYAEJYIDESlkH2-pIE2Tw:1qFqGn:8TZm5Q52c1u1xotJMF68IHmpWIaA3YQGgMuPEFiN5nk', '2023-07-16 06:09:13.024416'),
 ('wszdryihqx9lbd99gp0cg4f6svhbiysp', '.eJxVjDsOwyAQBe9CHSF2wWBSpvcZEMsnOIlAMnYV5e4RkoukfTPz3sz5Yy_u6Glza2RXBuzyu5EPz1QHiA9f742HVvdtJT4UftLOlxbT63a6fwfF9zJqG2aYpAGUGoWeCRC8ApmRxKRMFgJBBNLoTc6K0AYAEJYIDESlkH2-pIE2Tw:1qEjVM:uJn4LJZqWJNDvngBkQzIfeSBNDkZVHfK_R3K5kKgJzk', '2023-07-13 04:43:40.960782'),
+('wtsdajnnulak3dzvv8qlq9bgwh97cp0k', '.eJxVjDsOwyAQBe9CHSF2wWBSpvcZEMsnOIlAMnYV5e4RkoukfTPz3sz5Yy_u6Glza2RXBuzyu5EPz1QHiA9f742HVvdtJT4UftLOlxbT63a6fwfF9zJqG2aYpAGUGoWeCRC8ApmRxKRMFgJBBNLoTc6K0AYAEJYIDESlkH2-pIE2Tw:1qFzXL:3Cn2dlCuztwkc4--gxRGF4exHPco_BF0yrftDMh79WY', '2023-07-16 16:02:55.850450'),
 ('x8dxuopytzpy67uft4qf469yo0fzismj', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q7QJb:IC4F2JqNvmCTdpjqE_omuoH7Lr-hCd3pPGGHgJpjYvc', '2023-06-23 00:49:19.348093'),
 ('xsxmdl311k2zke4yb209nzix8w6zjqaf', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q5T3p:iwPCTyP4RY_GYDCrntA4brlfEZ57LWrofTrZQwYywkE', '2023-06-17 15:20:57.885792'),
 ('ywnpinum0a5238n9nnsx9d8pwglshxwc', '.eJxVjEEOwiAQRe_C2hBmLBRcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERIE6_W6D44LqDdKd6azK2ui5zkLsiD9rl1BI_r4f7d1Col289sMNgGNhZGJBzHgkiGI4QgzasWGd0mBktKWszUcKEo8pJnyM5RvH-APvOOMI:1q94MX:jT0h_6KWXGpOywS03MaN10XGjQftkYHa6iv2Uy8tOMk', '2023-06-27 13:47:09.790289'),
