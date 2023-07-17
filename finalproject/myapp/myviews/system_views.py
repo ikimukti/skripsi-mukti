@@ -3,6 +3,9 @@ from django.views import View
 from myapp.menus import menus, set_user_menus
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.models import Group
+from myapp.forms import SignUpForm
+from django.views.generic import FormView
 
 
 class SystemBaseView(View):
@@ -23,6 +26,7 @@ class SystemBaseView(View):
 
 class SignInClassView(SystemBaseView):
     template_name = "myapp/system/signin.html"
+
     context = {
         "title": "Sign In",
         **SystemBaseView.base_context,
@@ -46,12 +50,51 @@ class SignInClassView(SystemBaseView):
             return super().post(request)
 
 
-class SignUpClassView(SystemBaseView):
-    template_name = "myapp/system/signup.html"
-    context = {
-        "title": "Sign Up",
-        **SystemBaseView.base_context,
+class SignUpClassView(FormView):
+    base_context = {
+        "content": "Welcome to VisionSlice!",
+        "contributor": "VisionSlice Team",
+        "app_css": "myapp/css/styles.css",
+        "app_js": "myapp/js/scripts.js",
+        "logo": "myapp/images/Logo.png",
     }
+    form_class = SignUpForm
+    template_name = "myapp/system/signup.html"
+    success_url = "/dashboard/"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Sign Up"
+        return context
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        if form.cleaned_data["password1"] != form.cleaned_data["password2"]:
+            self.context["error"] = "Password does not match!"
+            return super().form_invalid(form)
+        else:
+            user.set_password(form.cleaned_data["password1"])
+        user.save()
+
+        # Tambahkan user ke grup "researcher"
+        researcher_group = Group.objects.get(name="researcher")
+        researcher_group.user_set.add(user)
+
+        # Login user setelah berhasil mendaftar
+        self.login(user)
+
+        return super().form_valid(form)
+
+    def login(self, user):
+        from django.contrib.auth import login
+
+        login(self.request, user)
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("myapp:dashboard")
+        else:
+            return super().get(request, *args, **kwargs)
 
 
 class SignOutClassView(SystemBaseView):

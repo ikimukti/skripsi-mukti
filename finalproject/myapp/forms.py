@@ -10,6 +10,20 @@ from django.contrib.auth.models import User, Group
 from myapp.models import UserProfile
 
 
+class SignUpForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    password1 = forms.CharField(
+        label="Password", widget=forms.PasswordInput(), required=True
+    )
+    password2 = forms.CharField(
+        label="Confirm Password", widget=forms.PasswordInput(), required=True
+    )
+
+    class Meta:
+        model = User
+        fields = ["email", "username", "first_name", "last_name"]
+
+
 class ManageUserGroupEditForm(forms.ModelForm):
     groups = forms.ModelMultipleChoiceField(
         queryset=Group.objects.all(),

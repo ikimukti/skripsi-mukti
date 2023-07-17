@@ -630,20 +630,13 @@ class ImageDetailView(DetailView):
                 segmentation_type=segmentation_type,
             )
 
-        segmentation = segmentation.order_by(
+        best = segmentation.order_by(
             "-f1_score",
             "-rand_score",
             "-jaccard_score",
         )
-        # Urutkan dari terendah ke tertinggi
-        segmentation = sorted(
-            segmentation,
-            key=lambda x: (
-                x.f1_score,
-                x.rand_score,
-                x.jaccard_score,
-            ),
-        )
+
+        best = best.last()
 
         labels = [seg.segmentation_type for seg in segmentation]
         f1_score = [seg.f1_score for seg in segmentation]
@@ -652,7 +645,6 @@ class ImageDetailView(DetailView):
 
         # get 1st segmentation data as best
         data_length = len(labels)
-        best = segmentation[data_length - 1]
 
         return {
             "labels": json.dumps(list(labels)),

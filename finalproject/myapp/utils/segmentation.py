@@ -184,8 +184,8 @@ def calculate_scores(ground_truth, segmented, type, average="binary", zero_divis
     segmented = np.array(segmented)
     ground_truth = np.array(ground_truth)
 
-    segmented = np.where(segmented > 0, 1, segmented)
-    ground_truth = np.where(ground_truth > 0, 1, ground_truth)
+    segmented = np.where(segmented > 0.2, 1, segmented)
+    ground_truth = np.where(ground_truth > 0.2, 1, ground_truth)
 
     scores["f1_score"] = str(
         round(
@@ -319,7 +319,7 @@ def calculate_scores(ground_truth, segmented, type, average="binary", zero_divis
             )
         )
     )
-    # print(scores)
+    print(scores)
     return scores
 
 

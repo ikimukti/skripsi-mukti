@@ -127,7 +127,7 @@
                             {% elif chartjs.best.image_preprocessing.median_filter %}Median Filter
                             {% elif chartjs.best.image_preprocessing.mean_filter %}Mean Filter
                             {% endif %}
-                        </span> to improve image quality.
+                        </span> to improve image quality. Id image preprocessing is <span class="text-red-500 font-bold">{{ chartjs.best.image_preprocessing.id|intcomma }}</span>. Id segmentation is <span class="text-red-500 font-bold">{{ chartjs.best.id|intcomma }}</span>.
                     </p>
                     {% endif %}
                 </div>
